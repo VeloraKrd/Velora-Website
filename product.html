@@ -17,6 +17,7 @@
     <a href="index.html#catalog" class="nav-link">Каталог</a>
     <a href="index.html#advantages" class="nav-link">Преимущества</a>
     <a href="index.html#quiz" class="nav-link">Подбор</a>
+    <a href="index.html#calc" class="nav-link">Калькулятор</a>
     <a href="index.html#contacts" class="nav-link">Контакты</a>
   </nav>
   <div class="nav-right">
@@ -38,15 +39,10 @@
     <span class="eyebrow" id="pEyebrow"></span>
     <h1 id="pTitle"></h1>
     <p id="pIntro"></p>
-    <div class="p-hero-actions">
-      <a href="index.html#quiz" class="btn-gold" style="margin-top:0;">Получить консультацию
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a href="index.html#calc" class="btn-outline-light">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="2.5" width="16" height="19" rx="2"/><path stroke-linecap="round" d="M8 6.5h8M8 11h2M12 11h2M16 11h.5M8 14.5h2M12 14.5h2M16 14.5h.5M8 18h2M12 18h4"/></svg>
-        Калькулятор
-      </a>
-    </div>
+    <div class="p-hero-price" id="pPrice"></div>
+    <a href="index.html#quiz" class="btn-gold" style="margin-top:32px;">Получить консультацию
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
   </div>
 </section>
 
@@ -214,6 +210,7 @@ const STEPS = [
 const PRODUCTS = {
   vertical:{
     n:'01', title:'Вертикальные жалюзи', eyebrow:'Каталог · Вертикальные системы',
+    priceLabel:'от 790 ₽/м²',
     heroImg:'img/vertical.svg',
     intro:'Универсальная система вертикальных ламелей для больших окон, витрин и офисных пространств — точный контроль света без лишних усилий.',
     galleryOffset:1,
@@ -258,6 +255,7 @@ const PRODUCTS = {
 
   horizontal:{
     n:'02', title:'Горизонтальные жалюзи', eyebrow:'Каталог · Горизонтальные системы',
+    priceLabel:'от 950 ₽/м²',
     heroImg:'img/horizontal.svg',
     intro:'Классическая система горизонтальных ламелей — проверенное временем решение для точного контроля света и приватности.',
     galleryOffset:2,
@@ -302,6 +300,7 @@ const PRODUCTS = {
 
   cassette:{
     n:'03', title:'Кассетные жалюзи', eyebrow:'Каталог · Кассетные системы',
+    priceLabel:'от 1 400 ₽',
     heroImg:'img/cassette.svg',
     intro:'Компактная система без сверления рамы — аккуратное и почти незаметное решение для пластиковых окон.',
     galleryOffset:3,
@@ -346,6 +345,7 @@ const PRODUCTS = {
 
   roller:{
     n:'04', title:'Рулонные жалюзи', eyebrow:'Каталог · Рулонные системы',
+    priceLabel:'от 1 080 ₽',
     heroImg:'img/roller.svg',
     intro:'Минималистичное полотно, сворачивающееся в аккуратный вал — лаконичное решение для любого интерьера.',
     galleryOffset:4,
@@ -390,6 +390,7 @@ const PRODUCTS = {
 
   wood:{
     n:'05', title:'Деревянные жалюзи', eyebrow:'Каталог · Деревянные системы',
+    priceLabel:'от 6 300 ₽',
     heroImg:'img/wood.svg',
     intro:'Натуральные материалы и тепло дерева — премиальное решение для интерьеров, где важна текстура и характер.',
     galleryOffset:5,
@@ -434,6 +435,7 @@ const PRODUCTS = {
 
   motorized:{
     n:'06', title:'Жалюзи на электроприводе', eyebrow:'Каталог · Умные системы',
+    priceLabel:'от 22 000 ₽',
     heroImg:'img/motorized.svg',
     intro:'Управление одним нажатием кнопки или со смартфона — комфорт и технологичность без лишних усилий.',
     galleryOffset:6,
@@ -478,6 +480,7 @@ const PRODUCTS = {
 
   daynight:{
     n:'07', title:'День/Ночь', eyebrow:'Каталог · Комбинированные системы',
+    priceLabel:'от 1 625 ₽',
     heroImg:'img/daynight.svg',
     intro:'Плавный переход между мягким рассеянным светом и полной приватностью — в одной элегантной системе.',
     galleryOffset:7,
@@ -522,6 +525,7 @@ const PRODUCTS = {
 
   pleated:{
     n:'08', title:'Плиссе', eyebrow:'Каталог · Плиссированные системы',
+    priceLabel:'от 1 600 ₽',
     heroImg:'img/pleated.svg',
     intro:'Элегантные складки ткани для нестандартных окон — мансардных, арочных, треугольных и эркерных.',
     galleryOffset:8,
@@ -566,6 +570,7 @@ const PRODUCTS = {
 
   office:{
     n:'09', title:'Жалюзи для офиса', eyebrow:'Каталог · Решения для бизнеса',
+    priceLabel:'от 950 ₽/м²',
     heroImg:'img/office.svg',
     intro:'Прочные и практичные решения для комфортной рабочей атмосферы — от переговорных до open space.',
     galleryOffset:9,
@@ -620,6 +625,7 @@ document.getElementById('crumbCurrent').textContent = p.title;
 document.getElementById('pEyebrow').textContent = p.eyebrow;
 document.getElementById('pTitle').textContent = p.title;
 document.getElementById('pIntro').textContent = p.intro;
+document.getElementById('pPrice').innerHTML = p.priceLabel ? `<span>${p.priceLabel}</span>` : '';
 document.getElementById('descTitle').textContent = `${p.title}: подробное описание`;
 document.getElementById('descImg').src = p.heroImg;
 document.getElementById('descImg').alt = p.title;
@@ -726,13 +732,37 @@ window.addEventListener('scroll', ()=>{ header.classList.toggle('scrolled', wind
 
 const burger = document.getElementById('burgerBtn');
 const mainNav = document.getElementById('mainNav');
-burger.addEventListener('click', ()=>{ mainNav.classList.toggle('open'); burger.classList.toggle('open'); });
-document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click', ()=>mainNav.classList.remove('open')));
+function setMenu(open){
+  mainNav.classList.toggle('open', open);
+  burger.classList.toggle('open', open);
+  document.body.classList.toggle('menu-open', open);
+}
+burger.addEventListener('click', ()=>{ setMenu(!mainNav.classList.contains('open')); });
+document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click', ()=>setMenu(false)));
 
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// Плавные переходы между блоками (появление/уход в тень)
+const fadeSections = Array.from(document.querySelectorAll('body > section')).filter(s=>s.id !== 'pHero');
+fadeSections.forEach(s=>s.classList.add('section-fade'));
+let fadeTicking = false;
+function updateSectionFades(){
+  const vh = window.innerHeight;
+  fadeSections.forEach(s=>{
+    const r = s.getBoundingClientRect();
+    const entered = r.top < vh * 0.82 && r.bottom > vh * 0.12;
+    const leavingUp = r.bottom < vh * 0.30;
+    if(entered && !leavingUp){ s.classList.add('sf-in'); s.classList.remove('sf-out'); }
+    else if(leavingUp){ s.classList.remove('sf-in'); s.classList.add('sf-out'); }
+  });
+  fadeTicking = false;
+}
+window.addEventListener('scroll', ()=>{ if(!fadeTicking){ requestAnimationFrame(updateSectionFades); fadeTicking = true; } }, {passive:true});
+window.addEventListener('resize', updateSectionFades, {passive:true});
+updateSectionFades();
 
 const timelineIO = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{

@@ -51,6 +51,19 @@
   .reveal{opacity:0; transform:translateY(28px); transition:opacity .9s var(--ease), transform .9s var(--ease);}
   .reveal.in{opacity:1; transform:translateY(0);}
 
+  /* плавный переход блок→блок: появление из тени и уход в тень */
+  .section-fade{
+    opacity:0; transform:translateY(40px) scale(.985);
+    transition:opacity 1s var(--ease), transform 1s var(--ease), filter 1s var(--ease);
+    filter:brightness(.82);
+    will-change:opacity, transform, filter;
+  }
+  .section-fade.sf-in{opacity:1; transform:translateY(0) scale(1); filter:brightness(1);}
+  .section-fade.sf-out{opacity:.35; transform:translateY(-24px) scale(.99); filter:brightness(.62);}
+  @media(prefers-reduced-motion:reduce){
+    .section-fade{opacity:1; transform:none; filter:none; transition:none;}
+  }
+
   /* ---------- NAV ---------- */
   header{
     position:fixed; top:0; left:0; width:100%; z-index:1000;
@@ -120,9 +133,11 @@
 
   @media(max-width:900px){
     nav.main-nav{
-      position:fixed; inset:0; background:var(--graphite); flex-direction:column;
+      position:fixed; top:0; left:0; right:0; bottom:0; height:100vh; height:100dvh;
+      background:var(--graphite); flex-direction:column;
       justify-content:center; align-items:center; gap:34px;
       transform:translateX(100%); transition:transform .5s var(--ease); z-index:1100;
+      overflow-y:auto; -webkit-overflow-scrolling:touch;
     }
     nav.main-nav.open{transform:translateX(0);}
     nav.main-nav a{color:var(--beige); font-size:20px;}
@@ -130,6 +145,10 @@
     .nav-cta{display:none;}
     .burger{display:flex;}
   }
+  /* блокировка прокрутки страницы при открытом мобильном меню */
+  body.menu-open{overflow:hidden; touch-action:none;}
+  body.menu-open header#siteHeader{z-index:1300; background:transparent; border-color:transparent;}
+  body.menu-open .burger{position:relative; z-index:1400;}
 
   /* ---------- HERO ---------- */
   .hero{
@@ -210,13 +229,6 @@
   .catalog-head{display:flex; justify-content:space-between; align-items:flex-end; gap:30px; flex-wrap:wrap; margin-bottom:64px;}
   .catalog-head p{max-width:380px; color:var(--text-muted); font-size:15px; line-height:1.6;}
   .catalog-head-side{display:flex; flex-direction:column; align-items:flex-start; gap:22px;}
-  .btn-calc{
-    display:inline-flex; align-items:center; gap:12px; padding:14px 26px;
-    border:1px solid var(--graphite); color:var(--graphite); font-weight:700; font-size:14px; letter-spacing:.02em;
-    transition:all .35s var(--ease);
-  }
-  .btn-calc svg{width:20px; height:20px;}
-  .btn-calc:hover{background:var(--graphite); color:var(--white);}
 
   /* ===== Услуга ремонта ===== */
   .repair{background:var(--graphite); color:var(--white);}
@@ -392,14 +404,15 @@
 .p-hero-content .eyebrow{color:var(--gold-bright);}
 .p-hero-content h1{font-size:clamp(34px,5.2vw,58px); color:var(--white); font-weight:500;}
 .p-hero-content p{margin-top:20px; font-size:clamp(15px,1.6vw,18px); color:var(--beige); max-width:600px; line-height:1.65;}
-.p-hero-actions{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap;}
-.btn-outline-light{
-  display:inline-flex; align-items:center; gap:10px; padding:17px 28px;
-  border:1px solid rgba(255,255,255,.4); color:var(--white); font-weight:700; font-size:14px; letter-spacing:.02em;
-  transition:all .35s var(--ease);
+.p-hero-price{margin-top:26px; display:flex; align-items:baseline; gap:12px;}
+.p-hero-price span{
+  font-family:'Fraunces', serif; font-style:italic; font-weight:400;
+  font-size:clamp(26px,3.2vw,38px); color:var(--gold-bright); letter-spacing:.01em;
 }
-.btn-outline-light svg{width:19px; height:19px;}
-.btn-outline-light:hover{border-color:var(--gold); background:rgba(255,255,255,.06);}
+.p-hero-price::before{
+  content:'Стоимость'; font-family:'Manrope',sans-serif; font-size:11px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--beige); opacity:.7; align-self:center;
+}
 
 /* section shell reused */
 .p-section{padding:100px 8vw;}
