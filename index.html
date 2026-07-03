@@ -25,7 +25,8 @@
     <a href="tel:+79181384029" class="nav-phone">+7 (918) 138-40-29</a>
     <a href="#quiz" class="nav-cta">Консультация</a>
     <button class="burger" id="burgerBtn" aria-label="Меню">
-      <span></span><span></span><span></span>
+      <span class="burger-slats"><i></i><i></i><i></i></span>
+      <span class="burger-chain"></span>
     </button>
   </div>
 </header>
@@ -50,10 +51,41 @@
       <span class="eyebrow">Каталог</span>
       <h2 class="section-title">Жалюзи на любой вкус и задачу</h2>
     </div>
-    <p>От минималистичных рулонных систем до премиальных решений на электроприводе — подберём вариант под ваш интерьер.</p>
+    <div class="catalog-head-side">
+      <p>От минималистичных рулонных систем до премиальных решений на электроприводе — подберём вариант под ваш интерьер.</p>
+      <a href="#calc" class="btn-calc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="2.5" width="16" height="19" rx="2"/><path stroke-linecap="round" d="M8 6.5h8M8 11h2M12 11h2M16 11h.5M8 14.5h2M12 14.5h2M16 14.5h.5M8 18h2M12 18h4"/></svg>
+        Калькулятор стоимости
+      </a>
+    </div>
   </div>
 
   <div class="grid-products" id="productsGrid"></div>
+</section>
+
+<section class="repair" id="repair">
+  <div class="repair-inner">
+    <div class="repair-text reveal">
+      <span class="eyebrow">Сервис</span>
+      <h2 class="section-title" style="color:var(--white);">Ремонт жалюзи</h2>
+      <p>Восстановим механизм, заменим ламели, цепочку или кронштейны — вернём вашим жалюзи исправность и аккуратный вид. Работаем с системами любых производителей.</p>
+      <div class="repair-list">
+        <span>Замена ламелей и ткани</span>
+        <span>Ремонт механизма подъёма</span>
+        <span>Замена цепочки и утяжелителя</span>
+        <span>Настройка электропривода</span>
+      </div>
+      <div class="repair-actions">
+        <a href="#calc" class="btn-gold" style="margin-top:0;">Рассчитать ремонт
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <span class="repair-price">от 1 000 ₽/м²</span>
+      </div>
+    </div>
+    <div class="repair-visual reveal">
+      <img src="img/repair.svg" alt="Ремонт жалюзи">
+    </div>
+  </div>
 </section>
 
 <section class="advantages" id="advantages">
@@ -160,8 +192,8 @@
         <label>Дополнительно</label>
         <div class="calc-opts">
           <label class="calc-check"><input type="checkbox" id="calcMotor"> Электропривод (+3 500 ₽)</label>
-          <label class="calc-check"><input type="checkbox" id="calcInstall" checked> Замер и монтаж (+1 200 ₽)</label>
           <label class="calc-check"><input type="checkbox" id="calcBlackout"> Ткань блэкаут (+25%)</label>
+          <label class="calc-check" id="calcSaleWrap"><input type="checkbox" id="calcSale"> Распродажная ткань (−10%)<span class="calc-hint">только рулонные и кассетные</span></label>
         </div>
       </div>
     </div>
@@ -211,8 +243,7 @@
 
       <div class="social-row">
         <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
-        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M14 9h3V5.5h-3A4.5 4.5 0 009.5 10v2H7v3.5h2.5V22H13v-6.5h2.7L16 12h-3v-1.5A1.5 1.5 0 0114 9z"/></svg></a>
-        <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21l1.4-4.2A8.5 8.5 0 1112 20.5c-1.4 0-2.7-.35-3.85-1L3 21z"/></svg></a>
+        <a href="https://wa.me/79181384029" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21l1.5-4.3A8.5 8.5 0 1 1 12 20.5c-1.45 0-2.8-.36-3.98-1L3 21z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8.8 8.4c-.2.45-.3.98-.15 1.5.35 1.25 1.2 2.5 2.35 3.35.9.66 1.9 1.1 2.7 1.2.5.06 1-.1 1.35-.45l.4-.4a.6.6 0 0 0-.05-.9l-1.2-.95a.6.6 0 0 0-.7-.02l-.5.35c-.7-.35-1.35-.95-1.75-1.7l.3-.5a.6.6 0 0 0 0-.65l-.85-1.3a.6.6 0 0 0-.9-.12l-.45.4z"/></svg></a>
         <a href="#" aria-label="Telegram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 4L3 11.5l6 2m12-9.5l-3.5 16-8.5-6.5m12-9.5L9.5 13.5"/></svg></a>
       </div>
     </div>
@@ -265,15 +296,15 @@ revealEls.forEach(el=>io.observe(el));
 
 // Products data
 const products = [
-  {n:'01', slug:'vertical', title:'Вертикальные жалюзи', img:'img/vertical.svg', desc:'Идеальны для больших окон и офисных пространств — плавное регулирование света в один жест.'},
-  {n:'02', slug:'horizontal', title:'Горизонтальные жалюзи', img:'img/horizontal.svg', desc:'Классика точного контроля света и приватности для дома и квартиры.'},
-  {n:'03', slug:'cassette', title:'Кассетные жалюзи', img:'img/cassette.svg', desc:'Компактная система без сверления рамы — аккуратное решение для пластиковых окон.'},
-  {n:'04', slug:'roller', title:'Рулонные жалюзи', img:'img/roller.svg', desc:'Минималистичный дизайн, который лаконично вписывается в любой интерьер.'},
-  {n:'05', slug:'wood', title:'Деревянные жалюзи', img:'img/wood.svg', desc:'Натуральные материалы и тепло дерева для уютного, премиального пространства.'},
-  {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/motorized.svg', desc:'Управление одним нажатием кнопки или со смартфона — комфорт без усилий.'},
-  {n:'07', slug:'daynight', title:'День/Ночь', img:'img/daynight.svg', desc:'Плавный переход между мягким светом и полной приватностью в одной системе.'},
-  {n:'08', slug:'pleated', title:'Плиссе', img:'img/pleated.svg', desc:'Элегантные складки для нестандартных окон, мансард и эркеров.'},
-  {n:'09', slug:'office', title:'Жалюзи для офиса', img:'img/office.svg', desc:'Прочные и практичные решения для комфортной рабочей атмосферы.'}
+  {n:'01', slug:'vertical', title:'Вертикальные жалюзи', img:'img/vertical.svg', priceLabel:'от 790 ₽/м²', desc:'Идеальны для больших окон и офисных пространств — плавное регулирование света в один жест.'},
+  {n:'02', slug:'horizontal', title:'Горизонтальные жалюзи', img:'img/horizontal.svg', priceLabel:'от 950 ₽/м²', desc:'Классика точного контроля света и приватности для дома и квартиры.'},
+  {n:'03', slug:'cassette', title:'Кассетные жалюзи', img:'img/cassette.svg', priceLabel:'от 1 400 ₽', desc:'Компактная система без сверления рамы — аккуратное решение для пластиковых окон.'},
+  {n:'04', slug:'roller', title:'Рулонные жалюзи', img:'img/roller.svg', priceLabel:'от 1 080 ₽', desc:'Минималистичный дизайн, который лаконично вписывается в любой интерьер.'},
+  {n:'05', slug:'wood', title:'Деревянные жалюзи', img:'img/wood.svg', priceLabel:'от 6 300 ₽', desc:'Натуральные материалы и тепло дерева для уютного, премиального пространства.'},
+  {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/motorized.svg', priceLabel:'от 22 000 ₽', desc:'Управление одним нажатием кнопки или со смартфона — комфорт без усилий.'},
+  {n:'07', slug:'daynight', title:'День/Ночь', img:'img/daynight.svg', priceLabel:'от 1 625 ₽', desc:'Плавный переход между мягким светом и полной приватностью в одной системе.'},
+  {n:'08', slug:'pleated', title:'Плиссе', img:'img/pleated.svg', priceLabel:'от 1 600 ₽', desc:'Элегантные складки для нестандартных окон, мансард и эркеров.'},
+  {n:'09', slug:'office', title:'Жалюзи для офиса', img:'img/office.svg', priceLabel:'от 950 ₽/м²', desc:'Прочные и практичные решения для комфортной рабочей атмосферы.'}
 ];
 
 const grid = document.getElementById('productsGrid');
@@ -287,6 +318,7 @@ grid.innerHTML = products.map(p=>`
     <div class="p-body">
       <h3>${p.title}</h3>
       <p>${p.desc}</p>
+      <div class="p-price">${p.priceLabel}</div>
       <a href="product.html?id=${p.slug}" class="p-more">Подробнее
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
@@ -400,19 +432,22 @@ quizPhoneInput.addEventListener('focus', (e)=>{ if(!e.target.value) e.target.val
 showStep(1);
 
 // ============ CALCULATOR ============
-// Base price per m² (₽) by blind type — indicative market ranges
+// Цена за м² (₽) — минимальные значения из прайса
 const calcTypes = [
-  {slug:'roller', name:'Рулонные', price:1900},
-  {slug:'horizontal', name:'Горизонтальные', price:1700},
-  {slug:'vertical', name:'Вертикальные', price:1600},
-  {slug:'cassette', name:'Кассетные', price:2200},
-  {slug:'daynight', name:'День/Ночь', price:2600},
-  {slug:'pleated', name:'Плиссе', price:3200},
-  {slug:'wood', name:'Деревянные', price:4200},
-  {slug:'motorized', name:'Электро', price:3800},
-  {slug:'office', name:'Для офиса', price:1800}
+  {slug:'vertical', name:'Вертикальные', price:790},
+  {slug:'horizontal', name:'Горизонтальные', price:950},
+  {slug:'roller', name:'Рулонные', price:1080},
+  {slug:'cassette', name:'Кассетные', price:1400},
+  {slug:'daynight', name:'День/Ночь', price:1625},
+  {slug:'pleated', name:'Плиссе', price:1600},
+  {slug:'wood', name:'Деревянные', price:6300},
+  {slug:'motorized', name:'Электро', price:22000},
+  {slug:'office', name:'Для офиса', price:950},
+  {slug:'repair', name:'Ремонт', price:1000}
 ];
-let calcState = {type:calcTypes[0], motor:false, install:true, blackout:false};
+// типы, к которым применима распродажная ткань
+const SALE_TYPES = ['roller','cassette'];
+let calcState = {type:calcTypes[0], motor:false, blackout:false, sale:false};
 
 const calcTypesEl = document.getElementById('calcTypes');
 calcTypesEl.innerHTML = calcTypes.map((t,i)=>
@@ -425,19 +460,37 @@ function recalc(){
   const w = Math.max(0, parseFloat(document.getElementById('calcWidth').value) || 0);
   const h = Math.max(0, parseFloat(document.getElementById('calcHeight').value) || 0);
   const area = (w/100) * (h/100);
-  const minArea = Math.max(area, 0.5); // minimum billable area
+  const minArea = Math.max(area, 0.5); // минимальная расчётная площадь
+  const isRepair = calcState.type.slug === 'repair';
   let base = minArea * calcState.type.price;
-  if(calcState.blackout) base *= 1.25;
-  const motor = calcState.motor ? 3500 : 0;
-  const install = calcState.install ? 1200 : 0;
-  const total = base + motor + install;
+
+  // распродажная ткань доступна только для рулонных и кассетных
+  const saleAvailable = SALE_TYPES.includes(calcState.type.slug);
+  const saleWrap = document.getElementById('calcSaleWrap');
+  const saleInput = document.getElementById('calcSale');
+  if(saleAvailable){
+    saleWrap.classList.remove('disabled');
+    saleInput.disabled = false;
+  } else {
+    saleWrap.classList.add('disabled');
+    saleInput.disabled = true;
+    saleInput.checked = false;
+    calcState.sale = false;
+  }
+
+  if(calcState.blackout && !isRepair) base *= 1.25;
+  let saleDiscount = 0;
+  if(calcState.sale && saleAvailable){ saleDiscount = base * 0.10; }
+  const motor = (calcState.motor && !isRepair) ? 3500 : 0;
+  const total = base - saleDiscount + motor;
 
   document.getElementById('calcArea').textContent = `Площадь: ${area.toFixed(2)} м²`;
   document.getElementById('calcPrice').textContent = money(total);
 
-  let rows = `<div class="calc-row"><span>${calcState.type.name} жалюзи</span><span>${money(base)} ₽</span></div>`;
-  if(calcState.motor)   rows += `<div class="calc-row"><span>Электропривод</span><span>${money(motor)} ₽</span></div>`;
-  if(calcState.install) rows += `<div class="calc-row"><span>Замер и монтаж</span><span>${money(install)} ₽</span></div>`;
+  const baseLabel = isRepair ? 'Ремонт жалюзи' : `${calcState.type.name} жалюзи`;
+  let rows = `<div class="calc-row"><span>${baseLabel}</span><span>${money(base)} ₽</span></div>`;
+  if(saleDiscount > 0) rows += `<div class="calc-row"><span>Распродажная ткань (−10%)</span><span>−${money(saleDiscount)} ₽</span></div>`;
+  if(motor > 0)        rows += `<div class="calc-row"><span>Электропривод</span><span>${money(motor)} ₽</span></div>`;
   document.getElementById('calcBreakdown').innerHTML = rows;
 }
 
@@ -451,8 +504,8 @@ calcTypesEl.querySelectorAll('.calc-type').forEach(btn=>{
 });
 ['calcWidth','calcHeight'].forEach(id=>document.getElementById(id).addEventListener('input', recalc));
 document.getElementById('calcMotor').addEventListener('change', e=>{ calcState.motor=e.target.checked; recalc(); });
-document.getElementById('calcInstall').addEventListener('change', e=>{ calcState.install=e.target.checked; recalc(); });
 document.getElementById('calcBlackout').addEventListener('change', e=>{ calcState.blackout=e.target.checked; recalc(); });
+document.getElementById('calcSale').addEventListener('change', e=>{ calcState.sale=e.target.checked; recalc(); });
 recalc();
 
 // Contact form
