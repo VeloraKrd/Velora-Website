@@ -6,6 +6,9 @@
   <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#CFE3EE"/><stop offset="1" stop-color="#EAF1F3"/>
   </linearGradient>
+  <linearGradient id="alu" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#E8ECEF"/><stop offset="0.5" stop-color="#C9D0D6"/><stop offset="1" stop-color="#B4BCC3"/>
+  </linearGradient>
   <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0" stop-color="#CFA968"/><stop offset="1" stop-color="#B8935A"/>
   </linearGradient>
@@ -15,4 +18,4 @@
 </defs>
 <rect width="800" height="1000" fill="url(#wall)"/>
 <rect x="0" y="850" width="800" height="150" fill="#C9B79A"/>
-<rect x="0" y="850" width="800" height="4" fill="#B8A585"/><rect x="192" y="132" width="416" height="656" rx="6" fill="#F7F3EC" filter="url(#soft)"/><rect x="192" y="132" width="416" height="656" rx="6" fill="none" stroke="#D8CEBD" stroke-width="2"/><rect x="210" y="150" width="380" height="620" fill="url(#sky)"/><circle cx="483.59999999999997" cy="323.6" r="38.0" fill="#FBF3DE" opacity="0.7"/><rect x="210" y="571.6" width="380" height="198.4" fill="#D5E0D2" opacity="0.5"/><rect x="220" y="140" width="360" height="620" rx="4" fill="#F4F0E8" stroke="#D8CEBD" stroke-width="2"/><rect x="224" y="140" width="352" height="34" rx="4" fill="#CFC7B7"/><rect x="224" y="140" width="352" height="34" rx="4" fill="url(#gold)" opacity="0.15"/><rect x="230" y="174" width="340" height="417.59999999999997" fill="#E4DCCB"/><rect x="226" y="174" width="4" height="417.59999999999997" fill="#B7AE9E"/><rect x="570" y="174" width="4" height="417.59999999999997" fill="#B7AE9E"/><rect x="228" y="591.5999999999999" width="344" height="12" fill="#A79E8E"/></svg>
+<rect x="0" y="850" width="800" height="4" fill="#B8A585"/><rect x="192" y="132" width="416" height="656" rx="6" fill="#F7F3EC" filter="url(#soft)"/><rect x="192" y="132" width="416" height="656" rx="6" fill="none" stroke="#D8CEBD" stroke-width="2"/><rect x="210" y="150" width="380" height="620" fill="url(#sky)"/><circle cx="483.59999999999997" cy="323.6" r="38.0" fill="#FBF3DE" opacity="0.7"/><rect x="210" y="571.6" width="380" height="198.4" fill="#D5E0D2" opacity="0.5"/><rect x="210" y="150" width="380" height="42" rx="5" fill="#FFFFFF" stroke="#E2DCD1" stroke-width="1.5"/><rect x="210" y="184" width="380" height="8" fill="#EFEBE2"/><rect x="210" y="192" width="8" height="578" fill="#FFFFFF" stroke="#E2DCD1" stroke-width="1"/><rect x="582" y="192" width="8" height="578" fill="#FFFFFF" stroke="#E2DCD1" stroke-width="1"/><rect x="218" y="192" width="364" height="578" fill="#E4DCCB"/><rect x="218" y="192" width="145.6" height="578" fill="#ffffff" opacity="0.06"/><rect x="218" y="758" width="364" height="12" fill="#D3C9B4"/><line x1="616" y1="194" x2="616" y2="474" stroke="#8A8175" stroke-width="2.4" stroke-dasharray="4 4"/><circle cx="616" cy="481" r="6" fill="#B8935A"/></svg>
