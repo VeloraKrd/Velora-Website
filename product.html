@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Velora — карточка товара</title>
+<title>Velora — жалюзи на заказ в Краснодаре</title>
+<meta name="description" content="Жалюзи на заказ в Краснодаре и Краснодарском крае: подробное описание, галерея интерьеров, цены, уход и монтаж. Бесплатный замер и гарантия 2 года.">
+<meta property="og:type" content="product">
+<meta property="og:locale" content="ru_RU">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -636,7 +639,10 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get('id') || 'vertical';
 const p = PRODUCTS[id] || PRODUCTS.vertical;
 
-document.title = `${p.title} — Velora`;
+document.title = `${p.title} в Краснодаре — цена ${p.priceLabel || ''} | Velora`;
+// динамическое мета-описание под товар
+const metaDesc = document.querySelector('meta[name="description"]');
+if(metaDesc) metaDesc.setAttribute('content', `${p.title} на заказ в Краснодаре и Краснодарском крае ${p.priceLabel || ''}. ${p.intro} Бесплатный замер, монтаж, гарантия 2 года.`);
 document.getElementById('pHeroBg').style.backgroundImage = `url('${p.heroImg}')`;
 document.getElementById('crumbCurrent').textContent = p.title;
 document.getElementById('pEyebrow').textContent = p.eyebrow;
