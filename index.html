@@ -330,7 +330,7 @@ const products = [
   {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/motorized.svg', priceLabel:'от 22 000 ₽', desc:'Управление одним нажатием кнопки или со смартфона — комфорт без усилий.'},
   {n:'07', slug:'daynight', title:'День/Ночь', img:'img/daynight.svg', priceLabel:'от 1 625 ₽', desc:'Плавный переход между мягким светом и полной приватностью в одной системе.'},
   {n:'08', slug:'pleated', title:'Плиссе', img:'img/pleated.svg', priceLabel:'от 1 600 ₽', desc:'Элегантные складки для нестандартных окон, мансард и эркеров.'},
-  {n:'09', slug:'office', title:'Жалюзи для офиса', img:'img/office.svg', priceLabel:'от 950 ₽/м²', desc:'Прочные и практичные решения для комфортной рабочей атмосферы.'}
+  {n:'09', slug:'roman', title:'Римские жалюзи', img:'img/roman.svg', priceLabel:'от 1 590 ₽/м²', btnText:'Посмотреть варианты', desc:'Элегантные тканевые системы, которые создают мягкие складки и придают интерьеру премиальный внешний вид.'}
 ];
 
 const grid = document.getElementById('productsGrid');
@@ -345,7 +345,7 @@ grid.innerHTML = products.map(p=>`
       <h3>${p.title}</h3>
       <p>${p.desc}</p>
       <div class="p-price">${p.priceLabel}</div>
-      <a href="product.html?id=${p.slug}" class="p-more">Подробнее
+      <a href="product.html?id=${p.slug}" class="p-more">${p.btnText || 'Подробнее'}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -468,7 +468,7 @@ const calcTypes = [
   {slug:'pleated', name:'Плиссе', price:1600},
   {slug:'wood', name:'Деревянные', price:6300},
   {slug:'motorized', name:'Электро', price:22000},
-  {slug:'office', name:'Для офиса', price:950},
+  {slug:'roman', name:'Римские', price:1590},
   {slug:'repair', name:'Ремонт', price:1000}
 ];
 // типы, к которым применима распродажная ткань
