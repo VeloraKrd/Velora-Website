@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 
 <script type="application/ld+json">
 {
@@ -548,6 +548,76 @@ quizPhoneInput.addEventListener('input', (e)=>{
 quizPhoneInput.addEventListener('focus', (e)=>{ if(!e.target.value) e.target.value = '+7 ('; });
 
 showStep(1);
+
+// ============ ЛАЙТБОКС ГАЛЕРЕИ РАБОТ ============
+(function(){
+  const items = Array.from(document.querySelectorAll('#works .g-item'));
+  if(!items.length) return;
+  const data = items.map(it=>({
+    src: it.querySelector('img').src,
+    alt: it.querySelector('img').alt,
+    label: (it.querySelector('.g-room')||{}).textContent || ''
+  }));
+  let cur = 0;
+
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.innerHTML = `
+    <span class="lb-counter"></span>
+    <img class="lb-img" src="" alt="">
+    <div class="lb-caption"></div>
+    <button class="lb-btn lb-close" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button class="lb-btn lb-prev" aria-label="Предыдущее">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="lb-btn lb-next" aria-label="Следующее">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+    </button>`;
+  document.body.appendChild(lb);
+
+  const imgEl = lb.querySelector('.lb-img');
+  const capEl = lb.querySelector('.lb-caption');
+  const cntEl = lb.querySelector('.lb-counter');
+
+  function render(){
+    const d = data[cur];
+    imgEl.src = d.src; imgEl.alt = d.alt;
+    capEl.textContent = d.label;
+    cntEl.textContent = (cur+1) + ' / ' + data.length;
+    // предзагрузка соседних
+    [cur+1, cur-1].forEach(i=>{
+      const j = (i + data.length) % data.length;
+      const pre = new Image(); pre.src = data[j].src;
+    });
+  }
+  function openLb(i){ cur = i; render(); lb.classList.add('open'); document.body.classList.add('lb-open'); }
+  function closeLb(){ lb.classList.remove('open'); document.body.classList.remove('lb-open'); }
+  function next(){ cur = (cur+1) % data.length; render(); }
+  function prev(){ cur = (cur-1+data.length) % data.length; render(); }
+
+  items.forEach((it,i)=>it.addEventListener('click', ()=>openLb(i)));
+  lb.querySelector('.lb-close').addEventListener('click', closeLb);
+  lb.querySelector('.lb-next').addEventListener('click', e=>{ e.stopPropagation(); next(); });
+  lb.querySelector('.lb-prev').addEventListener('click', e=>{ e.stopPropagation(); prev(); });
+  lb.addEventListener('click', e=>{ if(e.target === lb) closeLb(); });
+  document.addEventListener('keydown', e=>{
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLb();
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+  // свайпы на мобильном
+  let touchX = null;
+  lb.addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e=>{
+    if(touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
+    touchX = null;
+  }, {passive:true});
+})();
 
 // ============ ОТЗЫВЫ ============
 const reviews = [
