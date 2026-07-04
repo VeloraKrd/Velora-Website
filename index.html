@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=3">
 
 </head>
 <body>
@@ -17,6 +17,7 @@
   <nav class="main-nav" id="mainNav">
     <a href="#catalog" class="nav-link">Каталог</a>
     <a href="#advantages" class="nav-link">Преимущества</a>
+    <a href="#works" class="nav-link">Наши работы</a>
     <a href="#quiz" class="nav-link">Подбор</a>
     <a href="#calc" class="nav-link">Калькулятор</a>
     <a href="#contacts" class="nav-link">Контакты</a>
@@ -36,11 +37,20 @@
   <div class="slats" id="heroSlats"></div>
   <div class="hero-content">
     <span class="eyebrow">Пошив и монтаж под ключ</span>
-    <h1>Velora — современные жалюзи для дома и офиса</h1>
-    <p>Индивидуальные решения для комфорта, дизайна и защиты от солнца</p>
-    <a href="#quiz" class="btn-gold">Получить консультацию
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
+    <h1>Жалюзи под ваши размеры за 3–5 дней</h1>
+    <p>Бесплатный замер&nbsp;&bull;&nbsp;Монтаж&nbsp;&bull;&nbsp;Гарантия 2 года</p>
+    <div class="hero-btns">
+      <a href="#calc" class="btn-gold">Рассчитать стоимость
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#quiz" class="btn-ghost">Получить бесплатный замер</a>
+    </div>
+    <div class="hero-trust">
+      <div class="ht-item"><b>500+</b><span>установленных проектов</span></div>
+      <div class="ht-item"><b>2 года</b><span>гарантия</span></div>
+      <div class="ht-item"><b>Бесплатный</b><span>замер</span></div>
+      <div class="ht-item"><b>3–5 дней</b><span>изготовление</span></div>
+    </div>
   </div>
   <div class="hero-scroll"><span>Листайте вниз</span><span class="scroll-line"></span></div>
 </section>
@@ -59,31 +69,6 @@
   <div class="grid-products" id="productsGrid"></div>
 </section>
 
-<section class="repair" id="repair">
-  <div class="repair-inner">
-    <div class="repair-text reveal">
-      <span class="eyebrow">Сервис</span>
-      <h2 class="section-title" style="color:var(--white);">Ремонт жалюзи</h2>
-      <p>Восстановим механизм, заменим ламели, цепочку или кронштейны — вернём вашим жалюзи исправность и аккуратный вид. Работаем с системами любых производителей.</p>
-      <div class="repair-list">
-        <span>Замена ламелей и ткани</span>
-        <span>Ремонт механизма подъёма</span>
-        <span>Замена цепочки и утяжелителя</span>
-        <span>Настройка электропривода</span>
-      </div>
-      <div class="repair-actions">
-        <a href="#calc" class="btn-gold" style="margin-top:0;">Рассчитать ремонт
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-        <span class="repair-price">от 1 000 ₽/м²</span>
-      </div>
-    </div>
-    <div class="repair-visual reveal">
-      <img src="img/repair.svg" alt="Ремонт жалюзи">
-    </div>
-  </div>
-</section>
-
 <section class="advantages" id="advantages">
   <div class="section-pad" style="padding-bottom:0;">
     <div class="reveal">
@@ -92,6 +77,25 @@
     </div>
   </div>
   <div class="adv-grid section-pad" style="padding-top:0;" id="advGrid"></div>
+</section>
+
+
+<section class="works section-pad" id="works">
+  <div class="reveal">
+    <span class="eyebrow">Портфолио</span>
+    <h2 class="section-title">Наши работы</h2>
+    <p class="works-sub">Реальные проекты Velora — от уютных спален до панорамных гостиных и рабочих пространств.</p>
+  </div>
+  <div class="gallery-grid reveal" style="margin-top:56px;">
+    <div class="g-item"><img src="img/gallery/living-pano-wood.svg" alt="Гостиная с деревянными жалюзи" loading="lazy"><span class="g-room">Гостиная · панорамное окно</span></div>
+    <div class="g-item"><img src="img/gallery/bedroom-roller-beige.svg" alt="Спальня с рулонными шторами" loading="lazy"><span class="g-room">Спальня · рулонные</span></div>
+    <div class="g-item"><img src="img/gallery/kitchen-horiz-white.svg" alt="Кухня с горизонтальными жалюзи" loading="lazy"><span class="g-room">Кухня · горизонтальные</span></div>
+    <div class="g-item"><img src="img/gallery/attic-pleat-beige.svg" alt="Мансарда" loading="lazy"><span class="g-room">Мансарда · арочное окно</span></div>
+    <div class="g-item"><img src="img/gallery/nursery-roller-white.svg" alt="Детская" loading="lazy"><span class="g-room">Детская · светлые тона</span></div>
+    <div class="g-item"><img src="img/gallery/living-pano-graphite.svg" alt="Гостиная в графитовых тонах" loading="lazy"><span class="g-room">Гостиная · графит</span></div>
+    <div class="g-item"><img src="img/gallery/house-pano-white.svg" alt="Загородный дом" loading="lazy"><span class="g-room">Загородный дом</span></div>
+    <div class="g-item"><img src="img/gallery/office-horiz-graphite.svg" alt="Офис" loading="lazy"><span class="g-room">Офис · open space</span></div>
+  </div>
 </section>
 
 <section class="quiz section-pad" id="quiz">
@@ -207,6 +211,40 @@
   </div>
 </section>
 
+<section class="repair repair--light" id="repair">
+  <div class="repair-inner">
+    <div class="repair-text reveal">
+      <span class="eyebrow">Сервис</span>
+      <h2 class="section-title services-title">Дополнительные услуги</h2>
+      <p class="services-sub">Ремонт, обслуживание и настройка жалюзи</p>
+      <p>Восстановим механизм, заменим ламели, цепочку или кронштейны — вернём вашим жалюзи исправность и аккуратный вид. Работаем с системами любых производителей.</p>
+      <div class="repair-list">
+        <span>Замена ламелей и ткани</span>
+        <span>Ремонт механизма подъёма</span>
+        <span>Замена цепочки и утяжелителя</span>
+        <span>Настройка электропривода</span>
+      </div>
+      <div class="repair-actions">
+        <a href="#calc" class="btn-gold" style="margin-top:0;">Рассчитать ремонт
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <span class="repair-price">от 1 000 ₽/м²</span>
+      </div>
+    </div>
+    <div class="repair-visual reveal">
+      <img src="img/repair.svg" alt="Ремонт жалюзи">
+    </div>
+  </div>
+</section>
+
+<section class="reviews section-pad" id="reviews">
+  <div class="reveal">
+    <span class="eyebrow">Отзывы</span>
+    <h2 class="section-title">Отзывы наших клиентов</h2>
+  </div>
+  <div class="reviews-track reveal" id="reviewsTrack"></div>
+</section>
+
 <section class="contacts section-pad" id="contacts">
   <div class="reveal">
     <span class="eyebrow">Свяжитесь с нами</span>
@@ -252,6 +290,22 @@
     </form>
   </div>
 </section>
+
+
+<div class="mobile-bar" id="mobileBar">
+  <a href="tel:+79181384029" class="mb-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h1.5a2.25 2.25 0 002.25-2.25v-1.372a1.5 1.5 0 00-1.006-1.416l-3.762-1.354a1.5 1.5 0 00-1.615.397l-1.033 1.033a11.25 11.25 0 01-6.586-6.586l1.033-1.033a1.5 1.5 0 00.397-1.615L7.174 3.756A1.5 1.5 0 005.758 2.75H4.5A2.25 2.25 0 002.25 5v1.75z"/></svg>
+    Позвонить
+  </a>
+  <a href="https://wa.me/79181384029" class="mb-btn mb-wa">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21l1.5-4.3A8.5 8.5 0 1 1 12 20.5c-1.45 0-2.8-.36-3.98-1L3 21z"/></svg>
+    WhatsApp
+  </a>
+  <a href="#quiz" class="mb-btn mb-accent">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7.5l3-3 3 3M12 4.5V15m-7.5 4.5h15"/></svg>
+    Замер
+  </a>
+</div>
 
 <footer>
   <a href="#top" class="logo">VELORA<span>.</span></a>
@@ -322,15 +376,15 @@ updateSectionFades();
 
 // Products data
 const products = [
-  {n:'01', slug:'vertical', title:'Вертикальные жалюзи', img:'img/vertical.svg', priceLabel:'от 790 ₽/м²', desc:'Идеальны для больших окон и офисных пространств — плавное регулирование света в один жест.'},
-  {n:'02', slug:'horizontal', title:'Горизонтальные жалюзи', img:'img/horizontal.svg', priceLabel:'от 950 ₽/м²', desc:'Классика точного контроля света и приватности для дома и квартиры.'},
-  {n:'03', slug:'cassette', title:'Кассетные жалюзи', img:'img/cassette.svg', priceLabel:'от 1 400 ₽', desc:'Компактная система без сверления рамы — аккуратное решение для пластиковых окон.'},
-  {n:'04', slug:'roller', title:'Рулонные жалюзи', img:'img/roller.svg', priceLabel:'от 1 080 ₽', desc:'Минималистичный дизайн, который лаконично вписывается в любой интерьер.'},
-  {n:'05', slug:'wood', title:'Деревянные жалюзи', img:'img/wood.svg', priceLabel:'от 6 300 ₽', desc:'Натуральные материалы и тепло дерева для уютного, премиального пространства.'},
-  {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/motorized.svg', priceLabel:'от 22 000 ₽', desc:'Управление одним нажатием кнопки или со смартфона — комфорт без усилий.'},
-  {n:'07', slug:'daynight', title:'День/Ночь', img:'img/daynight.svg', priceLabel:'от 1 625 ₽', desc:'Плавный переход между мягким светом и полной приватностью в одной системе.'},
-  {n:'08', slug:'pleated', title:'Плиссе', img:'img/pleated.svg', priceLabel:'от 1 600 ₽', desc:'Элегантные складки для нестандартных окон, мансард и эркеров.'},
-  {n:'09', slug:'roman', title:'Римские жалюзи', img:'img/roman.svg', priceLabel:'от 1 590 ₽/м²', btnText:'Посмотреть варианты', desc:'Элегантные тканевые системы, которые создают мягкие складки и придают интерьеру премиальный внешний вид.'}
+  {n:'01', slug:'vertical', title:'Вертикальные жалюзи', img:'img/vertical.svg', priceLabel:'от 790 ₽/м²', benefits:['Для панорамных окон, балконов и офисов','Плавный поворот ламелей — свет под настроение','Ткань и ПВХ, более 40 оттенков']},
+  {n:'02', slug:'horizontal', title:'Горизонтальные жалюзи', img:'img/horizontal.svg', priceLabel:'от 950 ₽/м²', benefits:['Для кухни, спальни и кабинета','Точная регулировка света и приватности','Алюминий — не боится влаги и пара']},
+  {n:'03', slug:'cassette', title:'Кассетные жалюзи', img:'img/cassette.svg', priceLabel:'от 1 400 ₽', benefits:['Для пластиковых окон — без сверления рамы','Плотное прилегание, никаких боковых просветов','Ткани с грязеотталкивающей пропиткой']},
+  {n:'04', slug:'roller', title:'Рулонные жалюзи', img:'img/roller.svg', priceLabel:'от 1 080 ₽', benefits:['Для любых окон и интерьеров','От лёгкого затенения до полного блэкаута','Более 100 тканей и фактур']},
+  {n:'05', slug:'wood', title:'Деревянные жалюзи', img:'img/wood.svg', priceLabel:'от 6 300 ₽', benefits:['Для гостиных, кабинетов и спален','Широкие ламели мягко рассеивают свет','Массив дерева и бамбук, 15+ оттенков']},
+  {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/motorized.svg', priceLabel:'от 22 000 ₽', benefits:['Для высоких и труднодоступных окон','Управление с пульта, смартфона и по расписанию','Совместимы с любыми типами полотен']},
+  {n:'07', slug:'daynight', title:'День/Ночь', img:'img/daynight.svg', priceLabel:'от 1 625 ₽', benefits:['Для спальни и гостиной','Мягкий свет днём и приватность вечером','Более 30 комбинаций тканей']},
+  {n:'08', slug:'pleated', title:'Плиссе', img:'img/pleated.svg', priceLabel:'от 1 600 ₽', benefits:['Для мансард и нестандартных окон','Складки мягко рассеивают яркий свет','Сотовые ткани сохраняют тепло зимой']},
+  {n:'09', slug:'roman', title:'Римские жалюзи', img:'img/roman.svg', priceLabel:'от 1 590 ₽/м²', benefits:['Для спальни, гостиной и кухни','Мягкое регулирование света складками','Лён, хлопок и блэкаут — десятки фактур']}
 ];
 
 const grid = document.getElementById('productsGrid');
@@ -343,9 +397,9 @@ grid.innerHTML = products.map(p=>`
     </div>
     <div class="p-body">
       <h3>${p.title}</h3>
-      <p>${p.desc}</p>
+      <ul class="p-benefits">${p.benefits.map(b=>`<li>${b}</li>`).join('')}</ul>
       <div class="p-price">${p.priceLabel}</div>
-      <a href="product.html?id=${p.slug}" class="p-more">${p.btnText || 'Подробнее'}
+      <a href="product.html?id=${p.slug}" class="p-more">Подобрать
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -456,6 +510,28 @@ quizPhoneInput.addEventListener('input', (e)=>{
 quizPhoneInput.addEventListener('focus', (e)=>{ if(!e.target.value) e.target.value = '+7 ('; });
 
 showStep(1);
+
+// ============ ОТЗЫВЫ ============
+const reviews = [
+  {name:'Анна', city:'Краснодар', color:'#B8935A', text:'Установили очень быстро. Квартира сразу стала выглядеть намного уютнее.'},
+  {name:'Максим', city:'Краснодар', color:'#8CA07A', text:'Понравилось качество и работа монтажников. Всё аккуратно.'},
+  {name:'Екатерина', city:'Краснодар', color:'#A98C64', text:'Очень помогли подобрать цвет под интерьер.'},
+  {name:'Алексей', city:'Краснодар', color:'#7E8B99', text:'Заказал кассетные жалюзи. Выглядят дорого и работают идеально.'},
+  {name:'Ольга', city:'Краснодар', color:'#C08A5E', text:'Сделали замер бесплатно, установили через несколько дней.'}
+];
+document.getElementById('reviewsTrack').innerHTML = reviews.map(r=>`
+  <div class="rv-card">
+    <div class="rv-head">
+      <div class="rv-ava" style="--a:${r.color}">${r.name[0]}</div>
+      <div>
+        <div class="rv-name">${r.name}</div>
+        <div class="rv-city">${r.city}</div>
+      </div>
+    </div>
+    <div class="rv-stars">★★★★★</div>
+    <p class="rv-text">«${r.text}»</p>
+  </div>
+`).join('');
 
 // ============ CALCULATOR ============
 // Цена за м² (₽) — минимальные значения из прайса

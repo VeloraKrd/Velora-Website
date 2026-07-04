@@ -132,6 +132,12 @@
   .burger.open .burger-chain{opacity:0;}
 
   @media(max-width:900px){
+    /* КРИТИЧНО: backdrop-filter на шапке делает её containing block для
+       fixed-меню внутри — меню ломается. На мобильных blur отключён полностью. */
+    header#siteHeader, header#siteHeader.scrolled{
+      backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+    }
+    header#siteHeader.scrolled{background:rgba(251,249,245,0.97);}
     nav.main-nav{
       position:fixed; top:0; left:0; right:0; bottom:0; height:100vh; height:100dvh;
       background:var(--graphite); flex-direction:column;
@@ -140,11 +146,10 @@
       overflow-y:auto; -webkit-overflow-scrolling:touch;
     }
     nav.main-nav.open{transform:translateX(0);}
-    /* важно: перебиваем правило header.scrolled nav a (графит), иначе после
-       прокрутки ссылки становятся невидимыми на графитовом фоне меню */
+    /* цвет ссылок меню всегда бежевый на любой глубине прокрутки */
     nav.main-nav a,
-    header.scrolled nav.main-nav a{color:var(--beige); font-size:20px;}
-    nav.main-nav a:hover{color:var(--gold-bright);}
+    header.scrolled nav.main-nav a{color:var(--beige) !important; font-size:20px;}
+    nav.main-nav a:hover{color:var(--gold-bright) !important;}
     .nav-phone{display:none;}
     .nav-cta{display:none;}
     .burger{display:flex;}
@@ -165,7 +170,7 @@
   }
   .hero-bg::after{
     content:''; position:absolute; inset:0;
-    background:linear-gradient(180deg, rgba(20,18,16,.55) 0%, rgba(20,18,16,.35) 40%, rgba(20,18,16,.88) 100%);
+    background:linear-gradient(180deg, rgba(20,18,16,.62) 0%, rgba(20,18,16,.46) 40%, rgba(20,18,16,.92) 100%);
   }
   /* Vertical louvres that part sideways on load */
   .slats{position:absolute; inset:0; z-index:5; display:flex; flex-direction:row; overflow:hidden;}
@@ -572,3 +577,124 @@
 .calc-row span:last-child{font-weight:600; color:var(--white);}
 .calc-result .btn-gold{margin-top:0; align-self:stretch; justify-content:center;}
 .calc-disclaimer{font-size:12px; color:#8A8378; margin-top:18px; line-height:1.6;}
+
+/* ============ HERO: конверсионные элементы ============ */
+.hero-btns{display:flex; gap:16px; flex-wrap:wrap; margin-top:40px;}
+.hero-btns .btn-gold{margin-top:0;}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:10px; padding:18px 30px;
+  border:1px solid rgba(255,255,255,.55); color:var(--white);
+  font-weight:700; font-size:14.5px; letter-spacing:.02em;
+  transition:all .35s var(--ease);
+  opacity:0; animation:fadeUp 1s var(--ease) 1.85s forwards;
+}
+.btn-ghost:hover{border-color:var(--gold-bright); background:rgba(255,255,255,.08);}
+.hero-trust{
+  display:grid; grid-template-columns:repeat(4,auto); gap:14px 40px; margin-top:48px;
+  opacity:0; animation:fadeUp 1s var(--ease) 2.05s forwards;
+}
+.ht-item b{
+  display:block; font-family:'Fraunces',serif; font-weight:500;
+  font-size:clamp(20px,2.4vw,27px); color:#EBCF9C; line-height:1.1;
+}
+.ht-item span{font-size:12.5px; color:var(--beige); opacity:.85; line-height:1.4; display:block; margin-top:4px;}
+@media(max-width:700px){
+  .hero{height:auto; min-height:100svh;}
+  .hero-content{padding:150px 6vw 110px;}
+  .hero-trust{grid-template-columns:repeat(2,auto); gap:18px 30px; margin-top:36px;}
+  .hero-btns .btn-gold, .hero-btns .btn-ghost{width:100%; justify-content:center;}
+}
+
+/* ============ Карточки каталога: преимущества ============ */
+.p-benefits{list-style:none; margin:0 0 4px; padding:0; flex:1;}
+.p-benefits li{
+  position:relative; padding-left:24px; font-size:13.5px; color:var(--text-muted);
+  line-height:1.5; margin-bottom:8px;
+}
+.p-benefits li::before{
+  content:'✓'; position:absolute; left:0; top:0;
+  color:var(--gold); font-weight:800; font-size:14px;
+}
+
+/* ============ Секция «Наши работы» ============ */
+.works{background:var(--paper);}
+.works .works-sub{margin-top:16px; color:var(--text-muted); font-size:15px; max-width:460px; line-height:1.6;}
+
+/* ============ Доп. услуги (лёгкая версия ремонта) ============ */
+.repair--light{background:#F1EBDF;}
+.repair--light .repair-text{padding:76px 8vw;}
+@media(max-width:900px){.repair--light .repair-text{padding:56px 6vw;}}
+.repair--light .services-title{
+  font-size:clamp(24px,3vw,34px); color:var(--graphite); max-width:640px;
+}
+.repair--light .services-sub{margin-top:10px; color:var(--text-muted); font-size:15px;}
+.repair--light .repair-text > p{color:#5B5446;}
+.repair--light .repair-list span{color:var(--graphite); border-color:var(--graphite-line); background:rgba(255,255,255,.5);}
+.repair--light .repair-price{color:var(--gold);}
+.repair--light .repair-visual{background:#E5DCC9;}
+
+/* ============ Отзывы ============ */
+.reviews{background:var(--paper);}
+.reviews-track{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; margin-top:56px;
+}
+.rv-card{
+  background:var(--white); border:1px solid var(--graphite-line); border-radius:6px;
+  padding:28px 26px; display:flex; flex-direction:column; gap:14px;
+  box-shadow:0 4px 18px rgba(28,26,23,.05);
+  transition:transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.rv-card:hover{transform:translateY(-6px); box-shadow:0 14px 34px rgba(28,26,23,.12);}
+.rv-head{display:flex; align-items:center; gap:14px;}
+.rv-ava{
+  width:52px; height:52px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:22px; color:var(--white);
+  background:var(--a, var(--gold));
+}
+.rv-name{font-weight:700; font-size:15px;}
+.rv-city{font-size:12.5px; color:var(--text-muted); margin-top:2px;}
+.rv-stars{color:var(--gold); font-size:15px; letter-spacing:3px;}
+.rv-text{font-size:14px; color:#4A4438; line-height:1.65; font-style:italic;}
+@media(max-width:700px){
+  .reviews-track{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:14px;
+    margin-left:-6vw; margin-right:-6vw; padding:4px 6vw 18px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .reviews-track::-webkit-scrollbar{display:none;}
+  .rv-card{min-width:78%; scroll-snap-align:center;}
+}
+
+/* ============ Липкая мобильная панель действий ============ */
+.mobile-bar{display:none;}
+@media(max-width:1024px){
+  .mobile-bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:950;
+    display:flex; gap:10px; justify-content:center;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+    background:rgba(251,249,245,.78);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border-top:1px solid rgba(28,26,23,.08);
+    box-shadow:0 -6px 24px rgba(28,26,23,.10);
+  }
+  .mb-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    flex:1; max-width:180px; padding:13px 10px; border-radius:100px;
+    font-size:13.5px; font-weight:700; letter-spacing:.01em;
+    color:var(--graphite); background:rgba(255,255,255,.85);
+    border:1px solid rgba(28,26,23,.1);
+    box-shadow:0 2px 10px rgba(28,26,23,.06);
+    transition:transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+  }
+  .mb-btn svg{width:17px; height:17px; flex-shrink:0;}
+  .mb-btn:active{transform:scale(.96);}
+  .mb-btn:hover{box-shadow:0 4px 16px rgba(28,26,23,.14);}
+  .mb-wa{color:#1E7E4C;}
+  .mb-accent{background:var(--gold); color:var(--graphite); border-color:var(--gold);}
+  .mb-accent:hover{background:var(--gold-bright);}
+  /* отступ снизу страницы, чтобы панель не перекрывала контент */
+  body{padding-bottom:74px;}
+  footer{padding-bottom:100px;}
+  body.menu-open .mobile-bar{display:none;}
+}
