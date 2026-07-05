@@ -746,3 +746,71 @@
 }
 body.lb-open{overflow:hidden;}
 body.lb-open .mobile-bar{display:none;}
+
+/* ============ Конфигуратор цвета и ткани ============ */
+.configurator{background:var(--beige);}
+.cfg-wrap{display:grid; grid-template-columns:1.15fr .85fr; gap:2px; margin-top:56px; background:var(--graphite-line); border:1px solid var(--graphite-line);}
+@media(max-width:900px){.cfg-wrap{grid-template-columns:1fr;}}
+.cfg-render{background:var(--white); padding:34px; display:flex; align-items:center; justify-content:center; min-height:420px;}
+.cfg-render svg{width:100%; max-width:560px; height:auto; display:block;}
+.cfg-panel{background:var(--paper); padding:42px 38px; display:flex; flex-direction:column; gap:34px;}
+@media(max-width:640px){.cfg-panel{padding:30px 22px;} .cfg-render{padding:18px; min-height:320px;}}
+.cfg-group > label{display:block; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:16px;}
+.cfg-selected{font-size:13.5px; color:var(--graphite); font-weight:600; margin-top:12px;}
+.cfg-selected span{color:var(--gold); font-family:'Fraunces',serif; font-style:italic;}
+.cfg-swatches{display:flex; flex-wrap:wrap; gap:12px;}
+.cfg-swatch{
+  width:42px; height:42px; border-radius:50%; cursor:pointer; position:relative;
+  border:1px solid rgba(28,26,23,.18);
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.cfg-swatch:hover{transform:scale(1.1);}
+.cfg-swatch.active{box-shadow:0 0 0 3px var(--paper), 0 0 0 5px var(--gold);}
+.cfg-textures{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+@media(max-width:420px){.cfg-textures{grid-template-columns:1fr;}}
+.cfg-tex{
+  padding:13px 14px; border:1px solid var(--graphite-line); background:var(--white);
+  font-size:13.5px; font-weight:600; color:var(--graphite); cursor:pointer; text-align:center;
+  transition:all .3s var(--ease);
+}
+.cfg-tex:hover{border-color:var(--gold);}
+.cfg-tex.active{background:var(--graphite); color:var(--white); border-color:var(--graphite);}
+.cfg-note{font-size:12.5px; color:var(--text-muted); line-height:1.6; border-top:1px solid var(--graphite-line); padding-top:20px;}
+
+/* ============ Конфигуратор цвета и ткани ============ */
+.configurator{background:var(--white);}
+.config-wrap{display:grid; grid-template-columns:1.15fr .85fr; gap:56px; margin-top:56px; align-items:start;}
+@media(max-width:900px){.config-wrap{grid-template-columns:1fr; gap:36px;}}
+.config-stage{
+  background:linear-gradient(180deg,#F7F4EE 0%, #EFEAE0 100%);
+  border:1px solid var(--graphite-line); padding:28px;
+  display:flex; align-items:center; justify-content:center;
+}
+.config-stage svg{width:100%; height:auto; max-height:560px;}
+.cfg-group{margin-bottom:34px;}
+.cfg-group > label{
+  display:block; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--text-muted); font-weight:700; margin-bottom:16px;
+}
+.cfg-swatches{display:flex; flex-wrap:wrap; gap:12px;}
+.cfg-swatch{
+  width:42px; height:42px; border-radius:50%; cursor:pointer; position:relative;
+  border:1px solid rgba(28,26,23,.18);
+  box-shadow:inset 0 2px 6px rgba(255,255,255,.35), inset 0 -2px 5px rgba(0,0,0,.12);
+  transition:transform .25s var(--ease);
+}
+.cfg-swatch:hover{transform:scale(1.12);}
+.cfg-swatch.active{outline:2px solid var(--gold); outline-offset:3px;}
+.cfg-chips{display:flex; flex-wrap:wrap; gap:10px;}
+.cfg-chip{
+  padding:11px 20px; border:1px solid var(--graphite-line); font-size:13.5px; font-weight:600;
+  color:var(--graphite); cursor:pointer; background:var(--paper);
+  transition:all .3s var(--ease);
+}
+.cfg-chip:hover{border-color:var(--gold);}
+.cfg-chip.active{background:var(--graphite); color:var(--white); border-color:var(--graphite);}
+.cfg-current{
+  font-family:'Fraunces',serif; font-style:italic; font-size:22px; color:var(--gold);
+  padding-top:22px; border-top:1px solid var(--graphite-line);
+}
+.cfg-note{font-size:12.5px; color:var(--text-muted); margin-top:12px; line-height:1.6;}
