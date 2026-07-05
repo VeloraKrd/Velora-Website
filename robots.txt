@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://velora-jaluzi.ru/sitemap.xml

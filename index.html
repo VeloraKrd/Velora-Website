@@ -3,14 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Жалюзи в Краснодаре на заказ — рулонные, кассетные, деревянные | Velora</title>
-<meta name="description" content="Жалюзи и рулонные шторы на заказ в Краснодаре и Краснодарском крае. Бесплатный замер, изготовление за 3–5 дней, монтаж и гарантия 2 года. Вертикальные, горизонтальные, кассетные, деревянные, римские жалюзи от 790 ₽/м².">
+<title>Velora — жалюзи под заказ в Краснодаре | Кассетные, рулонные, римские жалюзи</title>
+<meta name="description" content="Velora — изготовление и установка жалюзи в Краснодаре. Бесплатный замер, монтаж и гарантия. Кассетные, рулонные, вертикальные, римские, деревянные и жалюзи на электроприводе.">
 <meta name="keywords" content="жалюзи Краснодар, жалюзи Краснодарский край, рулонные шторы Краснодар, кассетные жалюзи Краснодар, деревянные жалюзи Краснодар, римские шторы Краснодар, жалюзи на заказ, ремонт жалюзи Краснодар">
-<meta property="og:title" content="Velora — жалюзи в Краснодаре под ваши размеры за 3–5 дней">
-<meta property="og:description" content="Бесплатный замер, монтаж и гарантия 2 года. Более 2000 установленных проектов в Краснодаре и крае.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Velora — жалюзи под заказ">
+<meta property="og:description" content="Бесплатный замер • Монтаж • Гарантия">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://velora-jaluzi.ru">
+<meta property="og:image" content="https://velora-jaluzi.ru/img/preview.jpg">
 <meta property="og:locale" content="ru_RU">
-<link rel="canonical" href="https://velorakrd.github.io/Velora-Website/">
+<link rel="canonical" href="https://velora-jaluzi.ru/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,12 +22,19 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": "Store",
   "name": "Velora",
-  "description": "Жалюзи и рулонные шторы на заказ: бесплатный замер, изготовление за 3–5 дней, монтаж и гарантия 2 года.",
+  "description": "Изготовление и установка жалюзи в Краснодаре: бесплатный замер, монтаж и гарантия. Кассетные, рулонные, вертикальные, римские, деревянные и жалюзи на электроприводе.",
   "telephone": "+7 (918) 138-40-29",
   "email": "maxichernuk1@gmail.com",
-  "url": "https://velorakrd.github.io/Velora-Website/",
+  "url": "https://velora-jaluzi.ru",
+  "image": "https://velora-jaluzi.ru/img/preview.jpg",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Краснодар",
+    "addressRegion": "Краснодарский край",
+    "addressCountry": "RU"
+  },
   "areaServed": [
     {"@type": "City", "name": "Краснодар"},
     {"@type": "State", "name": "Краснодарский край"}
@@ -32,9 +42,13 @@
   "priceRange": "от 790 ₽/м²",
   "makesOffer": [
     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Вертикальные жалюзи"}},
-    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Рулонные шторы"}},
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Горизонтальные жалюзи"}},
     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Кассетные жалюзи"}},
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Рулонные шторы"}},
     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Деревянные жалюзи"}},
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Жалюзи на электроприводе"}},
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Жалюзи День/Ночь"}},
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Жалюзи плиссе"}},
     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Римские жалюзи"}},
     {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Ремонт жалюзи"}}
   ]
@@ -520,6 +534,12 @@ form.addEventListener('submit', (e)=>{
     errorEl.classList.remove('show');
     phoneInput.classList.remove('error');
     quizAnswers.phone = phoneInput.value.trim();
+    sendLead('Квиз-подбор', {
+      'Помещение': quizAnswers.place,
+      'Стиль': quizAnswers.style,
+      'Управление': quizAnswers.control,
+      'Телефон': quizAnswers.phone
+    });
     form.style.display='none';
     document.querySelector('.quiz-progress').style.display='none';
     document.getElementById('quizSuccess').classList.add('active');
@@ -723,10 +743,49 @@ document.querySelector('.c-form').addEventListener('submit', function(e){
   e.preventDefault();
   const btn = this.querySelector('button');
   const original = btn.textContent;
+  const name = this.querySelector('input[type="text"]').value.trim();
+  const phone = this.querySelector('input[type="tel"]').value.trim();
+  const msg = this.querySelector('textarea').value.trim();
+  sendLead('Контактная форма', {
+    'Имя': name || '—',
+    'Телефон': phone || '—',
+    'Сообщение': msg || '—'
+  });
   btn.textContent = 'Сообщение отправлено ✓';
   this.reset();
   setTimeout(()=>{ btn.textContent = original; }, 3000);
 });
+
+// ============ ОТПРАВКА ЗАЯВОК В TELEGRAM ============
+// НАСТРОЙКА: впишите токен бота и chat_id (инструкция — в ответе Claude).
+const TG_BOT_TOKEN = 'ВСТАВЬТЕ_ТОКЕН_БОТА';
+const TG_CHAT_ID   = 'ВСТАВЬТЕ_CHAT_ID';
+
+function sendLead(source, fields){
+  // Собираем текст заявки
+  let text = '🪟 *Новая заявка Velora*\n';
+  text += '📍 Источник: ' + source + '\n\n';
+  for(const [k, v] of Object.entries(fields)){
+    if(v && v !== '—') text += '*' + k + ':* ' + v + '\n';
+  }
+  text += '\n🕐 ' + new Date().toLocaleString('ru-RU');
+
+  // Если токен не настроен — не пытаемся отправлять (чтобы не было ошибок в консоли)
+  if(TG_BOT_TOKEN.startsWith('ВСТАВЬТЕ') || TG_CHAT_ID.startsWith('ВСТАВЬТЕ')){
+    console.warn('Telegram не настроен: заявка не отправлена. Впишите TG_BOT_TOKEN и TG_CHAT_ID.');
+    return;
+  }
+
+  fetch('https://api.telegram.org/bot' + TG_BOT_TOKEN + '/sendMessage', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      chat_id: TG_CHAT_ID,
+      text: text,
+      parse_mode: 'Markdown'
+    })
+  }).catch(err => console.error('Ошибка отправки заявки:', err));
+}
 </script>
 </body>
 </html>

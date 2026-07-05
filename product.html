@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Velora — жалюзи на заказ в Краснодаре</title>
 <meta name="description" content="Жалюзи на заказ в Краснодаре и Краснодарском крае: подробное описание, галерея интерьеров, цены, уход и монтаж. Бесплатный замер и гарантия 2 года.">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="product">
+<meta property="og:locale" content="ru_RU">
 <meta property="og:type" content="product">
 <meta property="og:locale" content="ru_RU">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,6 +81,7 @@
         <label id="cfgFabricLabel">Ткань</label>
         <div class="cfg-chips" id="cfgFabrics"></div>
       </div>
+      <div class="cfg-price" id="cfgPrice"></div>
       <div class="cfg-current" id="cfgCurrent"></div>
       <p class="cfg-note">Цвета на экране могут незначительно отличаться от реальных тканей. Точные образцы покажет замерщик — бесплатно.</p>
     </div>
@@ -667,6 +671,17 @@ document.title = `${p.title} в Краснодаре — цена ${p.priceLabel
 // динамическое мета-описание под товар
 const metaDesc = document.querySelector('meta[name="description"]');
 if(metaDesc) metaDesc.setAttribute('content', `${p.title} на заказ в Краснодаре и Краснодарском крае ${p.priceLabel || ''}. ${p.intro} Бесплатный замер, монтаж, гарантия 2 года.`);
+// динамический canonical + og:url под конкретный товар
+const canonUrl = 'https://velora-jaluzi.ru/product.html?id=' + id;
+let canon = document.querySelector('link[rel="canonical"]');
+if(!canon){ canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
+canon.href = canonUrl;
+let ogUrl = document.querySelector('meta[property="og:url"]');
+if(!ogUrl){ ogUrl = document.createElement('meta'); ogUrl.setAttribute('property','og:url'); document.head.appendChild(ogUrl); }
+ogUrl.setAttribute('content', canonUrl);
+let ogTitle = document.querySelector('meta[property="og:title"]');
+if(!ogTitle){ ogTitle = document.createElement('meta'); ogTitle.setAttribute('property','og:title'); document.head.appendChild(ogTitle); }
+ogTitle.setAttribute('content', p.title + ' — Velora');
 document.getElementById('pHeroBg').style.backgroundImage = `url('${p.heroImg}')`;
 document.getElementById('crumbCurrent').textContent = p.title;
 document.getElementById('pEyebrow').textContent = p.eyebrow;
@@ -837,10 +852,10 @@ timelineIO.observe(document.getElementById('timeline'));
     {name:'Бордо', hex:'#7E3B44'}
   ];
   const WOOD_SPECIES = [
-    {name:'Белёный дуб', hex:'#E9DFCC'}, {name:'Светлый дуб', hex:'#D9BE93'},
-    {name:'Натуральный тик', hex:'#C7A067'}, {name:'Бамбук', hex:'#D6C39A'},
-    {name:'Орех', hex:'#9A6F47'}, {name:'Махагон', hex:'#7C4A38'},
-    {name:'Венге', hex:'#4E3B30'}
+    {name:'Белёный дуб', hex:'#E9DFCC', price:6300}, {name:'Светлый дуб', hex:'#D9BE93', price:6300},
+    {name:'Натуральный тик', hex:'#C7A067', price:6900}, {name:'Бамбук', hex:'#D6C39A', price:5900},
+    {name:'Орех', hex:'#9A6F47', price:7200}, {name:'Махагон', hex:'#7C4A38', price:7800},
+    {name:'Венге', hex:'#4E3B30', price:7500}
   ];
   const TAPE_COLORS = [
     {name:'Бежевая', hex:'#D9C8A9'}, {name:'Белая', hex:'#F2EFE8'},
@@ -849,23 +864,23 @@ timelineIO.observe(document.getElementById('timeline'));
 
   const CFG = {
     vertical:  {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Полиэстер',key:'matte'},{name:'Жаккард',key:'jacquard'},{name:'Лён',key:'linen'},{name:'ПВХ',key:'pvc'}]},
+      fabrics:[{name:'Полиэстер',key:'matte',price:790},{name:'Жаккард',key:'jacquard',price:990},{name:'Лён',key:'linen',price:1090},{name:'ПВХ',key:'pvc',price:890}]},
     horizontal:{colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Покрытие',
-      fabrics:[{name:'Матовое',key:'matte'},{name:'Глянец',key:'gloss'},{name:'Металлик',key:'metallic'},{name:'Софт-тач',key:'soft'}]},
+      fabrics:[{name:'Матовое',key:'matte',price:950},{name:'Глянец',key:'gloss',price:1050},{name:'Металлик',key:'metallic',price:1150},{name:'Софт-тач',key:'soft',price:1190}]},
     cassette:  {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Скрин',key:'screen'},{name:'Димаут',key:'dimout'},{name:'Блэкаут',key:'blackout'},{name:'Лён',key:'linen'}]},
+      fabrics:[{name:'Скрин',key:'screen',price:1750},{name:'Димаут',key:'dimout',price:1400},{name:'Блэкаут',key:'blackout',price:1950},{name:'Лён',key:'linen',price:1850}]},
     roller:    {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Скрин',key:'screen'},{name:'Димаут',key:'dimout'},{name:'Блэкаут',key:'blackout'},{name:'Лён',key:'linen'},{name:'Сатин',key:'satin'}]},
+      fabrics:[{name:'Скрин',key:'screen',price:1400},{name:'Димаут',key:'dimout',price:1080},{name:'Блэкаут',key:'blackout',price:1600},{name:'Лён',key:'linen',price:1500},{name:'Сатин',key:'satin',price:1350}]},
     wood:      {colors:WOOD_SPECIES, colorLabel:'Вид дерева', fabricLabel:'Лента лесенки', tapeMode:true,
       fabrics:TAPE_COLORS.map(t=>({name:t.name, key:'tape', hex:t.hex}))},
     motorized: {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Скрин',key:'screen'},{name:'Блэкаут',key:'blackout'},{name:'Димаут',key:'dimout'},{name:'Сатин',key:'satin'}]},
+      fabrics:[{name:'Скрин',key:'screen',price:22600},{name:'Блэкаут',key:'blackout',price:23400},{name:'Димаут',key:'dimout',price:22000},{name:'Сатин',key:'satin',price:22900}]},
     daynight:  {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Стандарт',key:'matte'},{name:'Лён',key:'linen'},{name:'Металлик',key:'metallic'}]},
+      fabrics:[{name:'Стандарт',key:'matte',price:1625},{name:'Лён',key:'linen',price:2100},{name:'Металлик',key:'metallic',price:1950}]},
     pleated:   {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Креп',key:'matte'},{name:'Сатин',key:'satin'},{name:'Блэкаут',key:'blackout'},{name:'Гофре-сото',key:'honeycomb'}]},
+      fabrics:[{name:'Креп',key:'matte',price:1600},{name:'Сатин',key:'satin',price:1850},{name:'Блэкаут',key:'blackout',price:2200},{name:'Гофре-сото',key:'honeycomb',price:2600}]},
     roman:     {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Лён',key:'linen'},{name:'Хлопок',key:'cotton'},{name:'Рогожка',key:'rogojka'},{name:'Велюр',key:'velvet'},{name:'Блэкаут',key:'blackout'}]}
+      fabrics:[{name:'Лён',key:'linen',price:1590},{name:'Хлопок',key:'cotton',price:1690},{name:'Рогожка',key:'rogojka',price:1750},{name:'Велюр',key:'velvet',price:2300},{name:'Блэкаут',key:'blackout',price:2100}]}
   };
 
   const cfg = CFG[id];
@@ -1056,6 +1071,11 @@ timelineIO.observe(document.getElementById('timeline'));
     if(ov && !cfg.tapeMode) overlay = fabricOverlay(curFabric.key, ...ov);
     stage.innerHTML = scene(body + overlay, defs);
     document.getElementById('cfgCurrent').textContent = curColor.name + ' · ' + curFabric.name;
+    // цена зависит от ткани (для деревянных — от породы)
+    const UNIT = {vertical:'₽/м²', horizontal:'₽/м²', roman:'₽/м²'};
+    const price = (id === 'wood') ? curColor.price : curFabric.price;
+    document.getElementById('cfgPrice').innerHTML =
+      'от <b>' + price.toLocaleString('ru-RU') + '</b> ' + (UNIT[id] || '₽');
   }
 
   // --- панель управления ---
