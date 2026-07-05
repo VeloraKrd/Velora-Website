@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=5">
+<link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 
@@ -53,16 +53,6 @@
   </div>
 </section>
 
-<!-- GALLERY -->
-<section class="p-section" id="gallerySection">
-  <div class="p-section-head reveal">
-    <span class="eyebrow">Галерея</span>
-    <h2 class="section-title">Как это выглядит в интерьере</h2>
-    <p style="margin-top:16px; color:var(--text-muted); font-size:15px; line-height:1.6;">Реальные примеры установки — от квартир и загородных домов до офисов и детских комнат.</p>
-  </div>
-  <div class="gallery-grid reveal" id="galleryGrid"></div>
-</section>
-
 <!-- КОНФИГУРАТОР -->
 <section class="p-section configurator" id="configurator">
   <div class="p-section-head reveal">
@@ -86,6 +76,16 @@
       <p class="cfg-note">Цвета на экране могут незначительно отличаться от реальных тканей. Точные образцы покажет замерщик — бесплатно.</p>
     </div>
   </div>
+</section>
+
+<!-- GALLERY -->
+<section class="p-section" id="gallerySection">
+  <div class="p-section-head reveal">
+    <span class="eyebrow">Галерея</span>
+    <h2 class="section-title">Как это выглядит в интерьере</h2>
+    <p style="margin-top:16px; color:var(--text-muted); font-size:15px; line-height:1.6;">Реальные примеры установки — от квартир и загородных домов до офисов и детских комнат.</p>
+  </div>
+  <div class="gallery-grid reveal" id="galleryGrid"></div>
 </section>
 
 <!-- DESCRIPTION -->
@@ -258,7 +258,7 @@ const STEPS = [
 const PRODUCTS = {
   vertical:{
     n:'01', title:'Вертикальные жалюзи', eyebrow:'Каталог · Вертикальные системы',
-    priceLabel:'от 790 ₽/м²',
+    priceLabel:'от 1 500 ₽/м²',
     heroImg:'img/vertical.svg',
     intro:'Универсальная система вертикальных ламелей для больших окон, витрин и офисных пространств — точный контроль света без лишних усилий.',
     galleryOffset:1,
@@ -303,7 +303,7 @@ const PRODUCTS = {
 
   horizontal:{
     n:'02', title:'Горизонтальные жалюзи', eyebrow:'Каталог · Горизонтальные системы',
-    priceLabel:'от 950 ₽/м²',
+    priceLabel:'от 1 500 ₽/м²',
     heroImg:'img/horizontal.svg',
     intro:'Классическая система горизонтальных ламелей — проверенное временем решение для точного контроля света и приватности.',
     galleryOffset:2,
@@ -348,7 +348,7 @@ const PRODUCTS = {
 
   cassette:{
     n:'03', title:'Кассетные жалюзи', eyebrow:'Каталог · Кассетные системы',
-    priceLabel:'от 1 400 ₽',
+    priceLabel:'от 2 500 ₽',
     heroImg:'img/cassette.svg',
     intro:'Компактная система без сверления рамы — аккуратное и почти незаметное решение для пластиковых окон.',
     galleryOffset:3,
@@ -393,7 +393,7 @@ const PRODUCTS = {
 
   roller:{
     n:'04', title:'Рулонные жалюзи', eyebrow:'Каталог · Рулонные системы',
-    priceLabel:'от 1 080 ₽',
+    priceLabel:'от 1 700 ₽',
     heroImg:'img/roller.svg',
     intro:'Минималистичное полотно, сворачивающееся в аккуратный вал — лаконичное решение для любого интерьера.',
     galleryOffset:4,
@@ -438,7 +438,7 @@ const PRODUCTS = {
 
   wood:{
     n:'05', title:'Деревянные жалюзи', eyebrow:'Каталог · Деревянные системы',
-    priceLabel:'от 6 300 ₽',
+    priceLabel:'от 10 000 ₽/м²',
     heroImg:'img/wood.svg',
     intro:'Натуральные материалы и тепло дерева — премиальное решение для интерьеров, где важна текстура и характер.',
     galleryOffset:5,
@@ -483,7 +483,7 @@ const PRODUCTS = {
 
   motorized:{
     n:'06', title:'Жалюзи на электроприводе', eyebrow:'Каталог · Умные системы',
-    priceLabel:'от 22 000 ₽',
+    priceLabel:'от 22 000 ₽/м²',
     heroImg:'img/motorized.svg',
     intro:'Управление одним нажатием кнопки или со смартфона — комфорт и технологичность без лишних усилий.',
     galleryOffset:6,
@@ -528,7 +528,7 @@ const PRODUCTS = {
 
   daynight:{
     n:'07', title:'День/Ночь', eyebrow:'Каталог · Комбинированные системы',
-    priceLabel:'от 1 625 ₽',
+    priceLabel:'от 3 500 ₽',
     heroImg:'img/daynight.svg',
     intro:'Плавный переход между мягким рассеянным светом и полной приватностью — в одной элегантной системе.',
     galleryOffset:7,
@@ -573,7 +573,7 @@ const PRODUCTS = {
 
   pleated:{
     n:'08', title:'Плиссе', eyebrow:'Каталог · Плиссированные системы',
-    priceLabel:'от 1 600 ₽',
+    priceLabel:'от 6 000 ₽/м²',
     heroImg:'img/pleated.svg',
     intro:'Элегантные складки ткани для нестандартных окон — мансардных, арочных, треугольных и эркерных.',
     galleryOffset:8,
@@ -618,7 +618,7 @@ const PRODUCTS = {
 
   roman:{
     n:'09', title:'Римские жалюзи', eyebrow:'Каталог · Тканевые системы',
-    priceLabel:'от 1 590 ₽/м²',
+    priceLabel:'от 8 000 ₽/м²',
     heroImg:'img/roman.svg',
     intro:'Элегантные тканевые системы, которые создают мягкие складки и придают интерьеру премиальный внешний вид.',
     galleryOffset:2,
@@ -700,6 +700,51 @@ document.getElementById('galleryGrid').innerHTML = gal.map(g=>`
     <span class="g-room">${g.room}</span>
   </div>
 `).join('');
+
+// Лайтбокс галереи (открытие фото на весь экран)
+(function(){
+  const items = Array.from(document.querySelectorAll('#galleryGrid .g-item'));
+  if(!items.length) return;
+  const data = items.map(it=>({
+    src: it.querySelector('img').src,
+    alt: it.querySelector('img').alt,
+    label: (it.querySelector('.g-room')||{}).textContent || ''
+  }));
+  let cur = 0;
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.innerHTML = `
+    <span class="lb-counter"></span>
+    <img class="lb-img" src="" alt="">
+    <div class="lb-caption"></div>
+    <button class="lb-btn lb-close" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <button class="lb-btn lb-prev" aria-label="Предыдущее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="lb-btn lb-next" aria-label="Следующее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>`;
+  document.body.appendChild(lb);
+  const imgEl = lb.querySelector('.lb-img'), capEl = lb.querySelector('.lb-caption'), cntEl = lb.querySelector('.lb-counter');
+  function render(){
+    const d = data[cur];
+    imgEl.src = d.src; imgEl.alt = d.alt; capEl.textContent = d.label;
+    cntEl.textContent = (cur+1)+' / '+data.length;
+    [cur+1, cur-1].forEach(i=>{ const j=(i+data.length)%data.length; const pre=new Image(); pre.src=data[j].src; });
+  }
+  function open(i){ cur=i; render(); lb.classList.add('open'); document.body.classList.add('lb-open'); }
+  function close(){ lb.classList.remove('open'); document.body.classList.remove('lb-open'); }
+  function next(){ cur=(cur+1)%data.length; render(); }
+  function prev(){ cur=(cur-1+data.length)%data.length; render(); }
+  items.forEach((it,i)=>it.addEventListener('click', ()=>open(i)));
+  lb.querySelector('.lb-close').addEventListener('click', close);
+  lb.querySelector('.lb-next').addEventListener('click', e=>{ e.stopPropagation(); next(); });
+  lb.querySelector('.lb-prev').addEventListener('click', e=>{ e.stopPropagation(); prev(); });
+  lb.addEventListener('click', e=>{ if(e.target===lb) close(); });
+  document.addEventListener('keydown', e=>{
+    if(!lb.classList.contains('open')) return;
+    if(e.key==='Escape') close(); if(e.key==='ArrowRight') next(); if(e.key==='ArrowLeft') prev();
+  });
+  let tx=null;
+  lb.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } tx=null; }, {passive:true});
+})();
 
 // description blocks
 const descMap = [
@@ -852,10 +897,10 @@ timelineIO.observe(document.getElementById('timeline'));
     {name:'Бордо', hex:'#7E3B44'}
   ];
   const WOOD_SPECIES = [
-    {name:'Белёный дуб', hex:'#E9DFCC', price:6300}, {name:'Светлый дуб', hex:'#D9BE93', price:6300},
-    {name:'Натуральный тик', hex:'#C7A067', price:6900}, {name:'Бамбук', hex:'#D6C39A', price:5900},
-    {name:'Орех', hex:'#9A6F47', price:7200}, {name:'Махагон', hex:'#7C4A38', price:7800},
-    {name:'Венге', hex:'#4E3B30', price:7500}
+    {name:'Белёный дуб', hex:'#E9DFCC', price:10000}, {name:'Светлый дуб', hex:'#D9BE93', price:10000},
+    {name:'Натуральный тик', hex:'#C7A067', price:11500}, {name:'Бамбук', hex:'#D6C39A', price:10000},
+    {name:'Орех', hex:'#9A6F47', price:12000}, {name:'Махагон', hex:'#7C4A38', price:13000},
+    {name:'Венге', hex:'#4E3B30', price:12500}
   ];
   const TAPE_COLORS = [
     {name:'Бежевая', hex:'#D9C8A9'}, {name:'Белая', hex:'#F2EFE8'},
@@ -864,23 +909,23 @@ timelineIO.observe(document.getElementById('timeline'));
 
   const CFG = {
     vertical:  {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Полиэстер',key:'matte',price:790},{name:'Жаккард',key:'jacquard',price:990},{name:'Лён',key:'linen',price:1090},{name:'ПВХ',key:'pvc',price:890}]},
+      fabrics:[{name:'Полиэстер',key:'matte',price:1500},{name:'Жаккард',key:'jacquard',price:1750},{name:'Лён',key:'linen',price:1850},{name:'ПВХ',key:'pvc',price:1650}]},
     horizontal:{colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Покрытие',
-      fabrics:[{name:'Матовое',key:'matte',price:950},{name:'Глянец',key:'gloss',price:1050},{name:'Металлик',key:'metallic',price:1150},{name:'Софт-тач',key:'soft',price:1190}]},
+      fabrics:[{name:'Матовое',key:'matte',price:1500},{name:'Глянец',key:'gloss',price:1650},{name:'Металлик',key:'metallic',price:1800},{name:'Софт-тач',key:'soft',price:1750}]},
     cassette:  {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Скрин',key:'screen',price:1750},{name:'Димаут',key:'dimout',price:1400},{name:'Блэкаут',key:'blackout',price:1950},{name:'Лён',key:'linen',price:1850}]},
+      fabrics:[{name:'Димаут',key:'dimout',price:2500},{name:'Скрин',key:'screen',price:2900},{name:'Блэкаут',key:'blackout',price:3200},{name:'Лён',key:'linen',price:3000}]},
     roller:    {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Скрин',key:'screen',price:1400},{name:'Димаут',key:'dimout',price:1080},{name:'Блэкаут',key:'blackout',price:1600},{name:'Лён',key:'linen',price:1500},{name:'Сатин',key:'satin',price:1350}]},
+      fabrics:[{name:'Димаут',key:'dimout',price:1700},{name:'Скрин',key:'screen',price:2100},{name:'Блэкаут',key:'blackout',price:2400},{name:'Лён',key:'linen',price:2200},{name:'Сатин',key:'satin',price:2000}]},
     wood:      {colors:WOOD_SPECIES, colorLabel:'Вид дерева', fabricLabel:'Лента лесенки', tapeMode:true,
       fabrics:TAPE_COLORS.map(t=>({name:t.name, key:'tape', hex:t.hex}))},
     motorized: {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Скрин',key:'screen',price:22600},{name:'Блэкаут',key:'blackout',price:23400},{name:'Димаут',key:'dimout',price:22000},{name:'Сатин',key:'satin',price:22900}]},
+      fabrics:[{name:'Димаут',key:'dimout',price:22000},{name:'Скрин',key:'screen',price:22600},{name:'Блэкаут',key:'blackout',price:23400},{name:'Сатин',key:'satin',price:22900}]},
     daynight:  {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Стандарт',key:'matte',price:1625},{name:'Лён',key:'linen',price:2100},{name:'Металлик',key:'metallic',price:1950}]},
+      fabrics:[{name:'Стандарт',key:'matte',price:3500},{name:'Лён',key:'linen',price:4100},{name:'Металлик',key:'metallic',price:3900}]},
     pleated:   {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Креп',key:'matte',price:1600},{name:'Сатин',key:'satin',price:1850},{name:'Блэкаут',key:'blackout',price:2200},{name:'Гофре-сото',key:'honeycomb',price:2600}]},
+      fabrics:[{name:'Креп',key:'matte',price:6000},{name:'Сатин',key:'satin',price:6400},{name:'Блэкаут',key:'blackout',price:6900},{name:'Гофре-сото',key:'honeycomb',price:7500}]},
     roman:     {colors:FABRIC_COLORS, colorLabel:'Цвет', fabricLabel:'Ткань',
-      fabrics:[{name:'Лён',key:'linen',price:1590},{name:'Хлопок',key:'cotton',price:1690},{name:'Рогожка',key:'rogojka',price:1750},{name:'Велюр',key:'velvet',price:2300},{name:'Блэкаут',key:'blackout',price:2100}]}
+      fabrics:[{name:'Лён',key:'linen',price:8000},{name:'Хлопок',key:'cotton',price:8400},{name:'Рогожка',key:'rogojka',price:8600},{name:'Велюр',key:'velvet',price:9500},{name:'Блэкаут',key:'blackout',price:9000}]}
   };
 
   const cfg = CFG[id];
@@ -1072,7 +1117,11 @@ timelineIO.observe(document.getElementById('timeline'));
     stage.innerHTML = scene(body + overlay, defs);
     document.getElementById('cfgCurrent').textContent = curColor.name + ' · ' + curFabric.name;
     // цена зависит от ткани (для деревянных — от породы)
-    const UNIT = {vertical:'₽/м²', horizontal:'₽/м²', roman:'₽/м²'};
+    const UNIT = {
+      vertical:'₽/м²', horizontal:'₽/м²', pleated:'₽/м²', wood:'₽/м²',
+      motorized:'₽/м²', roman:'₽/м²',
+      roller:'₽/изд.', cassette:'₽/изд.', daynight:'₽/изд.'
+    };
     const price = (id === 'wood') ? curColor.price : curFabric.price;
     document.getElementById('cfgPrice').innerHTML =
       'от <b>' + price.toLocaleString('ru-RU') + '</b> ' + (UNIT[id] || '₽');

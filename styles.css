@@ -415,8 +415,8 @@
 .p-hero-content p{margin-top:20px; font-size:clamp(15px,1.6vw,18px); color:var(--beige); max-width:600px; line-height:1.65;}
 .p-hero-price{margin-top:26px; display:flex; align-items:baseline; gap:12px;}
 .p-hero-price span{
-  font-family:'Fraunces', serif; font-style:italic; font-weight:400;
-  font-size:clamp(26px,3.2vw,38px); color:var(--gold-bright); letter-spacing:.01em;
+  font-family:'Manrope', sans-serif; font-weight:700;
+  font-size:clamp(24px,3vw,34px); color:var(--gold-bright); letter-spacing:0;
 }
 .p-hero-price::before{
   content:'Стоимость'; font-family:'Manrope',sans-serif; font-size:11px; letter-spacing:.2em;
@@ -700,7 +700,7 @@
 }
 
 /* ============ Лайтбокс для галереи работ ============ */
-#works .g-item{cursor:zoom-in;}
+#works .g-item, #galleryGrid .g-item{cursor:zoom-in;}
 .lightbox{
   position:fixed; inset:0; z-index:1500;
   display:flex; align-items:center; justify-content:center;
@@ -810,7 +810,28 @@ body.lb-open .mobile-bar{display:none;}
 .cfg-chip:hover{border-color:var(--gold);}
 .cfg-chip.active{background:var(--graphite); color:var(--white); border-color:var(--graphite);}
 .cfg-current{
-  font-family:'Fraunces',serif; font-style:italic; font-size:22px; color:var(--gold);
-  padding-top:22px; border-top:1px solid var(--graphite-line);
+  font-family:'Manrope',sans-serif; font-weight:600; font-size:15px; color:var(--text-muted);
+  padding-top:20px; border-top:1px solid var(--graphite-line);
 }
+.cfg-price{
+  font-family:'Manrope',sans-serif; font-weight:700; font-size:26px; color:var(--gold);
+  margin-bottom:4px;
+}
+.cfg-price b{font-weight:800;}
 .cfg-note{font-size:12.5px; color:var(--text-muted); margin-top:12px; line-height:1.6;}
+
+/* подписи размеров окна в калькуляторе */
+.calc-dim-label{
+  display:block; font-style:normal; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:#8A8378; margin-top:6px;
+}
+/* форма заявки в калькуляторе */
+.calc-lead{margin-top:8px; display:flex; flex-direction:column; gap:12px;}
+.calc-lead input{
+  width:100%; padding:15px 16px; background:var(--graphite-soft); border:1px solid rgba(255,255,255,.18);
+  color:var(--white); font-family:inherit; font-size:15px; transition:border-color .3s;
+}
+.calc-lead input::placeholder{color:#8A8378;}
+.calc-lead input:focus{outline:none; border-color:var(--gold);}
+.calc-lead-ok{display:none; color:var(--gold-bright); font-size:14px; line-height:1.5;}
+.calc-lead-ok.show{display:block;}
