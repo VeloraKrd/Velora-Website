@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
 
@@ -693,13 +693,34 @@ document.getElementById('descImg').src = p.heroImg;
 document.getElementById('descImg').alt = p.title;
 
 // gallery
-const gal = galleryFor(p.galleryOffset);
-document.getElementById('galleryGrid').innerHTML = gal.map(g=>`
-  <div class="g-item">
-    <img src="${g.img}" alt="${p.title} — ${g.room}" loading="lazy">
-    <span class="g-room">${g.room}</span>
-  </div>
-`).join('');
+// Новые баннерные фото галереи (три интерьера в одном) — по типам.
+// Рулонные и День/Ночь пока используют старую сетку интерьеров.
+const GALLERY_BANNER = {
+  vertical:   'img/gallery-new/vertical.jpg',
+  horizontal: 'img/gallery-new/horizontal.jpg',
+  cassette:   'img/gallery-new/cassette.jpg',
+  wood:       'img/gallery-new/wood.jpg',
+  motorized:  'img/gallery-new/motorized.jpg',
+  pleated:    'img/gallery-new/pleated.jpg',
+  roman:      'img/gallery-new/roman.jpg'
+};
+
+if(GALLERY_BANNER[id]){
+  // одно широкое изображение на всю ширину
+  document.getElementById('galleryGrid').classList.add('gallery-banner');
+  document.getElementById('galleryGrid').innerHTML =
+    `<div class="g-item g-banner">
+       <img src="${GALLERY_BANNER[id]}" alt="${p.title} — как это выглядит в интерьере" loading="lazy">
+     </div>`;
+} else {
+  const gal = galleryFor(p.galleryOffset);
+  document.getElementById('galleryGrid').innerHTML = gal.map(g=>`
+    <div class="g-item">
+      <img src="${g.img}" alt="${p.title} — ${g.room}" loading="lazy">
+      <span class="g-room">${g.room}</span>
+    </div>
+  `).join('');
+}
 
 // Лайтбокс галереи (открытие фото на весь экран)
 (function(){

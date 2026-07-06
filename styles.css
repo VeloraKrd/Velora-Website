@@ -847,3 +847,17 @@ body.lb-open .mobile-bar{display:none;}
 .works-more:hover{background:var(--graphite); color:var(--white);}
 .works-more svg{width:18px; height:18px; transition:transform .3s var(--ease);}
 .works-more:hover svg{transform:translateY(2px);}
+
+/* ============ Галерея-баннер (одно широкое фото) ============ */
+.gallery-grid.gallery-banner{display:block; margin-top:56px;}
+.g-banner{
+  width:100%; aspect-ratio:auto; overflow:hidden; cursor:zoom-in;
+  border:1px solid var(--graphite-line); background:var(--paper);
+}
+.g-banner img{
+  width:100%; height:auto; display:block;
+  transition:transform .8s var(--ease);
+}
+.g-banner:hover img{transform:scale(1.02);}
+/* на баннере не нужно затемнение снизу (у него нет подписи-плашки) */
+.g-banner::after{display:none;}
