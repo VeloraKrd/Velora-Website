@@ -835,3 +835,15 @@ body.lb-open .mobile-bar{display:none;}
 .calc-lead input:focus{outline:none; border-color:var(--gold);}
 .calc-lead-ok{display:none; color:var(--gold-bright); font-size:14px; line-height:1.5;}
 .calc-lead-ok.show{display:block;}
+
+/* ============ Кнопка «Показать больше» в галерее работ ============ */
+.works-more-wrap{display:flex; justify-content:center; margin-top:40px;}
+.works-more{
+  display:inline-flex; align-items:center; gap:10px; padding:16px 34px;
+  border:1px solid var(--graphite); color:var(--graphite);
+  font-family:'Manrope',sans-serif; font-weight:700; font-size:14px; letter-spacing:.02em;
+  background:transparent; transition:all .35s var(--ease);
+}
+.works-more:hover{background:var(--graphite); color:var(--white);}
+.works-more svg{width:18px; height:18px; transition:transform .3s var(--ease);}
+.works-more:hover svg{transform:translateY(2px);}

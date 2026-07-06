@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=6">
+<link rel="stylesheet" href="styles.css?v=7">
 
 <script type="application/ld+json">
 {
@@ -131,22 +131,11 @@
     <h2 class="section-title">Наши крайние работы</h2>
     <p class="works-sub">Реальные проекты Velora в Краснодаре и крае — квартиры, загородные дома, офисы и коммерческие помещения.</p>
   </div>
-  <div class="gallery-grid reveal" style="margin-top:56px;">
-    <div class="g-item"><img src="img/works/works-01.jpg" alt="Рулонные шторы для бассейна — установка в Краснодаре" loading="lazy"><span class="g-room">Рулонные шторы · бассейн</span></div>
-    <div class="g-item"><img src="img/works/works-02.jpg" alt="Кассетная рулонная штора на балконной двери, Краснодар" loading="lazy"><span class="g-room">Кассетная рулонная · балконная дверь</span></div>
-    <div class="g-item"><img src="img/works/works-03.jpg" alt="Бордовая римская штора в спальне, Краснодарский край" loading="lazy"><span class="g-room">Римская штора · спальня</span></div>
-    <div class="g-item"><img src="img/works/works-04.jpg" alt="Деревянные жалюзи на кухне в загородном доме, Краснодар" loading="lazy"><span class="g-room">Деревянные жалюзи · кухня</span></div>
-    <div class="g-item"><img src="img/works/works-05.jpg" alt="Деревянные жалюзи с лесенкой из ткани крупным планом" loading="lazy"><span class="g-room">Деревянные жалюзи · детали</span></div>
-    <div class="g-item"><img src="img/works/works-06.jpg" alt="Льняные римские шторы в квартире, Краснодар" loading="lazy"><span class="g-room">Римские шторы · лён</span></div>
-    <div class="g-item"><img src="img/works/works-07.jpg" alt="Рулонные шторы скрин на витрине офиса, Краснодар" loading="lazy"><span class="g-room">Рулонные скрин · витрина</span></div>
-    <div class="g-item"><img src="img/works/works-08.jpg" alt="Тёмные деревянные жалюзи в современной гостиной" loading="lazy"><span class="g-room">Деревянные жалюзи венге · гостиная</span></div>
-    <div class="g-item"><img src="img/works/works-09.jpg" alt="Рулонные шторы блэкаут на лоджии, Краснодар" loading="lazy"><span class="g-room">Блэкаут · лоджия</span></div>
-    <div class="g-item"><img src="img/works/works-10.jpg" alt="Чёрные деревянные жалюзи на панорамных окнах" loading="lazy"><span class="g-room">Деревянные жалюзи · панорамное остекление</span></div>
-    <div class="g-item"><img src="img/works/works-11.jpg" alt="Светлые деревянные жалюзи на террасе загородного дома" loading="lazy"><span class="g-room">Деревянные жалюзи · терраса</span></div>
-    <div class="g-item"><img src="img/works/works-12.jpg" alt="Деревянные жалюзи в загородном доме, Краснодарский край" loading="lazy"><span class="g-room">Деревянные жалюзи · загородный дом</span></div>
-    <div class="g-item"><img src="img/works/works-13.jpg" alt="Кассетные рулонные шторы в учебном классе, Краснодар" loading="lazy"><span class="g-room">Кассетные рулонные · учебный класс</span></div>
-    <div class="g-item"><img src="img/works/works-14.jpg" alt="Детская рулонная штора с перфорированным рисунком города" loading="lazy"><span class="g-room">Рулонная с перфорацией · детская</span></div>
-    <div class="g-item"><img src="img/works/works-15.jpg" alt="Рулонная штора блэкаут с перфорированным цветочным узором" loading="lazy"><span class="g-room">Рулонная с перфорацией · цветы</span></div>
+  <div class="gallery-grid reveal" style="margin-top:56px;" id="worksGrid"></div>
+  <div class="works-more-wrap reveal">
+    <button class="works-more" id="worksMore">Показать больше
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
   </div>
 </section>
 
@@ -575,75 +564,94 @@ quizPhoneInput.addEventListener('focus', (e)=>{ if(!e.target.value) e.target.val
 
 showStep(1);
 
-// ============ ЛАЙТБОКС ГАЛЕРЕИ РАБОТ ============
-(function(){
-  const items = Array.from(document.querySelectorAll('#works .g-item'));
-  if(!items.length) return;
-  const data = items.map(it=>({
-    src: it.querySelector('img').src,
-    alt: it.querySelector('img').alt,
-    label: (it.querySelector('.g-room')||{}).textContent || ''
-  }));
-  let cur = 0;
+// ============ ГАЛЕРЕЯ «НАШИ КРАЙНИЕ РАБОТЫ» ============
+// ┌─────────────────────────────────────────────────────────────┐
+// │ КАК ДОБАВИТЬ ФОТО: положите файл в папку img/works/ и допишите │
+// │ строку в массив ниже: {img:'путь', room:'Подпись'}.           │
+// │ Первые 4 показываются сразу, остальные — по кнопке «Показать   │
+// │ больше» (по 4 за раз). Порядок в массиве = порядок показа.     │
+// └─────────────────────────────────────────────────────────────┘
+const WORKS = [
+  // --- Первые 4 (видны сразу): Горизонтальные, Рулонные, Кассетные, Деревянные ---
+  {img:'img/works/works-16.jpg', room:'Горизонтальные жалюзи · офис'},
+  {img:'img/works/works-01.jpg', room:'Рулонные шторы · бассейн'},
+  {img:'img/works/works-13.jpg', room:'Кассетные рулонные · учебный класс'},
+  {img:'img/works/works-04.jpg', room:'Деревянные жалюзи · кухня'},
+  // --- Остальные (подгружаются по кнопке) ---
+  {img:'img/works/works-17.jpg', room:'Рулонные шторы · офис'},
+  {img:'img/works/works-18.jpg', room:'Рулонные шторы · балкон'},
+  {img:'img/works/works-19.jpg', room:'Рулонные шторы · косметология'},
+  {img:'img/works/works-20.jpg', room:'Римская штора · кухня'},
+  {img:'img/works/works-21.jpg', room:'Рулонная день/ночь · мансарда'},
+  {img:'img/works/works-02.jpg', room:'Кассетная рулонная · балконная дверь'},
+  {img:'img/works/works-03.jpg', room:'Римская штора · спальня'},
+  {img:'img/works/works-05.jpg', room:'Деревянные жалюзи · детали'},
+  {img:'img/works/works-06.jpg', room:'Римские шторы · лён'},
+  {img:'img/works/works-07.jpg', room:'Рулонные скрин · витрина'},
+  {img:'img/works/works-08.jpg', room:'Деревянные жалюзи венге · гостиная'},
+  {img:'img/works/works-09.jpg', room:'Рулонные блэкаут · лоджия'},
+  {img:'img/works/works-10.jpg', room:'Деревянные жалюзи · панорамное остекление'},
+  {img:'img/works/works-11.jpg', room:'Деревянные жалюзи · терраса'},
+  {img:'img/works/works-12.jpg', room:'Деревянные жалюзи · загородный дом'},
+  {img:'img/works/works-14.jpg', room:'Рулонная с перфорацией · детская'},
+  {img:'img/works/works-15.jpg', room:'Рулонная с перфорацией · цветы'}
+];
+const WORKS_STEP = 4;      // сколько показывать изначально и добавлять за раз
+let worksShown = 0;
 
-  const lb = document.createElement('div');
-  lb.className = 'lightbox';
-  lb.innerHTML = `
-    <span class="lb-counter"></span>
-    <img class="lb-img" src="" alt="">
-    <div class="lb-caption"></div>
-    <button class="lb-btn lb-close" aria-label="Закрыть">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <button class="lb-btn lb-prev" aria-label="Предыдущее">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
-    </button>
-    <button class="lb-btn lb-next" aria-label="Следующее">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
-    </button>`;
-  document.body.appendChild(lb);
+const worksGrid = document.getElementById('worksGrid');
+const worksMoreBtn = document.getElementById('worksMore');
 
-  const imgEl = lb.querySelector('.lb-img');
-  const capEl = lb.querySelector('.lb-caption');
-  const cntEl = lb.querySelector('.lb-counter');
-
-  function render(){
-    const d = data[cur];
-    imgEl.src = d.src; imgEl.alt = d.alt;
-    capEl.textContent = d.label;
-    cntEl.textContent = (cur+1) + ' / ' + data.length;
-    // предзагрузка соседних
-    [cur+1, cur-1].forEach(i=>{
-      const j = (i + data.length) % data.length;
-      const pre = new Image(); pre.src = data[j].src;
-    });
+function renderWorks(){
+  const upto = Math.min(worksShown + WORKS_STEP, WORKS.length);
+  for(let i = worksShown; i < upto; i++){
+    const w = WORKS[i];
+    const el = document.createElement('div');
+    el.className = 'g-item';
+    el.innerHTML = `<img src="${w.img}" alt="${w.room}, Краснодар" loading="lazy"><span class="g-room">${w.room}</span>`;
+    el.addEventListener('click', ()=>openLb(i));
+    worksGrid.appendChild(el);
   }
-  function openLb(i){ cur = i; render(); lb.classList.add('open'); document.body.classList.add('lb-open'); }
-  function closeLb(){ lb.classList.remove('open'); document.body.classList.remove('lb-open'); }
-  function next(){ cur = (cur+1) % data.length; render(); }
-  function prev(){ cur = (cur-1+data.length) % data.length; render(); }
+  worksShown = upto;
+  worksMoreBtn.style.display = (worksShown >= WORKS.length) ? 'none' : '';
+}
+worksMoreBtn.addEventListener('click', renderWorks);
+renderWorks();
 
-  items.forEach((it,i)=>it.addEventListener('click', ()=>openLb(i)));
-  lb.querySelector('.lb-close').addEventListener('click', closeLb);
-  lb.querySelector('.lb-next').addEventListener('click', e=>{ e.stopPropagation(); next(); });
-  lb.querySelector('.lb-prev').addEventListener('click', e=>{ e.stopPropagation(); prev(); });
-  lb.addEventListener('click', e=>{ if(e.target === lb) closeLb(); });
-  document.addEventListener('keydown', e=>{
-    if(!lb.classList.contains('open')) return;
-    if(e.key === 'Escape') closeLb();
-    if(e.key === 'ArrowRight') next();
-    if(e.key === 'ArrowLeft') prev();
-  });
-  // свайпы на мобильном
-  let touchX = null;
-  lb.addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; }, {passive:true});
-  lb.addEventListener('touchend', e=>{
-    if(touchX === null) return;
-    const dx = e.changedTouches[0].clientX - touchX;
-    if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
-    touchX = null;
-  }, {passive:true});
-})();
+// ---- Лайтбокс (открывает любое фото из WORKS, даже ещё не показанное) ----
+let lbCur = 0;
+const lb = document.createElement('div');
+lb.className = 'lightbox';
+lb.innerHTML = `
+  <span class="lb-counter"></span>
+  <img class="lb-img" src="" alt="">
+  <div class="lb-caption"></div>
+  <button class="lb-btn lb-close" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="lb-btn lb-prev" aria-label="Предыдущее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="lb-btn lb-next" aria-label="Следующее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>`;
+document.body.appendChild(lb);
+const imgEl = lb.querySelector('.lb-img'), capEl = lb.querySelector('.lb-caption'), cntEl = lb.querySelector('.lb-counter');
+function lbRender(){
+  const d = WORKS[lbCur];
+  imgEl.src = d.img; imgEl.alt = d.room; capEl.textContent = d.room;
+  cntEl.textContent = (lbCur+1) + ' / ' + WORKS.length;
+  [lbCur+1, lbCur-1].forEach(i=>{ const j=(i+WORKS.length)%WORKS.length; const pre=new Image(); pre.src=WORKS[j].img; });
+}
+function openLb(i){ lbCur=i; lbRender(); lb.classList.add('open'); document.body.classList.add('lb-open'); }
+function closeLb(){ lb.classList.remove('open'); document.body.classList.remove('lb-open'); }
+function lbNext(){ lbCur=(lbCur+1)%WORKS.length; lbRender(); }
+function lbPrev(){ lbCur=(lbCur-1+WORKS.length)%WORKS.length; lbRender(); }
+lb.querySelector('.lb-close').addEventListener('click', closeLb);
+lb.querySelector('.lb-next').addEventListener('click', e=>{ e.stopPropagation(); lbNext(); });
+lb.querySelector('.lb-prev').addEventListener('click', e=>{ e.stopPropagation(); lbPrev(); });
+lb.addEventListener('click', e=>{ if(e.target===lb) closeLb(); });
+document.addEventListener('keydown', e=>{
+  if(!lb.classList.contains('open')) return;
+  if(e.key==='Escape') closeLb(); if(e.key==='ArrowRight') lbNext(); if(e.key==='ArrowLeft') lbPrev();
+});
+let touchX = null;
+lb.addEventListener('touchstart', e=>{ touchX=e.touches[0].clientX; }, {passive:true});
+lb.addEventListener('touchend', e=>{ if(touchX===null) return; const dx=e.changedTouches[0].clientX-touchX; if(Math.abs(dx)>50){ dx<0?lbNext():lbPrev(); } touchX=null; }, {passive:true});
 
 // ============ ОТЗЫВЫ ============
 const reviews = [
@@ -804,8 +812,8 @@ document.querySelector('.c-form').addEventListener('submit', function(e){
 
 // ============ ОТПРАВКА ЗАЯВОК В TELEGRAM ============
 // НАСТРОЙКА: впишите токен бота и chat_id (инструкция — в ответе Claude).
-const TG_BOT_TOKEN = 'ВСТАВЬТЕ_ТОКЕН_БОТА';
-const TG_CHAT_ID   = 'ВСТАВЬТЕ_CHAT_ID';
+const TG_BOT_TOKEN = '8649556457:AAENUnmkuY3ifpp4mOsR_FBQLeo-aYed5Pg';
+const TG_CHAT_ID   = 'ВАШ_ЛИЧНЫЙ_CHAT_ID'; // ← замените: напишите @userinfobot, он пришлёт ваш ID (число)
 
 function sendLead(source, fields){
   // Собираем текст заявки
