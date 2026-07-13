@@ -147,48 +147,103 @@
     <p class="vcfg-lead">Выберите систему, размеры, материал и управление. Мы покажем, как будет выглядеть изделие, и рассчитаем предварительную стоимость.</p>
   </div>
 
-  <div class="vcfg-layout reveal">
-    <!-- Левая колонка: интерактивная визуализация -->
-    <div class="vcfg-visual">
-      <div class="vcfg-stage" id="vcfgStage" data-system="roller" data-control="chain" data-side="right">
-        <div class="vcfg-floor"></div>
-        <div class="vcfg-window">
-          <div class="vcfg-glass"></div>
-          <div class="vcfg-blind" id="vcfgBlind"></div>
-          <div class="vcfg-frame"></div>
-        </div>
-      </div>
-      <div class="vcfg-viz-controls">
-        <button type="button" class="vcfg-viz-btn" data-viz="darker">Темнее</button>
-        <button type="button" class="vcfg-viz-btn" data-viz="lighter">Светлее</button>
-        <button type="button" class="vcfg-viz-btn" data-viz="toggle">Открыть / Закрыть</button>
-        <button type="button" class="vcfg-viz-btn is-reset" data-viz="reset">Сбросить</button>
-      </div>
-      <div class="vcfg-open">
-        <label for="vcfgOpen">Степень открытия</label>
-        <input type="range" class="vcfg-range" id="vcfgOpen" min="0" max="100" value="35" aria-label="Степень открытия">
-      </div>
+  <!-- Мобильная презентационная карточка (видна на телефоне, пока конфигуратор закрыт) -->
+  <div class="vcfg-mpreview reveal">
+    <div class="vcfg-mpreview-art" aria-hidden="true">
+      <svg viewBox="0 0 320 190" width="320" height="190" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="vpLight" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#F4E9CE"/><stop offset="1" stop-color="#D3BC8F"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="190" fill="#26231F"/>
+        <rect x="96" y="26" width="128" height="138" rx="3" fill="#E7E1D5"/>
+        <rect x="106" y="36" width="108" height="118" fill="url(#vpLight)"/>
+        <rect x="106" y="36" width="108" height="52" fill="#F3EFE7"/>
+        <rect x="106" y="86" width="108" height="5" fill="#CFC7B6"/>
+        <line x1="219" y1="44" x2="219" y2="72" stroke="#8A8378" stroke-width="2"/>
+      </svg>
     </div>
-
-    <!-- Правая колонка: настройки -->
-    <div class="vcfg-panel">
-      <div class="vcfg-steps-head" id="vcfgStepsHead" aria-label="Шаги конфигуратора"></div>
-      <div class="vcfg-step-body" id="vcfgStepBody" aria-live="polite"></div>
-      <div class="vcfg-nav">
-        <button type="button" class="vcfg-back" id="vcfgBack">← Назад</button>
-        <div class="vcfg-price-inline" aria-live="polite">
-          <span class="vcfg-price-label">Предварительно</span>
-          <span class="vcfg-price-val" id="vcfgPriceInline">—</span>
-        </div>
-        <button type="button" class="vcfg-next" id="vcfgNext">Далее →</button>
-      </div>
-    </div>
+    <button type="button" class="vcfg-open-btn" id="vcfgOpenBtn" aria-haspopup="dialog" aria-controls="vcfgShell">
+      Открыть конфигуратор
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
   </div>
 
-  <!-- Мобильная sticky-панель -->
-  <div class="vcfg-mobilebar" id="vcfgMobileBar">
-    <div class="vcfg-mb-price" aria-live="polite"><span>Предварительно</span><b id="vcfgMbPrice">—</b></div>
-    <button type="button" class="vcfg-mb-next" id="vcfgMbNext">Далее</button>
+  <!-- Оболочка конфигуратора: на телефоне превращается в полноэкранный wizard -->
+  <div class="vcfg-shell reveal" id="vcfgShell" aria-labelledby="vcfgTitle">
+
+    <!-- Мобильная верхняя панель -->
+    <div class="vcfg-mtopbar">
+      <button type="button" class="vcfg-mtop-back" id="vcfgMBack" aria-label="Предыдущий шаг">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="vcfg-mtop-title">
+        <span class="vcfg-mstep" id="vcfgMStep" aria-live="polite">Шаг 1 из 6</span>
+        <span class="vcfg-mname" id="vcfgMName">Выбор системы</span>
+      </div>
+      <button type="button" class="vcfg-mtop-close" id="vcfgClose" aria-label="Закрыть конфигуратор">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="vcfg-mprogress" aria-hidden="true"><i id="vcfgMProgress"></i></div>
+    </div>
+
+    <!-- Рабочая область: 2 колонки на десктопе, скролл-колонка на телефоне -->
+    <div class="vcfg-layout" id="vcfgWork">
+      <!-- Интерактивная визуализация -->
+      <div class="vcfg-visual">
+        <div class="vcfg-stage" id="vcfgStage" data-system="roller" data-control="chain" data-side="right">
+          <div class="vcfg-floor"></div>
+          <div class="vcfg-window">
+            <div class="vcfg-glass"></div>
+            <div class="vcfg-blind" id="vcfgBlind"></div>
+            <div class="vcfg-frame"></div>
+          </div>
+        </div>
+        <div class="vcfg-viz-controls">
+          <button type="button" class="vcfg-viz-btn" data-viz="darker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+            <span class="vlong">Темнее</span><span class="vshort">Тень</span>
+          </button>
+          <button type="button" class="vcfg-viz-btn" data-viz="lighter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
+            <span class="vlong">Светлее</span><span class="vshort">Свет</span>
+          </button>
+          <button type="button" class="vcfg-viz-btn" data-viz="toggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>
+            <span class="vlong">Открыть / Закрыть</span><span class="vshort">Открыть</span>
+          </button>
+          <button type="button" class="vcfg-viz-btn is-reset" data-viz="reset" aria-label="Сбросить конфигурацию">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/></svg>
+            <span class="vlong">Сбросить</span>
+          </button>
+        </div>
+        <div class="vcfg-open">
+          <label for="vcfgOpen">Степень открытия</label>
+          <input type="range" class="vcfg-range" id="vcfgOpen" min="0" max="100" value="35" aria-label="Степень открытия">
+        </div>
+      </div>
+
+      <!-- Настройки -->
+      <div class="vcfg-panel">
+        <div class="vcfg-steps-head" id="vcfgStepsHead" aria-label="Шаги конфигуратора"></div>
+        <div class="vcfg-step-body" id="vcfgStepBody" aria-live="polite"></div>
+        <div class="vcfg-nav">
+          <button type="button" class="vcfg-back" id="vcfgBack">← Назад</button>
+          <div class="vcfg-price-inline" aria-live="polite">
+            <span class="vcfg-price-label">Предварительно</span>
+            <span class="vcfg-price-val" id="vcfgPriceInline">—</span>
+          </div>
+          <button type="button" class="vcfg-next" id="vcfgNext">Далее →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Мобильная нижняя панель действий -->
+    <div class="vcfg-mbottombar">
+      <div class="vcfg-mb-price" aria-live="polite"><span>Предварительно</span><b id="vcfgMbPrice">—</b></div>
+      <button type="button" class="vcfg-mb-next" id="vcfgMbNext">Далее</button>
+    </div>
   </div>
 </section>
 
@@ -595,16 +650,6 @@ function sendLead(source, fields){
   }).catch(err => console.error('Ошибка отправки заявки:', err));
 }
 window.sendLead = sendLead;
-
-// Мобильная sticky-панель конфигуратора: показываем только когда секция на экране
-(function(){
-  var sec = document.getElementById('configurator');
-  if(!sec || !('IntersectionObserver' in window)) return;
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){ document.body.classList.toggle('vcfg-inview', e.isIntersecting); });
-  }, {threshold:0, rootMargin:'-25% 0px -30% 0px'});
-  io.observe(sec);
-})();
 </script>
 
 <!-- ОНЛАЙН-КОНФИГУРАТОР: данные (цены/материалы/цвета) + логика -->

@@ -19,6 +19,9 @@
   const TOTAL_STEPS = 6;
   const PHONE = '79181384029';
   const STEP_TITLES = ['Система', 'Размеры', 'Установка', 'Материал', 'Цвет и управление', 'Результат'];
+  const MOBILE_STEP_NAMES = ['Выбор системы', 'Размеры окна', 'Способ установки', 'Материал', 'Цвет и управление', 'Ваш расчёт'];
+  const mqMobile = window.matchMedia('(max-width: 767px)');
+  const isMobile = () => mqMobile.matches;
 
   const money = (n) => Math.round(n).toLocaleString('ru-RU');
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
@@ -108,6 +111,15 @@
   const priceInline = document.getElementById('vcfgPriceInline');
   const mbPrice = document.getElementById('vcfgMbPrice');
   const mbNext = document.getElementById('vcfgMbNext');
+  // Мобильная оболочка
+  const shell = document.getElementById('vcfgShell');
+  const openBtn = document.getElementById('vcfgOpenBtn');
+  const closeBtn = document.getElementById('vcfgClose');
+  const mBack = document.getElementById('vcfgMBack');
+  const mStep = document.getElementById('vcfgMStep');
+  const mName = document.getElementById('vcfgMName');
+  const mProgress = document.getElementById('vcfgMProgress');
+  const work = document.getElementById('vcfgWork');
 
   /* -------- Расчёт стоимости ---------------------------------------------------
      area = ш*в / 10000
@@ -231,7 +243,20 @@
     if (sum) sum.textContent = money(p.total);
     const summ = document.getElementById('vcfgSummary');
     if (summ) renderSummaryRows(summ, p);
+    const top = document.getElementById('vcfgSummaryTop');
+    if (top) renderCompactRows(top, p);
     return p;
+  }
+
+  // Компактная сводка для телефона (система, размеры, материал, количество)
+  function renderCompactRows(el, p) {
+    const rows = [
+      ['Система', p.sys.name],
+      ['Размеры', `${p.w} × ${p.h} см`],
+      ['Материал', p.mat.name],
+      ['Количество', `${p.qty} шт`]
+    ];
+    el.innerHTML = rows.map(r => `<div class="vcfg-srow"><span>${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
   }
 
   /* ==========================================================================
@@ -258,7 +283,7 @@
     maxReached = Math.max(maxReached, n);
     save();
     renderStep();
-    if (opts && opts.scroll) {
+    if (opts && opts.scroll && !isMobileOpen()) {
       const y = root.getBoundingClientRect().top + window.scrollY - 70;
       window.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
     }
@@ -268,14 +293,81 @@
     renderDots();
     stepBody.innerHTML = STEP_RENDERERS[state.step]();
     bindStep(state.step);
-    // навигация
+    // навигация (десктоп)
     backBtn.style.visibility = state.step > 1 ? 'visible' : 'hidden';
-    const lastNextLabel = state.step === TOTAL_STEPS ? 'Готово' : 'Далее';
     nextBtn.textContent = state.step === TOTAL_STEPS ? 'Наверх' : 'Далее →';
     nextBtn.classList.toggle('is-final', state.step === TOTAL_STEPS);
-    if (mbNext) mbNext.textContent = state.step === TOTAL_STEPS ? 'Получить расчёт' : 'Далее';
+    if (mbNext) { mbNext.textContent = state.step === TOTAL_STEPS ? 'Получить расчёт' : 'Далее'; mbNext.disabled = false; }
     updateVisual();
     updatePrice();
+    // --- Мобильный wizard ---
+    stage.classList.toggle('vcfg-stage--s1', state.step === 1);
+    if (mBack) mBack.style.visibility = state.step > 1 ? 'visible' : 'hidden';
+    updateMobileHeader();
+    updateMobileProgress();
+    const details = document.getElementById('vcfgDetails');
+    if (details) { if (isMobile()) details.removeAttribute('open'); else details.setAttribute('open', ''); }
+    // Прокрутку к началу и фокус заголовка делаем только при СМЕНЕ шага
+    if (isMobileOpen() && state.step !== lastMobileStep) { scrollActiveStepToTop(); focusStepTitle(); }
+    lastMobileStep = state.step;
+  }
+  let lastMobileStep = 0;
+
+  /* -------- Мобильный полноэкранный wizard ------------------------------------ */
+  function isMobileOpen() { return document.body.classList.contains('configurator-mobile-open'); }
+
+  function updateMobileHeader() {
+    if (mStep) mStep.textContent = `Шаг ${state.step} из ${TOTAL_STEPS}`;
+    if (mName) mName.textContent = MOBILE_STEP_NAMES[state.step - 1] || '';
+  }
+  function updateMobileProgress() {
+    if (mProgress) mProgress.style.width = (state.step / TOTAL_STEPS * 100).toFixed(2) + '%';
+  }
+  function scrollActiveStepToTop() { if (work) work.scrollTop = 0; }
+  function focusStepTitle() {
+    const t = stepBody.querySelector('.vcfg-step-title');
+    if (t) { t.setAttribute('tabindex', '-1'); try { t.focus({ preventScroll: true }); } catch (e) { t.focus(); } }
+  }
+
+  let savedScrollY = 0;
+  let openerEl = null;
+  function lockPageScroll() {
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = `-${savedScrollY}px`;
+    document.body.classList.add('configurator-mobile-open');
+  }
+  function unlockPageScroll() {
+    document.body.classList.remove('configurator-mobile-open');
+    document.body.style.top = '';
+    window.scrollTo(0, savedScrollY);
+  }
+  function openMobileConfigurator() {
+    if (!isMobile() || isMobileOpen()) return;
+    openerEl = document.activeElement;
+    lockPageScroll();
+    if (shell) { shell.setAttribute('role', 'dialog'); shell.setAttribute('aria-modal', 'true'); }
+    renderStep();
+    scrollActiveStepToTop();
+    focusStepTitle();
+    document.addEventListener('keydown', shellKey);
+  }
+  function closeMobileConfigurator() {
+    if (!isMobileOpen()) return;
+    unlockPageScroll();
+    if (shell) { shell.removeAttribute('role'); shell.removeAttribute('aria-modal'); }
+    document.removeEventListener('keydown', shellKey);
+    if (openerEl && openerEl.focus) { try { openerEl.focus(); } catch (e) { } }
+  }
+  function shellKey(e) {
+    if (e.key === 'Escape') { closeMobileConfigurator(); return; }
+    if (e.key === 'Tab' && shell) {
+      const f = shell.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])');
+      const vis = Array.prototype.filter.call(f, el => el.offsetParent !== null || el === document.activeElement);
+      if (!vis.length) return;
+      const first = vis[0], last = vis[vis.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   }
 
   // ---- Шаг 1: Система ----
@@ -293,9 +385,17 @@
     }).join('');
     return `<div class="vcfg-step" data-step="1">
       <span class="vcfg-step-label">Шаг 1 из 6 · Система</span>
-      <h3 class="vcfg-step-title">Выберите тип жалюзи</h3>
+      <h3 class="vcfg-step-title" tabindex="-1">Выберите тип жалюзи</h3>
       <div class="vcfg-cards">${cards}</div>
+      <div class="vcfg-sysinfo" id="vcfgSysInfo"></div>
     </div>`;
+  }
+
+  function fillSysInfo() {
+    const el = document.getElementById('vcfgSysInfo');
+    if (!el) return;
+    const s = D.getSystem(state.system);
+    el.innerHTML = `<b>${esc(s.name)} · от ${money(s.priceFrom)} ₽</b>${esc(s.desc)}`;
   }
 
   // ---- Шаг 2: Размеры ----
@@ -442,13 +542,17 @@
   function stepResult() {
     return `<div class="vcfg-step" data-step="6">
       <span class="vcfg-step-label">Шаг 6 из 6 · Результат</span>
-      <h3 class="vcfg-step-title">Ваша конфигурация</h3>
-      <div class="vcfg-summary" id="vcfgSummary"></div>
+      <h3 class="vcfg-step-title" tabindex="-1">Ваша конфигурация</h3>
+      <div class="vcfg-result-top" id="vcfgSummaryTop"></div>
       <div class="vcfg-priceblock">
         <span class="vcfg-price-cap">Предварительная стоимость</span>
         <div class="vcfg-price-big"><span id="vcfgResultPrice">0</span> <small>₽</small></div>
         <p class="vcfg-price-sub">Точную стоимость специалист рассчитает после бесплатного замера.</p>
       </div>
+      <details class="vcfg-details" id="vcfgDetails" open>
+        <summary>Все параметры конфигурации</summary>
+        <div class="vcfg-summary" id="vcfgSummary"></div>
+      </details>
       <form class="vcfg-form" id="vcfgForm" novalidate>
         <div class="vcfg-field">
           <label for="vcfgName">Имя</label>
@@ -518,8 +622,9 @@
      ========================================================================== */
   function bindStep(step) {
     if (step === 1) {
+      fillSysInfo();
       stepBody.querySelectorAll('[data-sys]').forEach(btn => btn.addEventListener('click', () => {
-        if (state.system === btn.dataset.sys) return;
+        if (state.system === btn.dataset.sys) { fillSysInfo(); return; }
         state.system = btn.dataset.sys;
         state.open = D.getSystem(state.system).defaultOpen;
         reconcile();
@@ -843,6 +948,20 @@
     const b = e.target.closest('[data-step]');
     if (b && !b.disabled) gotoStep(+b.dataset.step, { scroll: false });
   });
+
+  /* -------- Мобильные кнопки открытия/закрытия/назад --------------------------- */
+  if (openBtn) openBtn.addEventListener('click', openMobileConfigurator);
+  if (closeBtn) closeBtn.addEventListener('click', closeMobileConfigurator);
+  if (mBack) mBack.addEventListener('click', () => gotoStep(state.step - 1, { scroll: false }));
+
+  // Смена ориентации / выход из мобильной ширины — корректно закрываем оверлей
+  function onViewportChange() {
+    if (!isMobile() && isMobileOpen()) closeMobileConfigurator();
+    // пересчёт пропорций визуализации без перезагрузки
+    updateVisual();
+  }
+  window.addEventListener('resize', onViewportChange, { passive: true });
+  window.addEventListener('orientationchange', onViewportChange, { passive: true });
 
   /* -------- Старт -------------------------------------------------------------- */
   renderStep();

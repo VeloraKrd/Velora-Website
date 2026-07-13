@@ -1185,24 +1185,12 @@ body.lb-open .mobile-bar{display:none;}
 .vcfg-next.is-final{background:transparent; color:var(--beige); border:1px solid rgba(255,255,255,.25);}
 .vcfg-next.is-final:hover{border-color:var(--gold); color:var(--white);}
 
-/* мобильная sticky-панель конфигуратора */
-.vcfg-mobilebar{display:none;}
-@media(max-width:900px){
-  .vcfg-mobilebar{position:fixed; left:0; right:0; bottom:0; z-index:960;
-    display:flex; align-items:center; gap:12px;
-    padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
-    background:rgba(30,27,24,.92); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-    border-top:1px solid rgba(255,255,255,.12); box-shadow:0 -6px 24px rgba(0,0,0,.4);
-    transform:translateY(130%); transition:transform .4s var(--ease);}
-  body.vcfg-inview .vcfg-mobilebar{transform:translateY(0);}
-  body.vcfg-inview .mobile-bar{display:none;}
-  .vcfg-mb-price{flex:1; line-height:1.15;}
-  .vcfg-mb-price span{display:block; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:#8A8378; font-weight:700;}
-  .vcfg-mb-price b{font-family:'Fraunces',serif; font-size:21px; color:var(--gold-bright); font-weight:500;}
-  .vcfg-mb-next{flex:0 0 auto; padding:14px 30px; min-height:48px; background:var(--gold); color:var(--graphite);
-    font-weight:700; font-size:15px; border-radius:2px;}
-  .vcfg-mb-next:disabled{opacity:.6;}
-}
+/* Мобильные верхняя/нижняя панели и превью — стили в блоке «МОБИЛЬНЫЙ WIZARD» ниже.
+   Скрыты по умолчанию (десктоп/планшет). */
+.vcfg-mpreview{display:none;}
+.vcfg-mtopbar{display:none;}
+.vcfg-mbottombar{display:none;}
+.vcfg-viz-btn .vshort{display:none;}
 
 /* модальное окно «Как измерить?» */
 .vcfg-modal{position:fixed; inset:0; z-index:1600; display:flex; align-items:center; justify-content:center; padding:20px;
@@ -1231,4 +1219,189 @@ body.vcfg-modal-open{overflow:hidden;}
 /* уважение к prefers-reduced-motion в визуализации */
 @media(prefers-reduced-motion:reduce){
   .vcfg-window,.vcfg-fabric,.vcfg-bottombar,.vcfg-hslat,.vcfg-vslat,.vcfg-dn-layer{transition:none;}
+}
+
+
+/* ============================================================================
+   КОНФИГУРАТОР — ПЛАНШЕТ И МОБИЛЬНЫЙ WIZARD
+   ============================================================================ */
+
+/* иконки в кнопках визуализации */
+.vcfg-viz-btn svg{width:15px; height:15px; flex:0 0 auto;}
+.vcfg-viz-btn .vlong{display:inline;}
+
+/* фокус с клавиатуры */
+.vcfg-card:focus-visible,.vcfg-chip:focus-visible,.vcfg-option:focus-visible,.vcfg-mat:focus-visible,
+.vcfg-swatch:focus-visible,.vcfg-viz-btn:focus-visible,.vcfg-open-btn:focus-visible,
+.vcfg-mb-next:focus-visible,.vcfg-mtop-back:focus-visible,.vcfg-mtop-close:focus-visible,
+.vcfg-next:focus-visible,.vcfg-back:focus-visible{outline:2px solid var(--gold-bright); outline-offset:2px;}
+
+/* превью-кнопка и инфо-панель системы — базовые стили (показ — в мобильном медиа) */
+.vcfg-open-btn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+  min-height:54px; background:var(--gold); color:var(--graphite); font-weight:700; font-size:16px; border-radius:2px;
+  transition:background .3s var(--ease);}
+.vcfg-open-btn:hover{background:var(--gold-bright);}
+.vcfg-open-btn svg{width:18px; height:18px;}
+.vcfg-sysinfo{display:none;}
+
+/* модалка замера должна перекрывать полноэкранный shell */
+.vcfg-modal{z-index:2600;}
+
+/* результат: компактная сводка (телефон) / полная таблица (десктоп) */
+.vcfg-result-top{display:none;}
+.vcfg-details{border:1px solid rgba(255,255,255,.12); border-radius:2px; margin-bottom:22px;}
+.vcfg-details > summary{display:none;}
+.vcfg-details .vcfg-summary{border:0; margin:0;}
+
+/* ---------- ПЛАНШЕТ: 768–1023px — одна колонка, без модалки ---------- */
+@media(max-width:1023px){
+  .vcfg-layout{grid-template-columns:1fr; margin-top:36px;}
+  .vcfg-visual{position:static;}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .vcfg-cards{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .vcfg-mats{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .vcfg-stage{aspect-ratio:16/8; max-height:360px;}
+}
+
+/* ===================== МОБИЛЬНЫЙ (<=767px) ===================== */
+@media(max-width:767px){
+  /* компактный заголовок секции + превью-карточка */
+  #configurator.section-pad{padding:52px 20px 56px;}
+  .vcfg-head{max-width:none;}
+  .vcfg-head .section-title{font-size:clamp(32px,9vw,44px);}
+  .vcfg-lead{font-size:16px; line-height:1.5; margin-top:14px; max-width:none;}
+  .vcfg-mpreview{display:block; margin-top:22px;}
+  .vcfg-mpreview-art{width:100%; border:1px solid rgba(255,255,255,.1); border-radius:3px; overflow:hidden; background:#26231F;}
+  .vcfg-mpreview-art svg{width:100%; height:auto; display:block;}
+  .vcfg-mpreview .vcfg-open-btn{margin-top:16px;}
+
+  /* оболочка скрыта, пока конфигуратор не открыт */
+  .vcfg-shell{display:none;}
+
+  /* на телефоне всегда скрываем десктопные вкладки и нижнюю навигацию панели */
+  .vcfg-steps-head{display:none;}
+  .vcfg-nav{display:none;}
+
+  /* компактные карточки систем (2 колонки) */
+  .vcfg-cards{grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;}
+  .vcfg-card{flex-direction:column; text-align:left; align-items:stretch; gap:8px; padding:12px; position:relative;}
+  .vcfg-card-thumb{width:100%; height:64px;}
+  .vcfg-card-desc{display:none;}
+  .vcfg-card-name{font-size:15px; overflow-wrap:anywhere;}
+  .vcfg-card-price{font-size:14px;}
+  .vcfg-card.active::after{content:'✓'; position:absolute; top:6px; right:8px; width:20px; height:20px;
+    display:grid; place-items:center; border-radius:50%; background:var(--gold); color:var(--graphite); font-size:12px; font-weight:800;}
+  .vcfg-sysinfo{display:block; margin-top:14px; padding:14px 16px; border:1px solid rgba(255,255,255,.12);
+    border-radius:2px; background:rgba(255,255,255,.03); font-size:13.5px; color:#B7B0A5; line-height:1.5;}
+  .vcfg-sysinfo b{color:var(--white); display:block; margin-bottom:4px; font-weight:700;}
+
+  /* размеры */
+  .vcfg-dims{grid-template-columns:1fr 1fr; gap:14px;}
+  .vcfg-scope .vcfg-chips{flex-direction:column;}
+  .vcfg-scope .vcfg-chip{width:100%; text-align:left; min-height:52px; display:flex; align-items:center;}
+
+  /* установка — сетка 2×2 */
+  .vcfg-options{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .vcfg-option{flex-direction:column; align-items:flex-start; gap:6px; min-height:64px;}
+  .vcfg-option-main small{display:none;}
+
+  /* материалы 2 колонки */
+  .vcfg-mats{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .vcfg-tip::after{width:150px; left:auto; right:0; transform:translateY(4px);}
+  .vcfg-tip:hover::after,.vcfg-tip:focus-visible::after{transform:translateY(0);}
+
+  /* цвета / фурнитура — крупные swatch */
+  .vcfg-swatch{width:44px; height:44px;}
+
+  /* переключатели/чипы — крупнее для касания */
+  .vcfg-toggle{min-height:52px;}
+  .vcfg-chip{min-height:46px;}
+
+  /* результат: компактная сводка + сворачиваемые «Все параметры» */
+  .vcfg-result-top{display:block; border:1px solid rgba(255,255,255,.12); border-radius:2px; overflow:hidden; margin-bottom:18px;}
+  .vcfg-details{margin-bottom:18px;}
+  .vcfg-details > summary{display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:14px 16px; cursor:pointer; font-size:13.5px; font-weight:700; color:var(--white); list-style:none;}
+  .vcfg-details > summary::-webkit-details-marker{display:none;}
+  .vcfg-details > summary::after{content:''; width:9px; height:9px; border-right:2px solid var(--gold-bright);
+    border-bottom:2px solid var(--gold-bright); transform:rotate(45deg); transition:transform .3s var(--ease); flex:0 0 auto;}
+  .vcfg-details[open] > summary::after{transform:rotate(-135deg);}
+
+  /* ============ ПОЛНОЭКРАННЫЙ WIZARD (открыт) ============ */
+  body.configurator-mobile-open{overflow:hidden; position:fixed; left:0; right:0; width:100%;}
+  body.configurator-mobile-open #siteHeader{display:none;}
+  body.configurator-mobile-open .mobile-bar{display:none;}
+  /* обнуляем трансформации секции, чтобы position:fixed shell был относительно viewport */
+  body.configurator-mobile-open #configurator,
+  body.configurator-mobile-open #configurator.section-fade{transform:none !important; opacity:1 !important; filter:none !important; will-change:auto !important;}
+
+  body.configurator-mobile-open .vcfg-shell{
+    display:grid; grid-template-rows:auto minmax(0,1fr) auto;
+    position:fixed; inset:0; width:100%;
+    height:100vh; height:100dvh;
+    z-index:2000; overflow:hidden; margin:0; border:0;
+    background:var(--graphite);
+    opacity:1 !important; transform:none !important;
+  }
+
+  /* верхняя панель */
+  body.configurator-mobile-open .vcfg-mtopbar{
+    display:flex; align-items:center; gap:8px; position:relative;
+    padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px 11px;
+    background:var(--graphite-soft); border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  .vcfg-mtop-back,.vcfg-mtop-close{width:44px; height:44px; flex:0 0 auto; display:grid; place-items:center;
+    border:1px solid rgba(255,255,255,.14); border-radius:50%; color:var(--beige); background:rgba(255,255,255,.03);}
+  .vcfg-mtop-back svg,.vcfg-mtop-close svg{width:20px; height:20px;}
+  .vcfg-mtop-title{flex:1; min-width:0; text-align:center; line-height:1.2;}
+  .vcfg-mstep{display:block; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-bright); font-weight:700;}
+  .vcfg-mname{display:block; font-family:'Fraunces',serif; font-size:17px; color:var(--white); font-weight:500;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .vcfg-mprogress{position:absolute; left:0; right:0; bottom:0; height:3px; background:rgba(255,255,255,.1);}
+  .vcfg-mprogress i{display:block; height:100%; width:16.66%; background:var(--gold); transition:width .35s var(--ease);}
+
+  /* рабочая область (единственный скролл) */
+  body.configurator-mobile-open .vcfg-layout{
+    display:block; grid-template-columns:none; margin:0; border:0; background:transparent;
+    overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+    min-width:0; min-height:0; padding:16px;
+  }
+  body.configurator-mobile-open .vcfg-visual{background:transparent; padding:0 0 14px; gap:12px; position:static;}
+  body.configurator-mobile-open .vcfg-panel{background:transparent; padding:0;}
+  /* дублирующую подпись шага в теле скрываем — она уже есть в верхней панели */
+  body.configurator-mobile-open .vcfg-step-label{display:none;}
+  body.configurator-mobile-open .vcfg-step-title{margin-top:2px;}
+
+  /* мобильная визуализация */
+  body.configurator-mobile-open .vcfg-stage{height:clamp(170px,26dvh,230px); min-height:0; max-height:none; aspect-ratio:auto;}
+  body.configurator-mobile-open .vcfg-stage.vcfg-stage--s1{height:clamp(150px,22dvh,190px);}
+
+  /* компактные кнопки визуализации */
+  body.configurator-mobile-open .vcfg-viz-controls{gap:8px;}
+  body.configurator-mobile-open .vcfg-viz-btn{flex:1; min-height:44px; padding:8px 4px; justify-content:center; gap:6px;}
+  body.configurator-mobile-open .vcfg-viz-btn .vlong{display:none;}
+  body.configurator-mobile-open .vcfg-viz-btn .vshort{display:inline;}
+  body.configurator-mobile-open .vcfg-viz-btn.is-reset{flex:0 0 46px;}
+
+  /* нижняя панель действий */
+  body.configurator-mobile-open .vcfg-mbottombar{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
+    min-height:76px; background:var(--graphite-soft); border-top:1px solid rgba(255,255,255,.1);
+  }
+  .vcfg-mb-price{flex:1; min-width:0; line-height:1.15;}
+  .vcfg-mb-price span{display:block; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:#8A8378; font-weight:700;}
+  .vcfg-mb-price b{font-family:'Fraunces',serif; font-size:22px; color:var(--gold-bright); font-weight:500;}
+  .vcfg-mb-next{flex:0 0 auto; padding:15px 30px; min-height:50px; background:var(--gold); color:var(--graphite);
+    font-weight:700; font-size:15px; border-radius:2px;}
+  .vcfg-mb-next:disabled{opacity:.6;}
+
+  /* модалка замера в пределах экрана */
+  .vcfg-modal-box{max-height:calc(100dvh - 32px); border-radius:3px;}
+}
+
+/* внутренний отступ рабочей области чуть больше на 375px+ */
+@media(min-width:375px) and (max-width:767px){
+  body.configurator-mobile-open .vcfg-layout{padding:20px;}
 }
