@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=8">
+<link rel="stylesheet" href="styles.css?v=9">
 
 <script type="application/ld+json">
 {
@@ -65,13 +65,12 @@
     <a href="#catalog" class="nav-link">Каталог</a>
     <a href="#advantages" class="nav-link">Преимущества</a>
     <a href="#works" class="nav-link">Наши работы</a>
-    <a href="#quiz" class="nav-link">Подбор</a>
-    <a href="#calc" class="nav-link">Калькулятор</a>
+    <a href="#configurator" class="nav-link">Конфигуратор</a>
     <a href="#contacts" class="nav-link">Контакты</a>
   </nav>
   <div class="nav-right">
     <a href="tel:+79181384029" class="nav-phone">+7 (918) 138-40-29</a>
-    <a href="#quiz" class="nav-cta">Консультация</a>
+    <a href="#configurator" class="nav-cta">Консультация</a>
     <button class="burger" id="burgerBtn" aria-label="Меню">
       <span class="burger-slats"><i></i><i></i><i></i></span>
       <span class="burger-chain"></span>
@@ -87,10 +86,10 @@
     <h1>Жалюзи под ваши размеры за 3–5 дней</h1>
     <p>Бесплатный замер&nbsp;&bull;&nbsp;Монтаж&nbsp;&bull;&nbsp;Гарантия 2 года</p>
     <div class="hero-btns">
-      <a href="#calc" class="btn-gold">Рассчитать стоимость
+      <a href="#configurator" class="btn-gold">Рассчитать стоимость
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
-      <a href="#quiz" class="btn-ghost">Получить бесплатный замер</a>
+      <a href="#configurator" class="btn-ghost">Получить бесплатный замер</a>
     </div>
     <div class="hero-trust">
       <div class="ht-item"><b>2000+</b><span>установленных проектов</span></div>
@@ -141,124 +140,88 @@
   </div>
 </section>
 
-<section class="quiz section-pad" id="quiz">
-  <div class="reveal" style="text-align:center; margin-bottom:50px;">
-    <span class="eyebrow">Персональный подбор</span>
-    <h2 class="section-title" style="margin:0 auto;">Подберите идеальные жалюзи</h2>
+<section class="vcfg section-pad" id="configurator" aria-labelledby="vcfgTitle">
+  <div class="vcfg-head reveal">
+    <span class="eyebrow">Онлайн-конфигуратор</span>
+    <h2 class="section-title" id="vcfgTitle">Создайте свои жалюзи</h2>
+    <p class="vcfg-lead">Выберите систему, размеры, материал и управление. Мы покажем, как будет выглядеть изделие, и рассчитаем предварительную стоимость.</p>
   </div>
 
-  <div class="quiz-wrap reveal">
-    <div class="quiz-progress">
-      <i class="p1"></i><i class="p2"></i><i class="p3"></i><i class="p4"></i>
+  <div class="vcfg-layout reveal">
+    <!-- Левая колонка: интерактивная визуализация -->
+    <div class="vcfg-visual">
+      <div class="vcfg-stage" id="vcfgStage" data-system="roller" data-control="chain" data-side="right">
+        <div class="vcfg-floor"></div>
+        <div class="vcfg-window">
+          <div class="vcfg-glass"></div>
+          <div class="vcfg-blind" id="vcfgBlind"></div>
+          <div class="vcfg-frame"></div>
+        </div>
+      </div>
+      <div class="vcfg-viz-controls">
+        <button type="button" class="vcfg-viz-btn" data-viz="darker">Темнее</button>
+        <button type="button" class="vcfg-viz-btn" data-viz="lighter">Светлее</button>
+        <button type="button" class="vcfg-viz-btn" data-viz="toggle">Открыть / Закрыть</button>
+        <button type="button" class="vcfg-viz-btn is-reset" data-viz="reset">Сбросить</button>
+      </div>
+      <div class="vcfg-open">
+        <label for="vcfgOpen">Степень открытия</label>
+        <input type="range" class="vcfg-range" id="vcfgOpen" min="0" max="100" value="35" aria-label="Степень открытия">
+      </div>
     </div>
 
-    <form id="quizForm" novalidate>
-      <div class="quiz-step active" data-step="1">
-        <span class="q-label">Вопрос 1 из 4</span>
-        <h3>Где будут установлены жалюзи?</h3>
-        <div class="q-options" data-group="place">
-          <div class="q-option" data-value="Дом">Дом</div>
-          <div class="q-option" data-value="Квартира">Квартира</div>
-          <div class="q-option" data-value="Офис">Офис</div>
+    <!-- Правая колонка: настройки -->
+    <div class="vcfg-panel">
+      <div class="vcfg-steps-head" id="vcfgStepsHead" aria-label="Шаги конфигуратора"></div>
+      <div class="vcfg-step-body" id="vcfgStepBody" aria-live="polite"></div>
+      <div class="vcfg-nav">
+        <button type="button" class="vcfg-back" id="vcfgBack">← Назад</button>
+        <div class="vcfg-price-inline" aria-live="polite">
+          <span class="vcfg-price-label">Предварительно</span>
+          <span class="vcfg-price-val" id="vcfgPriceInline">—</span>
         </div>
+        <button type="button" class="vcfg-next" id="vcfgNext">Далее →</button>
       </div>
-
-      <div class="quiz-step" data-step="2">
-        <span class="q-label">Вопрос 2 из 4</span>
-        <h3>Какой стиль вам нравится?</h3>
-        <div class="q-options" data-group="style">
-          <div class="q-option" data-value="Современный">Современный</div>
-          <div class="q-option" data-value="Классический">Классический</div>
-          <div class="q-option" data-value="Минимализм">Минимализм</div>
-        </div>
-      </div>
-
-      <div class="quiz-step" data-step="3">
-        <span class="q-label">Вопрос 3 из 4</span>
-        <h3>Какой тип управления нужен?</h3>
-        <div class="q-options two-col" data-group="control">
-          <div class="q-option" data-value="Ручное">Ручное</div>
-          <div class="q-option" data-value="Автоматическое">Автоматическое</div>
-        </div>
-      </div>
-
-      <div class="quiz-step" data-step="4">
-        <span class="q-label">Вопрос 4 из 4</span>
-        <h3>Ваш номер телефона</h3>
-        <input type="tel" class="q-phone-input" id="quizPhone" placeholder="+7 (918) 138-40-29" inputmode="tel">
-        <p class="q-error" id="quizError">Пожалуйста, укажите номер телефона.</p>
-      </div>
-
-      <div class="quiz-nav">
-        <span class="q-back" id="quizBack">← Назад</span>
-        <button type="submit" class="q-submit" id="quizSubmit">Далее</button>
-      </div>
-    </form>
-
-    <div class="quiz-success" id="quizSuccess">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-      <h3>Спасибо!</h3>
-      <p>Мы получили ваши ответы и свяжемся с вами в течение рабочего дня, чтобы предложить оптимальный вариант.</p>
     </div>
+  </div>
+
+  <!-- Мобильная sticky-панель -->
+  <div class="vcfg-mobilebar" id="vcfgMobileBar">
+    <div class="vcfg-mb-price" aria-live="polite"><span>Предварительно</span><b id="vcfgMbPrice">—</b></div>
+    <button type="button" class="vcfg-mb-next" id="vcfgMbNext">Далее</button>
   </div>
 </section>
 
-<section class="calc section-pad" id="calc">
-  <div class="reveal" style="text-align:center; margin-bottom:0;">
-    <span class="eyebrow">Онлайн-расчёт</span>
-    <h2 class="section-title" style="margin:0 auto;">Калькулятор стоимости</h2>
-    <p style="margin-top:16px; color:#A9A296; font-size:15px; max-width:520px; margin-left:auto; margin-right:auto; line-height:1.6;">Укажите тип жалюзи и размеры окна — узнайте примерную стоимость за минуту.</p>
-  </div>
-
-  <div class="calc-wrap reveal">
-    <div class="calc-form">
-      <div class="calc-field">
-        <label>Тип жалюзи</label>
-        <div class="calc-types" id="calcTypes"></div>
-      </div>
-
-      <div class="calc-field">
-        <label>Размеры окна</label>
-        <div class="calc-dims">
-          <div class="calc-input-wrap">
-            <input type="number" id="calcWidth" placeholder="Ширина" min="20" max="600" value="120">
-            <span>см</span>
-            <em class="calc-dim-label">ширина</em>
-          </div>
-          <div class="calc-input-wrap">
-            <input type="number" id="calcHeight" placeholder="Высота" min="20" max="400" value="150">
-            <span>см</span>
-            <em class="calc-dim-label">высота</em>
-          </div>
-        </div>
-      </div>
-
-      <div class="calc-field" style="margin-bottom:0;">
-        <label>Дополнительно</label>
-        <div class="calc-opts">
-          <label class="calc-check"><input type="checkbox" id="calcInstall" checked> Установка (+10% к стоимости)</label>
-          <label class="calc-check"><input type="checkbox" id="calcBlackout"> Ткань блэкаут (+25%)</label>
-          <label class="calc-check" id="calcSaleWrap"><input type="checkbox" id="calcSale"> Распродажная ткань (−10%)<span class="calc-hint">только рулонные и кассетные</span></label>
-        </div>
-      </div>
+<!-- Модальное окно «Как правильно измерить?» -->
+<div class="vcfg-modal" id="vcfgModal" role="dialog" aria-modal="true" aria-labelledby="vcfgModalTitle" aria-hidden="true">
+  <div class="vcfg-modal-box">
+    <button type="button" class="vcfg-modal-close" data-close aria-label="Закрыть окно">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <span class="eyebrow">Замер</span>
+    <h3 id="vcfgModalTitle">Как правильно измерить</h3>
+    <div class="vcfg-measure">
+      <svg viewBox="0 0 160 152" width="160" height="152" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="26" y="16" width="112" height="104" rx="2" fill="#EFE6D3" stroke="#1C1A17" stroke-width="2"/>
+        <rect x="36" y="26" width="92" height="84" fill="#D3BC8F" stroke="#1C1A17" stroke-width="1.5"/>
+        <line x1="82" y1="26" x2="82" y2="110" stroke="#1C1A17" stroke-width="1.5"/>
+        <line x1="26" y1="134" x2="138" y2="134" stroke="#B8935A" stroke-width="2"/>
+        <path d="M26 134l7-4v8z" fill="#B8935A"/><path d="M138 134l-7-4v8z" fill="#B8935A"/>
+        <text x="82" y="150" text-anchor="middle" font-family="Manrope,sans-serif" font-size="11" font-weight="700" fill="#8A6B36">Ширина</text>
+        <line x1="14" y1="16" x2="14" y2="120" stroke="#B8935A" stroke-width="2"/>
+        <path d="M14 16l-4 7h8z" fill="#B8935A"/><path d="M14 120l-4-7h8z" fill="#B8935A"/>
+        <text x="14" y="70" text-anchor="middle" font-family="Manrope,sans-serif" font-size="11" font-weight="700" fill="#8A6B36" transform="rotate(-90 14 70)">Высота</text>
+      </svg>
+      <ol>
+        <li><b>В проём:</b> измерьте ширину и высоту светового проёма внутри рамы; из ширины вычтите 1–2 см на зазоры.</li>
+        <li><b>На створку:</b> измеряйте по стеклу и прибавьте по ~3 см с каждой стороны, чтобы полотно перекрывало штапик.</li>
+        <li><b>На стену / потолок:</b> к ширине окна добавьте по 5–10 см с каждой стороны и сверху — для лучшего затемнения.</li>
+        <li>Замеряйте в трёх точках и берите наименьшее значение.</li>
+      </ol>
     </div>
-
-    <div class="calc-result">
-      <div class="r-label">Примерная стоимость</div>
-      <div class="calc-price"><span id="calcPrice">0</span> <small>₽</small></div>
-      <div class="calc-price-note" id="calcArea">Площадь: 1.80 м²</div>
-      <div class="calc-breakdown" id="calcBreakdown"></div>
-      <form class="calc-lead" id="calcLead">
-        <input type="tel" id="calcPhone" placeholder="Ваш телефон для расчёта" inputmode="tel" required>
-        <button type="submit" class="btn-gold" style="margin-top:0; width:100%; justify-content:center;">Отправить расчёт
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-        <p class="calc-lead-ok" id="calcLeadOk">Заявка отправлена — свяжемся с вами в рабочее время.</p>
-      </form>
-      <p class="calc-disclaimer">Расчёт предварительный. Точную стоимость специалист назовёт после бесплатного замера.</p>
-    </div>
+    <p class="vcfg-modal-note">Все размеры — в сантиметрах. Точный замер бесплатно выполнит наш специалист.</p>
   </div>
-</section>
+</div>
 
 <section class="repair repair--light" id="repair">
   <div class="repair-inner">
@@ -274,7 +237,7 @@
         <span>Настройка электропривода</span>
       </div>
       <div class="repair-actions">
-        <a href="#calc" class="btn-gold" style="margin-top:0;">Рассчитать ремонт
+        <a href="#configurator" class="btn-gold" style="margin-top:0;">Рассчитать ремонт
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <span class="repair-price">от 1 000 ₽/м²</span>
@@ -350,7 +313,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21l1.5-4.3A8.5 8.5 0 1 1 12 20.5c-1.45 0-2.8-.36-3.98-1L3 21z"/></svg>
     WhatsApp
   </a>
-  <a href="#quiz" class="mb-btn mb-accent">
+  <a href="#configurator" class="mb-btn mb-accent">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7.5l3-3 3 3M12 4.5V15m-7.5 4.5h15"/></svg>
     Замер
   </a>
@@ -472,100 +435,6 @@ document.getElementById('advGrid').innerHTML = advantages.map(a=>`
   </div>
 `).join('');
 
-// Quiz logic
-const quizAnswers = {place:'', style:'', control:'', phone:''};
-let currentStep = 1;
-const totalSteps = 4;
-const form = document.getElementById('quizForm');
-const progressBars = document.querySelectorAll('.quiz-progress i');
-const backBtn = document.getElementById('quizBack');
-const submitBtn = document.getElementById('quizSubmit');
-
-function updateProgress(){
-  progressBars.forEach((bar, idx)=>{ bar.classList.toggle('done', idx < currentStep); });
-}
-function showStep(step){
-  document.querySelectorAll('.quiz-step').forEach(s=>{
-    s.classList.toggle('active', parseInt(s.dataset.step) === step);
-  });
-  backBtn.classList.toggle('show', step > 1);
-  submitBtn.textContent = step === totalSteps ? 'Получить предложение' : 'Далее';
-  updateProgress();
-}
-
-document.querySelectorAll('.q-option').forEach(opt=>{
-  opt.addEventListener('click', ()=>{
-    const group = opt.parentElement.dataset.group;
-    opt.parentElement.querySelectorAll('.q-option').forEach(o=>o.classList.remove('selected'));
-    opt.classList.add('selected');
-    quizAnswers[group] = opt.dataset.value;
-  });
-});
-
-backBtn.addEventListener('click', ()=>{
-  if(currentStep > 1){ currentStep--; showStep(currentStep); }
-});
-
-form.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  const stepGroups = {1:'place', 2:'style', 3:'control'};
-  if(currentStep < totalSteps){
-    const group = stepGroups[currentStep];
-    if(group && !quizAnswers[group]){
-      const stepEl = document.querySelector(`.quiz-step[data-step="${currentStep}"] .q-options`);
-      stepEl.style.animation='none'; void stepEl.offsetWidth; stepEl.style.animation='fadeUp .3s';
-      return;
-    }
-    currentStep++;
-    showStep(currentStep);
-  } else {
-    const phoneInput = document.getElementById('quizPhone');
-    const errorEl = document.getElementById('quizError');
-    const digits = phoneInput.value.replace(/\D/g, '');
-    if(digits.length < 10){
-      errorEl.classList.add('show');
-      phoneInput.classList.add('error');
-      phoneInput.focus();
-      return;
-    }
-    errorEl.classList.remove('show');
-    phoneInput.classList.remove('error');
-    quizAnswers.phone = phoneInput.value.trim();
-    sendLead('Квиз-подбор', {
-      'Помещение': quizAnswers.place,
-      'Стиль': quizAnswers.style,
-      'Управление': quizAnswers.control,
-      'Телефон': quizAnswers.phone
-    });
-    form.style.display='none';
-    document.querySelector('.quiz-progress').style.display='none';
-    document.getElementById('quizSuccess').classList.add('active');
-  }
-});
-
-// Live phone formatting for quiz: +7 (XXX) XXX-XX-XX
-const quizPhoneInput = document.getElementById('quizPhone');
-function formatRuPhone(value){
-  let d = value.replace(/\D/g, '');
-  if(d.startsWith('8')) d = '7' + d.slice(1);
-  if(!d.startsWith('7')) d = '7' + d;
-  d = d.slice(0, 11);
-  let out = '+7';
-  if(d.length > 1) out += ' (' + d.slice(1, 4);
-  if(d.length >= 4) out += ') ' + d.slice(4, 7);
-  if(d.length >= 7) out += '-' + d.slice(7, 9);
-  if(d.length >= 9) out += '-' + d.slice(9, 11);
-  return out;
-}
-quizPhoneInput.addEventListener('input', (e)=>{
-  e.target.value = formatRuPhone(e.target.value);
-  document.getElementById('quizError').classList.remove('show');
-  e.target.classList.remove('error');
-});
-quizPhoneInput.addEventListener('focus', (e)=>{ if(!e.target.value) e.target.value = '+7 ('; });
-
-showStep(1);
-
 // ============ ГАЛЕРЕЯ «НАШИ КРАЙНИЕ РАБОТЫ» ============
 // ┌─────────────────────────────────────────────────────────────┐
 // │ КАК ДОБАВИТЬ ФОТО: положите файл в папку img/works/ и допишите │
@@ -677,123 +546,6 @@ document.getElementById('reviewsTrack').innerHTML = reviews.map(r=>`
   </div>
 `).join('');
 
-// ============ CALCULATOR ============
-// unit: 'm2' — цена за квадратный метр; 'item' — цена за изделие (40–140 см высотой)
-const calcTypes = [
-  {slug:'horizontal', name:'Горизонтальные', price:1500, unit:'m2'},
-  {slug:'vertical', name:'Вертикальные', price:1500, unit:'m2'},
-  {slug:'roller', name:'Рулонные', price:1700, unit:'item'},
-  {slug:'cassette', name:'Кассетные', price:2500, unit:'item'},
-  {slug:'daynight', name:'День/Ночь', price:3500, unit:'item'},
-  {slug:'pleated', name:'Плиссе', price:6000, unit:'m2'},
-  {slug:'wood', name:'Деревянные', price:10000, unit:'m2'},
-  {slug:'motorized', name:'Электро', price:22000, unit:'m2'},
-  {slug:'roman', name:'Римские', price:8000, unit:'m2'},
-  {slug:'repair', name:'Ремонт', price:1000, unit:'m2'}
-];
-// типы, к которым применима распродажная ткань
-const SALE_TYPES = ['roller','cassette'];
-let calcState = {type:calcTypes[0], install:true, blackout:false, sale:false};
-
-const calcTypesEl = document.getElementById('calcTypes');
-calcTypesEl.innerHTML = calcTypes.map((t,i)=>
-  `<button type="button" class="calc-type${i===0?' active':''}" data-slug="${t.slug}">${t.name}</button>`
-).join('');
-
-function money(n){ return Math.round(n).toLocaleString('ru-RU'); }
-
-function recalc(){
-  const w = Math.max(0, parseFloat(document.getElementById('calcWidth').value) || 0);
-  const h = Math.max(0, parseFloat(document.getElementById('calcHeight').value) || 0);
-  const area = (w/100) * (h/100);
-  const isRepair = calcState.type.slug === 'repair';
-
-  let base;
-  if(calcState.type.unit === 'item'){
-    // цена за изделие: базовая «от» соответствует окну ~1.4 м² (ширина 1 м × высота 1.4 м),
-    // масштабируем по площади, но не ниже базовой цены за изделие
-    const refArea = 1.4;
-    base = calcState.type.price * Math.max(1, area / refArea);
-  } else {
-    const minArea = Math.max(area, 0.5); // минимальная расчётная площадь
-    base = minArea * calcState.type.price;
-  }
-
-  // распродажная ткань доступна только для рулонных и кассетных
-  const saleAvailable = SALE_TYPES.includes(calcState.type.slug);
-  const saleWrap = document.getElementById('calcSaleWrap');
-  const saleInput = document.getElementById('calcSale');
-  if(saleAvailable){
-    saleWrap.classList.remove('disabled');
-    saleInput.disabled = false;
-  } else {
-    saleWrap.classList.add('disabled');
-    saleInput.disabled = true;
-    saleInput.checked = false;
-    calcState.sale = false;
-  }
-
-  if(calcState.blackout && !isRepair) base *= 1.25;
-  let saleDiscount = 0;
-  if(calcState.sale && saleAvailable){ saleDiscount = base * 0.10; }
-  const subtotal = base - saleDiscount;
-  const install = (calcState.install && !isRepair) ? subtotal * 0.10 : 0;
-  const total = subtotal + install;
-
-  const unitText = calcState.type.unit === 'm2' ? 'м²' : 'изделие';
-  document.getElementById('calcArea').textContent =
-    `Площадь: ${area.toFixed(2)} м² · расчёт за ${unitText}`;
-  document.getElementById('calcPrice').textContent = money(total);
-
-  const baseLabel = isRepair ? 'Ремонт жалюзи' : `${calcState.type.name} жалюзи`;
-  let rows = `<div class="calc-row"><span>${baseLabel}</span><span>${money(base)} ₽</span></div>`;
-  if(saleDiscount > 0) rows += `<div class="calc-row"><span>Распродажная ткань (−10%)</span><span>−${money(saleDiscount)} ₽</span></div>`;
-  if(install > 0)      rows += `<div class="calc-row"><span>Установка (10%)</span><span>${money(install)} ₽</span></div>`;
-  document.getElementById('calcBreakdown').innerHTML = rows;
-
-  calcState._summary = {
-    type: baseLabel, w, h, area: area.toFixed(2),
-    blackout: calcState.blackout, sale: calcState.sale && saleAvailable,
-    install: calcState.install && !isRepair, total: money(total)
-  };
-}
-
-calcTypesEl.querySelectorAll('.calc-type').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    calcTypesEl.querySelectorAll('.calc-type').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    calcState.type = calcTypes.find(t=>t.slug===btn.dataset.slug);
-    recalc();
-  });
-});
-['calcWidth','calcHeight'].forEach(id=>document.getElementById(id).addEventListener('input', recalc));
-document.getElementById('calcInstall').addEventListener('change', e=>{ calcState.install=e.target.checked; recalc(); });
-document.getElementById('calcBlackout').addEventListener('change', e=>{ calcState.blackout=e.target.checked; recalc(); });
-document.getElementById('calcSale').addEventListener('change', e=>{ calcState.sale=e.target.checked; recalc(); });
-recalc();
-
-// Отправка расчёта из калькулятора в Telegram
-document.getElementById('calcLead').addEventListener('submit', function(e){
-  e.preventDefault();
-  const phoneEl = document.getElementById('calcPhone');
-  const digits = phoneEl.value.replace(/\D/g,'');
-  if(digits.length < 10){ phoneEl.focus(); phoneEl.style.borderColor = '#B4462F'; return; }
-  phoneEl.style.borderColor = '';
-  const s = calcState._summary || {};
-  sendLead('Калькулятор', {
-    'Тип': s.type,
-    'Размеры': (s.w||'?') + '×' + (s.h||'?') + ' см (' + (s.area||'?') + ' м²)',
-    'Блэкаут': s.blackout ? 'да' : 'нет',
-    'Распродажная ткань': s.sale ? 'да' : 'нет',
-    'Установка': s.install ? 'да (+10%)' : 'нет',
-    'Итого': s.total + ' ₽',
-    'Телефон': phoneEl.value.trim()
-  });
-  this.querySelector('button').style.display = 'none';
-  phoneEl.style.display = 'none';
-  document.getElementById('calcLeadOk').classList.add('show');
-});
-
 // Contact form
 document.querySelector('.c-form').addEventListener('submit', function(e){
   e.preventDefault();
@@ -842,6 +594,25 @@ function sendLead(source, fields){
     })
   }).catch(err => console.error('Ошибка отправки заявки:', err));
 }
+window.sendLead = sendLead;
+
+// Мобильная sticky-панель конфигуратора: показываем только когда секция на экране
+(function(){
+  var sec = document.getElementById('configurator');
+  if(!sec || !('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ document.body.classList.toggle('vcfg-inview', e.isIntersecting); });
+  }, {threshold:0, rootMargin:'-25% 0px -30% 0px'});
+  io.observe(sec);
+})();
 </script>
+
+<!-- ОНЛАЙН-КОНФИГУРАТОР: данные (цены/материалы/цвета) + логика -->
+<!-- Чтобы отправлять заявки через Cloudflare Worker (безопаснее — токен бота не на сайте),
+     раскомментируйте строку ниже и вставьте адрес Worker (см. worker/README-worker.md):
+<script>window.VELORA_LEAD_ENDPOINT = 'https://velora-lead.ВАШ-САБДОМЕН.workers.dev';</script>
+-->
+<script src="js/configurator-data.js?v=1"></script>
+<script src="js/configurator.js?v=1"></script>
 </body>
 </html>

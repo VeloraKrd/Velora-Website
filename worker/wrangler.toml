@@ -1,0 +1,8 @@
+name = "velora-lead"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Секреты НЕ пишутся сюда. Их задают командами:
+#   npx wrangler secret put TG_BOT_TOKEN
+#   npx wrangler secret put TG_CHAT_ID
+# (см. README-worker.md)
