@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=9">
+<link rel="stylesheet" href="styles.css?v=10">
 
 <script type="application/ld+json">
 {
@@ -192,23 +192,14 @@
     <div class="vcfg-layout" id="vcfgWork">
       <!-- Интерактивная визуализация -->
       <div class="vcfg-visual">
-        <div class="vcfg-stage" id="vcfgStage" data-system="roller" data-control="chain" data-side="right">
-          <div class="vcfg-floor"></div>
-          <div class="vcfg-window">
-            <div class="vcfg-glass"></div>
-            <div class="vcfg-blind" id="vcfgBlind"></div>
-            <div class="vcfg-frame"></div>
-          </div>
+        <div class="vcfg-stage" id="vcfgStage" data-device="desktop" data-system="roller">
+          <img class="vcfg-layer" id="vcfgLayerBase" alt="Интерьер комнаты с выбранной системой жалюзи Velora" decoding="async" fetchpriority="high">
+          <img class="vcfg-layer" id="vcfgLayerLighting" alt="" aria-hidden="true" decoding="async">
+          <img class="vcfg-layer" id="vcfgLayerPrimary" alt="" aria-hidden="true" decoding="async">
+          <img class="vcfg-layer" id="vcfgLayerHardware" alt="" aria-hidden="true" decoding="async">
+          <img class="vcfg-layer" id="vcfgLayerState" alt="" aria-hidden="true" decoding="async">
         </div>
         <div class="vcfg-viz-controls">
-          <button type="button" class="vcfg-viz-btn" data-viz="darker">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-            <span class="vlong">Темнее</span><span class="vshort">Тень</span>
-          </button>
-          <button type="button" class="vcfg-viz-btn" data-viz="lighter">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
-            <span class="vlong">Светлее</span><span class="vshort">Свет</span>
-          </button>
           <button type="button" class="vcfg-viz-btn" data-viz="toggle">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>
             <span class="vlong">Открыть / Закрыть</span><span class="vshort">Открыть</span>
@@ -218,9 +209,10 @@
             <span class="vlong">Сбросить</span>
           </button>
         </div>
+        <div class="vcfg-secondary" id="vcfgSecondary" hidden></div>
         <div class="vcfg-open">
-          <label for="vcfgOpen">Степень открытия</label>
-          <input type="range" class="vcfg-range" id="vcfgOpen" min="0" max="100" value="35" aria-label="Степень открытия">
+          <label for="vcfgOpen" id="vcfgOpenLabel">Степень закрытия</label>
+          <input type="range" class="vcfg-range" id="vcfgOpen" min="0" max="4" step="1" value="2" aria-label="Положение полотна">
         </div>
       </div>
 
@@ -652,12 +644,19 @@ function sendLead(source, fields){
 window.sendLead = sendLead;
 </script>
 
-<!-- ОНЛАЙН-КОНФИГУРАТОР: данные (цены/материалы/цвета) + логика -->
+<!-- ОНЛАЙН-КОНФИГУРАТОР -->
 <!-- Чтобы отправлять заявки через Cloudflare Worker (безопаснее — токен бота не на сайте),
      раскомментируйте строку ниже и вставьте адрес Worker (см. worker/README-worker.md):
 <script>window.VELORA_LEAD_ENDPOINT = 'https://velora-lead.ВАШ-САБДОМЕН.workers.dev';</script>
 -->
-<script src="js/configurator-data.js?v=1"></script>
-<script src="js/configurator.js?v=1"></script>
+<!-- Базовый путь к ассетам визуализации (папка assets/configurator) -->
+<script>window.VELORA_ASSET_BASE = 'assets/configurator';
+/* Если у вас подключена Яндекс.Метрика, укажите её номер счётчика,
+   чтобы конфигуратор отправлял цели cfg_system / cfg_material / cfg_submit:
+   window.VELORA_YM_ID = 12345678; */</script>
+<!-- Движок визуализации (слои изображений 8 систем) -->
+<script src="assets/configurator/visual-engine.js?v=1" defer></script>
+<script src="js/configurator-data.js?v=2" defer></script>
+<script src="js/configurator.js?v=2" defer></script>
 </body>
 </html>

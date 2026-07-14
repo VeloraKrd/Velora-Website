@@ -1405,3 +1405,50 @@ body.vcfg-modal-open{overflow:hidden;}
 @media(min-width:375px) and (max-width:767px){
   body.configurator-mobile-open .vcfg-layout{padding:20px;}
 }
+
+
+/* ============================================================================
+   ВИЗУАЛИЗАЦИЯ НА СЛОЯХ ИЗОБРАЖЕНИЙ (движок библиотеки)
+   Переопределяет прежнюю CSS/SVG-визуализацию окна.
+   ============================================================================ */
+.vcfg-stage{
+  position:relative; width:100%; overflow:hidden;
+  aspect-ratio:1586 / 992;               /* соответствует room-desktop.webp */
+  background:#d8d1c5;                     /* плейсхолдер, пока грузятся слои */
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:none;
+  transition:aspect-ratio .25s ease;
+}
+.vcfg-stage[data-device="mobile"]{ aspect-ratio:1122 / 1402; }  /* room-mobile.webp */
+.vcfg-layer{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; display:none; pointer-events:none;
+}
+#vcfgLayerBase{ display:block; }
+
+/* вторичный режим (полосы / поворот ламелей / направление) под кнопками */
+.vcfg-secondary{ display:flex; flex-direction:column; gap:10px; }
+.vcfg-secondary[hidden]{ display:none; }
+
+/* планшет: стадия остаётся альбомной, во всю ширину одной колонки */
+@media(min-width:768px) and (max-width:1023px){
+  .vcfg-stage{ aspect-ratio:1586 / 992; max-height:none; }
+}
+
+/* ---------- мобильный полноэкранный wizard ---------- */
+@media(max-width:767px){
+  /* размер по высоте, чтобы портретная сцена не была слишком высокой */
+  body.configurator-mobile-open .vcfg-stage{
+    width:auto; max-width:100%; height:auto; margin:0 auto; min-height:0; max-height:none;
+  }
+  body.configurator-mobile-open .vcfg-stage[data-device="mobile"]{
+    aspect-ratio:1122 / 1402;
+    height:min(46dvh, calc(100vw * 1402 / 1122));
+    width:auto;
+  }
+  body.configurator-mobile-open .vcfg-stage[data-device="desktop"]{
+    width:100%; height:auto; aspect-ratio:1586 / 992;
+  }
+  /* на телефоне вторичный режим — компактные чипы, перенос по строкам */
+  body.configurator-mobile-open .vcfg-secondary .vcfg-chips{ gap:8px; }
+}

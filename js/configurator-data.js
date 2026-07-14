@@ -1,101 +1,144 @@
 /* ============================================================================
-   VELORA — ДАННЫЕ КОНФИГУРАТОРА
+   VELORA — ДАННЫЕ КОНФИГУРАТОРА  (коммерческая часть)
    ----------------------------------------------------------------------------
-   ВСЁ, что связано с ценами, материалами, цветами и совместимостью, находится
-   ЗДЕСЬ. Правьте только этот файл — логика (configurator.js) трогать не нужно.
+   Визуализация (слои изображений, поворот ламелей, совпадение полос и т.д.)
+   живёт в отдельном движке: assets/configurator/visual-engine.js
+   (там же — названия материалов/режимов для показа на визуализации).
+
+   ЗДЕСЬ хранится всё, что нужно для КОММЕРЧЕСКОГО расчёта и заявки:
+   • цены систем и коэффициенты материалов;
+   • совместимость установки и управления;
+   • цвета фурнитуры, стороны, опции.
+
+   Наборы материалов согласованы с библиотекой (id совпадают с движком),
+   поэтому выбранный материал сразу отражается на реалистичной визуализации.
 
    БЫСТРЫЕ ОТВЕТЫ:
-   • Где менять цены?            → в массиве SYSTEMS (pricePerM2, minItemPrice,
-                                    priceFrom) и в OPTIONS (installs / controls /
-                                    guidePrice).
-   • Где менять материалы?       → в MATERIAL_SETS (coef — коэффициент цены,
-                                    alpha — прозрачность на визуализации).
-   • Где менять цвета?           → в PALETTES (цвет материала) и HARDWARE_COLORS
-                                    (цвет фурнитуры).
-   • Как считается цена?         → см. функцию calcPrice в configurator.js
-                                    (формула вынесена, но все числа берутся отсюда).
-
-   Цены — ПРЕДВАРИТЕЛЬНЫЕ базовые значения, перенесённые со старого калькулятора
-   сайта. Их специально держим простыми для последующего редактирования.
+   • Цены систем        → SYSTEMS[].pricePerM2 / minItemPrice / priceFrom
+   • Коэффициент ткани  → SYSTEMS[].materials[].coef
+   • Названия материалов→ SYSTEMS[].materials[].name (дублируют движок; можно править)
+   • Установка/управление → INSTALLS / CONTROLS
+   • Фурнитура          → HARDWARE_COLORS
    ========================================================================== */
 
 window.VELORA_CFG = (function () {
 
-  /* -------- Наборы материалов -------------------------------------------------
-     coef  — множитель к базовой цене за м²
-     alpha — «светопроницаемость» для визуализации (0 = не пропускает свет,
-             1 = полностью прозрачный). На цену не влияет.
-     cat   — ценовая категория (для карточки)
-     transp — текст степени светопроницаемости
-     info  — короткая подсказка (tooltip)                                       */
-  const MATERIAL_SETS = {
-    // Рулонные, кассетные, плиссе, римские
-    standard: [
-      { id: 'light',    name: 'Светопроницаемый', transp: 'Высокая',           coef: 1.00, cat: 'Базовая',  alpha: 0.55, info: 'Мягко рассеивает свет и сохраняет вид из окна.' },
-      { id: 'dimout',   name: 'Dimout',           transp: 'Частичное затемнение', coef: 1.15, cat: 'Стандарт', alpha: 0.28, info: 'Приглушает свет, не пропускает прямые лучи.' },
-      { id: 'blackout', name: 'Blackout',         transp: 'Полное затемнение',  coef: 1.30, cat: 'Премиум',  alpha: 0.04, info: 'Практически не пропускает свет — для спальни и медиа-комнат.' },
-      { id: 'texture',  name: 'Фактурный',        transp: 'Средняя',           coef: 1.25, cat: 'Премиум',  alpha: 0.24, info: 'Выраженная фактура ткани, декоративный эффект.' }
-    ],
-    // День-Ночь — отдельный набор
-    daynight: [
-      { id: 'zebra-classic',  name: 'Зебра классик',  transp: 'Регулируемая',      coef: 1.00, cat: 'Базовая',  alpha: 0.42, info: 'Чередование прозрачных и плотных полос.' },
-      { id: 'zebra-metallic', name: 'Зебра металлик', transp: 'Регулируемая',      coef: 1.20, cat: 'Стандарт', alpha: 0.30, info: 'Полосы с металлизированным напылением.' },
-      { id: 'zebra-blackout', name: 'Зебра блэкаут',  transp: 'Плотное затемнение', coef: 1.35, cat: 'Премиум',  alpha: 0.08, info: 'Плотные полосы для сильного затемнения.' },
-      { id: 'zebra-texture',  name: 'Зебра фактура',  transp: 'Регулируемая',      coef: 1.25, cat: 'Премиум',  alpha: 0.26, info: 'Фактурные полосы «день-ночь».' }
-    ],
-    // Горизонтальные
-    aluwood: [
-      { id: 'alu',      name: 'Алюминий',          transp: 'Регулируется ламелями', coef: 1.00, cat: 'Базовая', alpha: 0.02, info: 'Влагостойкие алюминиевые ламели 16 / 25 мм.' },
-      { id: 'woodlike', name: 'Дерево / имитация', transp: 'Регулируется ламелями', coef: 1.40, cat: 'Премиум', alpha: 0.00, info: 'Тёплая фактура дерева или его имитации.' }
-    ],
-    // Вертикальные
-    verticalmat: [
-      { id: 'fabric',  name: 'Ткань',    transp: 'Средняя', coef: 1.00, cat: 'Базовая', alpha: 0.35, info: 'Тканевые ламели, широкая палитра оттенков.' },
-      { id: 'plastic', name: 'Пластик',  transp: 'Низкая',  coef: 0.90, cat: 'Базовая', alpha: 0.12, info: 'Практичный ПВХ, легко моется.' },
-      { id: 'alu',     name: 'Алюминий', transp: 'Низкая',  coef: 1.30, cat: 'Премиум', alpha: 0.02, info: 'Металлические ламели для офисов.' }
-    ],
-    // Деревянные
-    wood: [
-      { id: 'solid25', name: 'Массив 25 мм',     transp: 'Регулируется ламелями', coef: 1.00, cat: 'Премиум',  alpha: 0.00, info: 'Ламели из массива липы 25 мм.' },
-      { id: 'solid50', name: 'Массив 50 мм',     transp: 'Регулируется ламелями', coef: 1.25, cat: 'Премиум',  alpha: 0.00, info: 'Широкие ламели 50 мм, выразительная фактура.' },
-      { id: 'faux',    name: 'Имитация дерева',  transp: 'Регулируется ламелями', coef: 0.70, cat: 'Стандарт', alpha: 0.00, info: 'Влагостойкая имитация дерева.' }
-    ]
-  };
+  // Ценовые категории — только подпись на карточке материала.
+  const CAT = { base: 'Базовая', std: 'Стандарт', prem: 'Премиум' };
 
-  /* -------- Палитры цвета материала ------------------------------------------
-     Тканевая палитра — для тканей/ПВХ; деревянная — для дерева и имитации.     */
-  const PALETTES = {
-    fabric: [
-      { id: 'white',      name: 'Белый',            hex: '#F3EFE7' },
-      { id: 'ivory',      name: 'Слоновая кость',   hex: '#E7DCC6' },
-      { id: 'beige',      name: 'Бежевый',          hex: '#D8C4A0' },
-      { id: 'sand',       name: 'Песочный',         hex: '#C9AE83' },
-      { id: 'taupe',      name: 'Тёмный беж',       hex: '#A98C64' },
-      { id: 'olive',      name: 'Олива',            hex: '#8CA07A' },
-      { id: 'terra',      name: 'Терракота',        hex: '#B5764F' },
-      { id: 'blue',       name: 'Пыльно-синий',     hex: '#6E7E8C' },
-      { id: 'graphite',   name: 'Графит',           hex: '#4A463F' },
-      { id: 'anthracite', name: 'Антрацит',         hex: '#2C2A27' }
-    ],
-    wood: [
-      { id: 'natural',  name: 'Натуральный', hex: '#C79A5B' },
-      { id: 'oak',      name: 'Дуб',         hex: '#B07C43' },
-      { id: 'walnut',   name: 'Орех',        hex: '#7A4E2C' },
-      { id: 'wenge',    name: 'Венге',       hex: '#3B2B20' },
-      { id: 'bleached', name: 'Белёный',     hex: '#E6DAC4' },
-      { id: 'graphite', name: 'Графит',      hex: '#413A34' }
-    ]
-  };
-
-  /* -------- Цвет фурнитуры (кассеты, направляющих, механизма) ---------------- */
-  const HARDWARE_COLORS = [
-    { id: 'white',      name: 'Белая',        hex: '#EDEBE6' },
-    { id: 'brown',      name: 'Коричневая',   hex: '#5A4632' },
-    { id: 'anthracite', name: 'Антрацитовая', hex: '#33322F' }
+  /* -------- Системы -----------------------------------------------------------
+     id            — совпадает с id системы в движке визуализации
+     unit          — 'm2' (за м²) | 'item' (поштучно, есть минимальная цена)
+     pricePerM2    — базовая цена за м²
+     minArea       — минимальная расчётная площадь, м²
+     minItemPrice  — минимальная цена изделия (для unit:'item')
+     priceFrom     — «от …» на карточке
+     installs      — совместимые способы установки (ключи INSTALLS)
+     controls      — совместимые типы управления (ключи CONTROLS)
+     guides        — можно ли добавить направляющие
+     defMat        — материал по умолчанию (id из materials)
+     materials     — согласованный с движком набор {id,name,transp,coef,cat,hex,info}
+                     hex — цвет образца-кружка в карточке материала.                */
+  const SYSTEMS = [
+    {
+      id: 'roller', name: 'Рулонные', thumb: 'assets/configurator/thumbnails/roller.webp',
+      desc: 'Компактное полотно для любых окон и интерьеров.',
+      unit: 'item', pricePerM2: 1700, minArea: 0.5, minItemPrice: 1700, priceFrom: 1700,
+      installs: ['sash', 'recess', 'wall', 'ceiling'], controls: ['chain', 'manual', 'motor'], guides: true,
+      defMat: 'dimout',
+      materials: [
+        { id: 'milk',     name: 'Светопроницаемый молочный', transp: 'Высокая',  coef: 1.00, cat: CAT.base, hex: '#EFE7D6', info: 'Мягко рассеивает свет, сохраняет вид из окна.' },
+        { id: 'dimout',   name: 'Бежевый Dimout',            transp: 'Затемнение', coef: 1.15, cat: CAT.std,  hex: '#D8C4A0', info: 'Приглушает свет, не пропускает прямые лучи.' },
+        { id: 'blackout', name: 'Графитовый Blackout',       transp: 'Полное затемнение', coef: 1.30, cat: CAT.prem, hex: '#4A463F', info: 'Практически не пропускает свет — для спальни и медиа-комнат.' }
+      ]
+    },
+    {
+      id: 'cassette', name: 'Кассетные', thumb: 'assets/configurator/thumbnails/cassette.webp',
+      desc: 'Закрытая кассета и боковые направляющие — без просветов.',
+      unit: 'item', pricePerM2: 2500, minArea: 0.5, minItemPrice: 2500, priceFrom: 2500,
+      installs: ['sash', 'recess'], controls: ['chain', 'motor'], guides: false,
+      defMat: 'dimout',
+      materials: [
+        { id: 'milk',     name: 'Светопроницаемый молочный', transp: 'Высокая',  coef: 1.00, cat: CAT.base, hex: '#EFE7D6', info: 'Мягко рассеивает свет, сохраняет вид из окна.' },
+        { id: 'dimout',   name: 'Бежевый Dimout',            transp: 'Затемнение', coef: 1.15, cat: CAT.std,  hex: '#D8C4A0', info: 'Приглушает свет, не пропускает прямые лучи.' },
+        { id: 'blackout', name: 'Графитовый Blackout',       transp: 'Полное затемнение', coef: 1.30, cat: CAT.prem, hex: '#4A463F', info: 'Плотное полотно с боковыми направляющими.' }
+      ]
+    },
+    {
+      id: 'daynight', name: 'День-Ночь', thumb: 'assets/configurator/thumbnails/daynight.webp',
+      desc: 'Прозрачные и плотные полосы — свет под настроение.',
+      unit: 'item', pricePerM2: 3500, minArea: 0.5, minItemPrice: 3500, priceFrom: 3500,
+      installs: ['sash', 'recess', 'wall', 'ceiling'], controls: ['chain', 'motor'], guides: true,
+      defMat: 'beige',
+      materials: [
+        { id: 'ivory',    name: 'Молочный',         transp: 'Регулируемая', coef: 1.00, cat: CAT.base, hex: '#EDE4D2', info: 'Светлая «зебра», максимум света.' },
+        { id: 'beige',    name: 'Тёплый бежевый',   transp: 'Регулируемая', coef: 1.05, cat: CAT.std,  hex: '#D3BC93', info: 'Тёплые полосы, мягкий рассеянный свет.' },
+        { id: 'graphite', name: 'Графитовый',       transp: 'Регулируемая', coef: 1.20, cat: CAT.prem, hex: '#45413B', info: 'Контрастные полосы, глубокое затемнение.' }
+      ]
+    },
+    {
+      id: 'horizontal', name: 'Горизонтальные', thumb: 'assets/configurator/thumbnails/horizontal.webp',
+      desc: 'Алюминиевые ламели, точная регулировка света.',
+      unit: 'm2', pricePerM2: 1500, minArea: 0.4, minItemPrice: 0, priceFrom: 1500,
+      installs: ['sash', 'recess', 'wall'], controls: ['manual', 'chain'], guides: false,
+      defMat: 'white',
+      materials: [
+        { id: 'white',      name: 'Белый',           transp: 'Регулируется ламелями', coef: 1.00, cat: CAT.base, hex: '#EFEDE8', info: 'Классический белый алюминий 16/25 мм.' },
+        { id: 'silver',     name: 'Светлое серебро', transp: 'Регулируется ламелями', coef: 1.10, cat: CAT.std,  hex: '#C7C9CC', info: 'Матовое серебро, нейтральный металлик.' },
+        { id: 'anthracite', name: 'Антрацит',        transp: 'Регулируется ламелями', coef: 1.15, cat: CAT.prem, hex: '#33322F', info: 'Тёмные ламели для строгих интерьеров.' }
+      ]
+    },
+    {
+      id: 'vertical', name: 'Вертикальные', thumb: 'assets/configurator/thumbnails/vertical.webp',
+      desc: 'Для панорамных окон, балконов и офисов.',
+      unit: 'm2', pricePerM2: 1500, minArea: 0.6, minItemPrice: 0, priceFrom: 1500,
+      installs: ['recess', 'wall', 'ceiling'], controls: ['chain'], guides: false,
+      defMat: 'ivory',
+      materials: [
+        { id: 'ivory',    name: 'Молочный текстиль', transp: 'Средняя', coef: 1.00, cat: CAT.base, hex: '#EDE4D2', info: 'Тканевые ламели, мягкий свет.' },
+        { id: 'greige',   name: 'Серо-бежевый',      transp: 'Средняя', coef: 1.05, cat: CAT.std,  hex: '#B7AC99', info: 'Нейтральный серо-бежевый текстиль.' },
+        { id: 'graphite', name: 'Графитовый',        transp: 'Низкая',  coef: 1.15, cat: CAT.prem, hex: '#45413B', info: 'Плотные тёмные ламели для офисов.' }
+      ]
+    },
+    {
+      id: 'pleated', name: 'Плиссе', thumb: 'assets/configurator/thumbnails/pleated.webp',
+      desc: 'Мягкие складки для мансард и нестандартных окон.',
+      unit: 'm2', pricePerM2: 6000, minArea: 0.3, minItemPrice: 0, priceFrom: 6000,
+      installs: ['sash', 'recess'], controls: ['manual', 'chain'], guides: true,
+      defMat: 'ivory',
+      materials: [
+        { id: 'ivory',    name: 'Молочный',           transp: 'Высокая',   coef: 1.00, cat: CAT.base, hex: '#EDE4D2', info: 'Светлая ткань-плиссе, рассеивает свет.' },
+        { id: 'beige',    name: 'Бежевый Dimout',     transp: 'Затемнение', coef: 1.15, cat: CAT.std,  hex: '#D3BC93', info: 'Тёплый беж с затемнением.' },
+        { id: 'graphite', name: 'Графитовый Blackout', transp: 'Полное затемнение', coef: 1.30, cat: CAT.prem, hex: '#45413B', info: 'Плотное плиссе для сна и мансард.' }
+      ]
+    },
+    {
+      id: 'roman', name: 'Римские', thumb: 'assets/configurator/thumbnails/roman.webp',
+      desc: 'Крупные горизонтальные складки, мягкий свет.',
+      unit: 'm2', pricePerM2: 8000, minArea: 0.4, minItemPrice: 0, priceFrom: 8000,
+      installs: ['recess', 'wall', 'ceiling'], controls: ['chain', 'manual', 'motor'], guides: false,
+      defMat: 'ivory',
+      materials: [
+        { id: 'ivory',    name: 'Молочный лён',       transp: 'Высокая',   coef: 1.00, cat: CAT.base, hex: '#EDE4D2', info: 'Натуральный светлый лён.' },
+        { id: 'beige',    name: 'Бежевый Dimout',     transp: 'Затемнение', coef: 1.15, cat: CAT.std,  hex: '#D3BC93', info: 'Плотный беж, мягкое затемнение.' },
+        { id: 'graphite', name: 'Графитовый Blackout', transp: 'Полное затемнение', coef: 1.30, cat: CAT.prem, hex: '#45413B', info: 'Тёмная ткань для полного затемнения.' }
+      ]
+    },
+    {
+      id: 'wood', name: 'Деревянные', thumb: 'assets/configurator/thumbnails/wood.webp',
+      desc: 'Широкие ламели из массива, тёплая фактура.',
+      unit: 'm2', pricePerM2: 10000, minArea: 0.5, minItemPrice: 0, priceFrom: 10000,
+      installs: ['recess', 'wall', 'ceiling'], controls: ['manual', 'chain', 'motor'], guides: false,
+      defMat: 'oak',
+      materials: [
+        { id: 'oak',    name: 'Светлый дуб',  transp: 'Регулируется ламелями', coef: 1.00, cat: CAT.prem,  hex: '#C79A5B', info: 'Тёплый светлый дуб, ламели 50 мм.' },
+        { id: 'walnut', name: 'Орех',         transp: 'Регулируется ламелями', coef: 1.15, cat: CAT.prem,  hex: '#7A4E2C', info: 'Насыщенный орех, благородная фактура.' },
+        { id: 'wenge',  name: 'Тёмный венге', transp: 'Регулируется ламелями', coef: 1.25, cat: CAT.prem,  hex: '#3B2B20', info: 'Глубокий тёмный оттенок.' }
+      ]
+    }
   ];
 
-  /* -------- Способы установки (совместимость задаётся в SYSTEMS) --------------
-     price — надбавка к стоимости одного изделия                                */
+  /* -------- Способы установки — надбавка к цене одного изделия ----------------- */
   const INSTALLS = {
     sash:    { id: 'sash',    name: 'На створку', price: 0,   note: 'Крепление на раму без сверления.' },
     recess:  { id: 'recess',  name: 'В проём',    price: 0,   note: 'Внутри оконного проёма.' },
@@ -103,117 +146,41 @@ window.VELORA_CFG = (function () {
     ceiling: { id: 'ceiling', name: 'На потолок', price: 900, note: 'Для панорамных окон и ниш.' }
   };
 
-  /* -------- Типы управления (совместимость задаётся в SYSTEMS) --------------- */
+  /* -------- Типы управления --------------------------------------------------- */
   const CONTROLS = {
     manual: { id: 'manual', name: 'Ручное',        price: 0,    note: 'Управление рукой или штоком.' },
     chain:  { id: 'chain',  name: 'Цепочное',      price: 0,    note: 'Пластиковая или металлическая цепочка.' },
     motor:  { id: 'motor',  name: 'Электропривод', price: 9000, note: 'Пульт ДУ, совместимо с умным домом.' }
   };
 
-  /* -------- Направляющие (боковые) — доступность в SYSTEMS.guides ------------- */
-  const GUIDE_PRICE = 800; // надбавка за комплект направляющих на изделие
+  const GUIDE_PRICE = 800; // направляющие, надбавка на изделие
 
-  /* -------- Стороны управления ----------------------------------------------- */
   const SIDES = [
     { id: 'left',  name: 'Слева' },
     { id: 'right', name: 'Справа' }
   ];
 
-  /* -------- Системы (порядок = порядок карточек на шаге 1) --------------------
-     unit          — 'm2' (за м²) | 'item' (поштучно, есть минимальная цена)
-     pricePerM2    — базовая цена за м²
-     minArea       — минимальная расчётная площадь, м²
-     minItemPrice  — минимальная цена одного изделия (для unit:'item')
-     priceFrom     — что показывать как «от …» на карточке
-     installs      — совместимые способы установки
-     controls      — совместимые типы управления
-     materialSet   — ключ из MATERIAL_SETS
-     guides        — можно ли добавить направляющие
-     defaultOpen   — стартовая степень открытия визуализации (0..1)             */
-  const SYSTEMS = [
-    {
-      id: 'roller', name: 'Рулонные', vizClass: 'roller', thumb: 'img/roller.svg',
-      desc: 'Компактное полотно для любых окон и интерьеров.',
-      unit: 'item', pricePerM2: 1700, minArea: 0.5, minItemPrice: 1700, priceFrom: 1700,
-      installs: ['sash', 'recess', 'wall', 'ceiling'], controls: ['chain', 'manual', 'motor'],
-      materialSet: 'standard', guides: true, defaultOpen: 0.35
-    },
-    {
-      id: 'cassette', name: 'Кассетные', vizClass: 'cassette', thumb: 'img/cassette.svg',
-      desc: 'Закрытая кассета и боковые направляющие — без просветов.',
-      unit: 'item', pricePerM2: 2500, minArea: 0.5, minItemPrice: 2500, priceFrom: 2500,
-      installs: ['sash', 'recess'], controls: ['chain', 'motor'],
-      materialSet: 'standard', guides: false, defaultOpen: 0.35
-    },
-    {
-      id: 'daynight', name: 'День-Ночь', vizClass: 'daynight', thumb: 'img/daynight.svg',
-      desc: 'Прозрачные и плотные полосы — свет под настроение.',
-      unit: 'item', pricePerM2: 3500, minArea: 0.5, minItemPrice: 3500, priceFrom: 3500,
-      installs: ['sash', 'recess', 'wall', 'ceiling'], controls: ['chain', 'motor'],
-      materialSet: 'daynight', guides: true, defaultOpen: 0.5
-    },
-    {
-      id: 'horizontal', name: 'Горизонтальные', vizClass: 'horizontal', thumb: 'img/horizontal.svg',
-      desc: 'Точная регулировка света поворотом ламелей.',
-      unit: 'm2', pricePerM2: 1500, minArea: 0.4, minItemPrice: 0, priceFrom: 1500,
-      installs: ['sash', 'recess', 'wall'], controls: ['manual', 'chain'],
-      materialSet: 'aluwood', guides: false, defaultOpen: 0.5
-    },
-    {
-      id: 'vertical', name: 'Вертикальные', vizClass: 'vertical', thumb: 'img/vertical.svg',
-      desc: 'Для панорамных окон, балконов и офисов.',
-      unit: 'm2', pricePerM2: 1500, minArea: 0.6, minItemPrice: 0, priceFrom: 1500,
-      installs: ['recess', 'wall', 'ceiling'], controls: ['chain'],
-      materialSet: 'verticalmat', guides: false, defaultOpen: 0.5
-    },
-    {
-      id: 'pleated', name: 'Плиссе', vizClass: 'pleated', thumb: 'img/pleated.svg',
-      desc: 'Мягкие складки для мансард и нестандартных окон.',
-      unit: 'm2', pricePerM2: 6000, minArea: 0.3, minItemPrice: 0, priceFrom: 6000,
-      installs: ['sash', 'recess'], controls: ['manual', 'chain'],
-      materialSet: 'standard', guides: true, defaultOpen: 0.4
-    },
-    {
-      id: 'roman', name: 'Римские', vizClass: 'roman', thumb: 'img/roman.svg',
-      desc: 'Крупные горизонтальные складки, мягкий свет.',
-      unit: 'm2', pricePerM2: 8000, minArea: 0.4, minItemPrice: 0, priceFrom: 8000,
-      installs: ['recess', 'wall', 'ceiling'], controls: ['chain', 'manual', 'motor'],
-      materialSet: 'standard', guides: false, defaultOpen: 0.35
-    },
-    {
-      id: 'wood', name: 'Деревянные', vizClass: 'wood', thumb: 'img/wood.svg',
-      desc: 'Широкие ламели и декоративные ленты из массива.',
-      unit: 'm2', pricePerM2: 10000, minArea: 0.5, minItemPrice: 0, priceFrom: 10000,
-      installs: ['recess', 'wall', 'ceiling'], controls: ['manual', 'chain', 'motor'],
-      materialSet: 'wood', guides: false, defaultOpen: 0.5
-    }
+  const HARDWARE_COLORS = [
+    { id: 'white',      name: 'Белая',        hex: '#EDEBE6' },
+    { id: 'brown',      name: 'Коричневая',   hex: '#5A4632' },
+    { id: 'anthracite', name: 'Антрацитовая', hex: '#33322F' }
   ];
 
-  /* -------- Ограничения размеров (валидация шага 2) --------------------------- */
   const LIMITS = {
-    width:  { min: 20, max: 600, def: 120 },  // см
-    height: { min: 20, max: 400, def: 150 },  // см
+    width:  { min: 20, max: 600, def: 120 },
+    height: { min: 20, max: 400, def: 150 },
     qty:    { min: 1,  max: 20,  def: 1 }
   };
 
-  /* -------- Помощники доступа ------------------------------------------------- */
   function getSystem(id) { return SYSTEMS.find(s => s.id === id) || SYSTEMS[0]; }
-  function getMaterials(systemId) {
-    const s = getSystem(systemId);
-    return MATERIAL_SETS[s.materialSet] || MATERIAL_SETS.standard;
-  }
-  // Палитра зависит от системы и выбранного материала:
-  // деревянные и «дерево/имитация» у горизонтальных → деревянная палитра.
-  function getPalette(systemId, materialId) {
-    const s = getSystem(systemId);
-    if (s.materialSet === 'wood') return PALETTES.wood;
-    if (s.materialSet === 'aluwood' && materialId === 'woodlike') return PALETTES.wood;
-    return PALETTES.fabric;
+  function getMaterials(systemId) { return getSystem(systemId).materials; }
+  function getMaterial(systemId, matId) {
+    const list = getMaterials(systemId);
+    return list.find(m => m.id === matId) || list.find(m => m.id === getSystem(systemId).defMat) || list[0];
   }
 
   return {
-    MATERIAL_SETS, PALETTES, HARDWARE_COLORS, INSTALLS, CONTROLS,
-    SIDES, SYSTEMS, LIMITS, GUIDE_PRICE,
-    getSystem, getMaterials, getPalette
+    SYSTEMS, INSTALLS, CONTROLS, SIDES, HARDWARE_COLORS, LIMITS, GUIDE_PRICE,
+    getSystem, getMaterials, getMaterial
   };
 })();

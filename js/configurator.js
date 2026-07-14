@@ -18,10 +18,29 @@
   const STORAGE_KEY = 'velora_cfg_v1';
   const TOTAL_STEPS = 6;
   const PHONE = '79181384029';
-  const STEP_TITLES = ['Система', 'Размеры', 'Установка', 'Материал', 'Цвет и управление', 'Результат'];
-  const MOBILE_STEP_NAMES = ['Выбор системы', 'Размеры окна', 'Способ установки', 'Материал', 'Цвет и управление', 'Ваш расчёт'];
+  const STEP_TITLES = ['Система', 'Размеры', 'Установка', 'Материал', 'Управление', 'Результат'];
+  const MOBILE_STEP_NAMES = ['Выбор системы', 'Размеры окна', 'Способ установки', 'Материал', 'Управление', 'Ваш расчёт'];
   const mqMobile = window.matchMedia('(max-width: 767px)');
   const isMobile = () => mqMobile.matches;
+
+  // Движок визуализации (assets/configurator/visual-engine.js) — источник слоёв,
+  // названий материалов, вторичных режимов (поворот ламелей / полосы / направление).
+  const ENGINE = (window.VeloraConfigurator && window.VeloraConfigurator.systems) || {};
+  const ASSET_BASE = window.VELORA_ASSET_BASE || 'assets/configurator';
+  const STATES = [0, 25, 50, 75, 100];
+  const CODES = ['000', '025', '050', '075', '100'];
+  const engineSys = (id) => ENGINE[id] || {};
+  const hasSecondary = (id) => !!engineSys(id).secondary;
+  // Аналитика Яндекс.Метрики — работает, только если счётчик уже подключён.
+  function ymGoal(goal, params) {
+    try {
+      var id = window.VELORA_YM_ID;
+      if (!id && window.Ya && Ya._metrika && Ya._metrika.counters) {
+        var k = Object.keys(Ya._metrika.counters)[0]; if (k) id = +k;
+      }
+      if (typeof window.ym === 'function' && id) window.ym(id, 'reachGoal', goal, params || {});
+    } catch (e) { }
+  }
 
   const money = (n) => Math.round(n).toLocaleString('ru-RU');
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
@@ -42,10 +61,14 @@
   function firstCompatibleInstall(sys) { return sys.installs[0]; }
   function firstControl(sys) { return sys.controls[0]; }
 
+  function defaultSecondary(sysId) { return engineSys(sysId).defaultSecondary || ''; }
+  function defaultPos(sysId) {
+    const d = engineSys(sysId).defaultState;
+    return typeof d === 'number' ? d : 2;
+  }
+
   function defaultState() {
     const sys = D.SYSTEMS[0];
-    const mats = D.getMaterials(sys.id);
-    const pal = D.getPalette(sys.id, mats[0].id);
     return {
       step: 1,
       system: sys.id,
@@ -54,15 +77,14 @@
       qty: D.LIMITS.qty.def,
       scope: 'sash-one',
       install: firstCompatibleInstall(sys),
-      material: mats[0].id,
-      color: pal[0].id,
+      material: sys.defMat,
+      secondary: defaultSecondary(sys.id),
+      pos: defaultPos(sys.id),      // индекс положения 0..4 (0/25/50/75/100 %)
       hardware: D.HARDWARE_COLORS[0].id,
       side: 'right',
       control: firstControl(sys),
       guides: false,
       montage: true,
-      open: sys.defaultOpen,
-      tone: 0,
       name: '',
       phone: '',
       contact: 'call'
@@ -74,13 +96,15 @@
     const sys = D.getSystem(state.system);
     if (!sys.installs.includes(state.install)) state.install = sys.installs[0];
     const mats = D.getMaterials(sys.id);
-    if (!mats.some(m => m.id === state.material)) state.material = mats[0].id;
-    const pal = D.getPalette(sys.id, state.material);
-    if (!pal.some(c => c.id === state.color)) state.color = pal[0].id;
+    if (!mats.some(m => m.id === state.material)) state.material = sys.defMat;
+    // вторичный режим (полосы / поворот / направление)
+    const sec = engineSys(sys.id).secondary;
+    if (sec) { if (!sec[state.secondary]) state.secondary = defaultSecondary(sys.id); }
+    else state.secondary = '';
     if (!sys.controls.includes(state.control)) state.control = sys.controls[0];
     if (!sys.guides) state.guides = false;
-    state.open = clamp(state.open, 0, 1);
-    state.tone = clamp(state.tone, -6, 6);
+    if (typeof state.pos !== 'number' || state.pos < 0 || state.pos > 4) state.pos = defaultPos(sys.id);
+    state.pos = clamp(Math.round(state.pos), 0, 4);
   }
 
   let state = load() || defaultState();
@@ -102,8 +126,16 @@
 
   /* -------- Ссылки на DOM ------------------------------------------------------ */
   const stage = document.getElementById('vcfgStage');
-  const blind = document.getElementById('vcfgBlind');
+  const layers = {
+    base: document.getElementById('vcfgLayerBase'),
+    lighting: document.getElementById('vcfgLayerLighting'),
+    primary: document.getElementById('vcfgLayerPrimary'),
+    hardware: document.getElementById('vcfgLayerHardware'),
+    state: document.getElementById('vcfgLayerState')
+  };
+  const secondaryWrap = document.getElementById('vcfgSecondary');
   const openRange = document.getElementById('vcfgOpen');
+  const openLabel = document.getElementById('vcfgOpenLabel');
   const stepBody = document.getElementById('vcfgStepBody');
   const dotsWrap = document.getElementById('vcfgStepsHead');
   const backBtn = document.getElementById('vcfgBack');
@@ -157,80 +189,66 @@
     };
   }
 
-  /* -------- Визуализация ------------------------------------------------------- */
-  let builtSystem = null;
-
-  function slatSpans(n, cls) {
-    let s = '';
-    for (let i = 0; i < n; i++) s += `<span class="${cls}"></span>`;
-    return s;
+  /* -------- Визуализация (движок слоёв изображений) ---------------------------
+     Реиспользуем логику библиотеки: assets/configurator/visual-engine.js.
+     Мы НЕ вызываем VeloraConfigurator.init (у нас свой wizard), а напрямую
+     дергаем render() выбранной системы, подавая ей наш ctx.set().              */
+  function effectiveDevice() {
+    return window.matchMedia('(max-width: 560px)').matches ? 'mobile' : 'desktop';
   }
-
-  function buildBlind(sys) {
-    let html = '';
-    switch (sys.vizClass) {
-      case 'roller':
-        html = `<div class="vcfg-headbox"></div><div class="vcfg-fabric"></div><div class="vcfg-bottombar"></div>`;
-        break;
-      case 'cassette':
-        html = `<div class="vcfg-cassette"></div>
-                <div class="vcfg-guide vcfg-guide-l"></div><div class="vcfg-guide vcfg-guide-r"></div>
-                <div class="vcfg-fabric vcfg-fabric-inset"></div><div class="vcfg-bottombar vcfg-bar-inset"></div>`;
-        break;
-      case 'daynight':
-        html = `<div class="vcfg-headbox"></div>
-                <div class="vcfg-dn"><div class="vcfg-dn-layer"></div></div>
-                <div class="vcfg-bottombar"></div>`;
-        break;
-      case 'pleated':
-        html = `<div class="vcfg-headbox vcfg-headbox-slim"></div><div class="vcfg-fabric vcfg-pleat"></div><div class="vcfg-bottombar vcfg-bar-slim"></div>`;
-        break;
-      case 'roman':
-        html = `<div class="vcfg-headbox"></div><div class="vcfg-fabric vcfg-roman">${slatSpans(6, 'vcfg-roman-fold')}</div><div class="vcfg-bottombar"></div>`;
-        break;
-      case 'horizontal':
-        html = `<div class="vcfg-headrail"></div><div class="vcfg-hslats">${slatSpans(18, 'vcfg-hslat')}</div><div class="vcfg-bottombar vcfg-bar-slim"></div>`;
-        break;
-      case 'wood':
-        html = `<div class="vcfg-headrail"></div><div class="vcfg-hslats vcfg-wood">${slatSpans(9, 'vcfg-hslat')}</div><div class="vcfg-tape vcfg-tape-l"></div><div class="vcfg-tape vcfg-tape-r"></div><div class="vcfg-bottombar"></div>`;
-        break;
-      case 'vertical':
-        html = `<div class="vcfg-headrail"></div><div class="vcfg-vslats">${slatSpans(11, 'vcfg-vslat')}</div>`;
-        break;
-    }
-    blind.innerHTML = html;
-    builtSystem = sys.vizClass;
+  function resetLayer(name) {
+    const el = layers[name]; if (!el) return;
+    el.removeAttribute('src'); el.style.display = 'none'; el.style.opacity = '1'; el.style.clipPath = 'none';
+  }
+  function setLayer(name, src, opacity, clipPath) {
+    const el = layers[name]; if (!el) return;
+    if (!src) { resetLayer(name); return; }
+    el.style.display = 'block';
+    el.style.opacity = opacity == null ? '1' : String(opacity);
+    el.style.clipPath = clipPath || 'none';
+    if (el.getAttribute('src') !== src) el.setAttribute('src', src);
   }
 
   function updateVisual() {
     const sys = D.getSystem(state.system);
-    const mat = D.getMaterials(sys.id).find(m => m.id === state.material) || D.getMaterials(sys.id)[0];
-    const pal = D.getPalette(sys.id, state.material);
-    const colorObj = pal.find(c => c.id === state.color) || pal[0];
-    const hw = D.HARDWARE_COLORS.find(c => c.id === state.hardware) || D.HARDWARE_COLORS[0];
+    const eSys = engineSys(sys.id);
+    const device = effectiveDevice();
+    const pct = STATES[state.pos];
+    const code = CODES[state.pos];
 
-    if (builtSystem !== sys.vizClass) buildBlind(sys);
+    if (stage) {
+      stage.dataset.device = device;
+      stage.dataset.system = sys.id;
+    }
+    if (layers.base) layers.base.src = `${ASSET_BASE}/common/room-${device}.webp`;
+    ['lighting', 'primary', 'hardware', 'state'].forEach(resetLayer);
 
-    const baseHex = colorObj.hex;
-    const matHex = shade(baseHex, state.tone * 6);
-    stage.dataset.system = sys.vizClass;
-    stage.dataset.control = state.control;
-    stage.dataset.side = state.side;
-    stage.style.setProperty('--mat', matHex);
-    stage.style.setProperty('--mat-dark', shade(matHex, -22));
-    stage.style.setProperty('--mat-light', shade(matHex, 16));
-    stage.style.setProperty('--alpha', mat.alpha);
-    stage.style.setProperty('--hw', hw.hex);
-    stage.style.setProperty('--hw-dark', shade(hw.hex, -25));
-    blind.style.setProperty('--open', state.open.toFixed(3));
+    if (typeof eSys.render === 'function') {
+      const ctx = {
+        device, pct, code,
+        material: state.material,
+        secondary: state.secondary,
+        systemBase: `${ASSET_BASE}/systems/${sys.id}`,
+        set: setLayer
+      };
+      try { eSys.render.call(eSys, ctx); } catch (e) { /* движок не загружен — покажем только фон */ }
+    }
+    dispatchChange();
+  }
 
-    // Размеры влияют на пропорции окна (умеренно, композиция не ломается)
-    const ar = clamp((+state.width || 120) / (+state.height || 150), 0.55, 1.9);
-    let winW, winH;
-    if (ar >= 1) { winW = 86; winH = 86 / ar; } else { winH = 86; winW = 86 * ar; }
-    winH = clamp(winH, 48, 86); winW = clamp(winW, 42, 88);
-    stage.style.setProperty('--win-w', winW.toFixed(1) + '%');
-    stage.style.setProperty('--win-h', winH.toFixed(1) + '%');
+  // Событие velora:change — контракт библиотеки, используется формой/аналитикой.
+  function dispatchChange() {
+    const sys = D.getSystem(state.system);
+    const mat = D.getMaterial(sys.id, state.material);
+    const eSys = engineSys(sys.id);
+    const secTitle = eSys.secondary ? eSys.secondary[state.secondary] : null;
+    const detail = {
+      system: sys.id, systemTitle: sys.name,
+      material: state.material, materialTitle: mat.name,
+      secondary: state.secondary || null, secondaryTitle: secTitle || null,
+      state: STATES[state.pos], device: effectiveDevice()
+    };
+    root.dispatchEvent(new CustomEvent('velora:change', { detail }));
   }
 
   /* -------- Обновление цены (везде) -------------------------------------------- */
@@ -245,7 +263,19 @@
     if (summ) renderSummaryRows(summ, p);
     const top = document.getElementById('vcfgSummaryTop');
     if (top) renderCompactRows(top, p);
+    updateHiddenFields(p);
     return p;
+  }
+
+  // Скрытые поля формы (передаются в заявку вместе с именем и телефоном)
+  function updateHiddenFields(p) {
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    set('vcfgHfSystem', p.sys.name);
+    set('vcfgHfMaterial', p.mat.name);
+    set('vcfgHfSecondary', secondaryTitle() || '—');
+    set('vcfgHfPos', STATES[state.pos] + '%');
+    set('vcfgHfSize', `${p.w}×${p.h} см, ${p.qty} шт`);
+    set('vcfgHfPrice', money(p.total) + ' ₽');
   }
 
   // Компактная сводка для телефона (система, размеры, материал, количество)
@@ -298,6 +328,7 @@
     nextBtn.textContent = state.step === TOTAL_STEPS ? 'Наверх' : 'Далее →';
     nextBtn.classList.toggle('is-final', state.step === TOTAL_STEPS);
     if (mbNext) { mbNext.textContent = state.step === TOTAL_STEPS ? 'Получить расчёт' : 'Далее'; mbNext.disabled = false; }
+    renderVizControls();
     updateVisual();
     updatePrice();
     // --- Мобильный wizard ---
@@ -467,7 +498,7 @@
     const cards = mats.map(m => {
       const active = state.material === m.id;
       return `<button type="button" class="vcfg-mat${active ? ' active' : ''}" data-mat="${m.id}" aria-pressed="${active}">
-        <span class="vcfg-mat-swatch" data-swatch="${m.id}"></span>
+        <span class="vcfg-mat-swatch" style="background:${m.hex}"></span>
         <span class="vcfg-mat-info">
           <span class="vcfg-mat-name">${esc(m.name)}
             <span class="vcfg-tip" tabindex="0" aria-label="${esc(m.info)}" data-tip="${esc(m.info)}">i</span>
@@ -478,19 +509,15 @@
     }).join('');
     return `<div class="vcfg-step" data-step="4">
       <span class="vcfg-step-label">Шаг 4 из 6 · Материал</span>
-      <h3 class="vcfg-step-title">Выберите материал</h3>
-      <p class="vcfg-hint">Совместимые материалы для системы «${esc(sys.name)}».</p>
+      <h3 class="vcfg-step-title" tabindex="-1">Выберите материал и цвет</h3>
+      <p class="vcfg-hint">Выбранный материал сразу виден на визуализации. Совместимо с системой «${esc(sys.name)}».</p>
       <div class="vcfg-mats">${cards}</div>
     </div>`;
   }
 
-  // ---- Шаг 5: Цвет и управление ----
+  // ---- Шаг 5: Управление и фурнитура ----
   function stepColor() {
     const sys = D.getSystem(state.system);
-    const pal = D.getPalette(sys.id, state.material);
-    const swatches = pal.map(c =>
-      `<button type="button" class="vcfg-swatch${state.color === c.id ? ' active' : ''}" data-color="${c.id}" style="--sw:${c.hex}" aria-label="${esc(c.name)}" aria-pressed="${state.color === c.id}"></button>`
-    ).join('');
     const hw = D.HARDWARE_COLORS.map(c =>
       `<button type="button" class="vcfg-swatch vcfg-swatch-hw${state.hardware === c.id ? ' active' : ''}" data-hw="${c.id}" style="--sw:${c.hex}" aria-label="${esc(c.name)} фурнитура" aria-pressed="${state.hardware === c.id}"></button>`
     ).join('');
@@ -516,12 +543,8 @@
       </label>`;
 
     return `<div class="vcfg-step" data-step="5">
-      <span class="vcfg-step-label">Шаг 5 из 6 · Цвет и управление</span>
-      <h3 class="vcfg-step-title">Цвет и управление</h3>
-      <div class="vcfg-group">
-        <label class="vcfg-sublabel">Цвет материала</label>
-        <div class="vcfg-swatches" role="group" aria-label="Цвет материала">${swatches}</div>
-      </div>
+      <span class="vcfg-step-label">Шаг 5 из 6 · Управление</span>
+      <h3 class="vcfg-step-title" tabindex="-1">Управление и фурнитура</h3>
       <div class="vcfg-group">
         <label class="vcfg-sublabel">Цвет фурнитуры</label>
         <div class="vcfg-swatches" role="group" aria-label="Цвет фурнитуры">${hw}</div>
@@ -554,6 +577,13 @@
         <div class="vcfg-summary" id="vcfgSummary"></div>
       </details>
       <form class="vcfg-form" id="vcfgForm" novalidate>
+        <!-- Скрытые поля: конфигурация уходит в заявку вместе с именем/телефоном -->
+        <input type="hidden" name="Система" id="vcfgHfSystem">
+        <input type="hidden" name="Материал/цвет" id="vcfgHfMaterial">
+        <input type="hidden" name="Доп. режим" id="vcfgHfSecondary">
+        <input type="hidden" name="Положение" id="vcfgHfPos">
+        <input type="hidden" name="Размеры" id="vcfgHfSize">
+        <input type="hidden" name="Стоимость" id="vcfgHfPrice">
         <div class="vcfg-field">
           <label for="vcfgName">Имя</label>
           <input type="text" id="vcfgName" autocomplete="name" value="${esc(state.name)}" aria-describedby="vcfgNameErr">
@@ -592,10 +622,17 @@
   function labelFor(map, id) { return (map[id] && map[id].name) || '—'; }
   function scopeName(id) { return ({ 'sash-one': 'Одна створка', 'sash-multi': 'Несколько створок', 'opening': 'Весь проём' })[id] || '—'; }
 
+  function secondaryTitle() {
+    const eSys = engineSys(state.system);
+    return eSys.secondary ? eSys.secondary[state.secondary] : null;
+  }
+  function secondaryLabel() {
+    const eSys = engineSys(state.system);
+    return eSys.secondaryLabel || 'Режим';
+  }
+
   function renderSummaryRows(el, p) {
     const sys = p.sys, mat = p.mat;
-    const pal = D.getPalette(sys.id, state.material);
-    const color = pal.find(c => c.id === state.color) || pal[0];
     const hw = D.HARDWARE_COLORS.find(c => c.id === state.hardware) || D.HARDWARE_COLORS[0];
     const rows = [
       ['Система', sys.name],
@@ -604,12 +641,14 @@
       ['Площадь', `${p.area.toFixed(2)} м²`],
       ['Область', scopeName(state.scope)],
       ['Установка', labelFor(D.INSTALLS, state.install)],
-      ['Материал', mat.name],
-      ['Цвет', color.name],
-      ['Фурнитура', hw.name],
-      ['Сторона', state.side === 'left' ? 'Слева' : 'Справа'],
-      ['Управление', labelFor(D.CONTROLS, state.control)]
+      ['Материал / цвет', mat.name]
     ];
+    const secT = secondaryTitle();
+    if (secT) rows.push([secondaryLabel(), secT]);
+    rows.push(['Положение', `${STATES[state.pos]}%`]);
+    rows.push(['Фурнитура', hw.name]);
+    rows.push(['Сторона', state.side === 'left' ? 'Слева' : 'Справа']);
+    rows.push(['Управление', labelFor(D.CONTROLS, state.control)]);
     const opts = [];
     if (state.guides && sys.guides) opts.push('направляющие');
     if (state.montage) opts.push('монтаж под ключ');
@@ -626,9 +665,11 @@
       stepBody.querySelectorAll('[data-sys]').forEach(btn => btn.addEventListener('click', () => {
         if (state.system === btn.dataset.sys) { fillSysInfo(); return; }
         state.system = btn.dataset.sys;
-        state.open = D.getSystem(state.system).defaultOpen;
+        state.secondary = defaultSecondary(state.system);
+        state.pos = defaultPos(state.system);
         reconcile();
         save();
+        ymGoal('cfg_system', { system: state.system });
         renderStep(); // перерисовать карточки (активная) и визуал
       }));
     }
@@ -639,13 +680,10 @@
       }));
     }
     if (step === 4) {
-      paintMatSwatches();
       stepBody.querySelectorAll('[data-mat]').forEach(b => b.addEventListener('click', () => {
         state.material = b.dataset.mat;
-        // цвет мог стать несовместимым (дерево/ткань)
-        const pal = D.getPalette(state.system, state.material);
-        if (!pal.some(c => c.id === state.color)) state.color = pal[0].id;
         markActive(b, '[data-mat]'); save(); updateVisual(); updatePrice();
+        ymGoal('cfg_material', { system: state.system, material: state.material });
       }));
     }
     if (step === 5) bindColor();
@@ -655,19 +693,6 @@
   function markActive(btn, sel) {
     stepBody.querySelectorAll(sel).forEach(x => { x.classList.remove('active'); x.setAttribute('aria-pressed', 'false'); });
     btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true');
-  }
-
-  function paintMatSwatches() {
-    const sys = D.getSystem(state.system);
-    const pal = D.getPalette(sys.id, state.material);
-    const c0 = (pal.find(c => c.id === state.color) || pal[0]).hex;
-    stepBody.querySelectorAll('.vcfg-mat-swatch').forEach(sw => {
-      const m = D.getMaterials(sys.id).find(x => x.id === sw.dataset.swatch);
-      if (!m) return;
-      // образец: цвет материала + степень «плотности» через прозрачность
-      sw.style.background = c0;
-      sw.style.opacity = String(clamp(1 - m.alpha * 0.5, 0.5, 1));
-    });
   }
 
   function bindSizes() {
@@ -700,14 +725,11 @@
   }
 
   function bindColor() {
-    stepBody.querySelectorAll('[data-color]').forEach(b => b.addEventListener('click', () => {
-      state.color = b.dataset.color; markActive(b, '[data-color]'); save(); updateVisual();
-    }));
     stepBody.querySelectorAll('[data-hw]').forEach(b => b.addEventListener('click', () => {
-      state.hardware = b.dataset.hw; markActive(b, '[data-hw]'); save(); updateVisual();
+      state.hardware = b.dataset.hw; markActive(b, '[data-hw]'); save();
     }));
     stepBody.querySelectorAll('[data-side]').forEach(b => b.addEventListener('click', () => {
-      state.side = b.dataset.side; markActive(b, '[data-side]'); save(); updateVisual();
+      state.side = b.dataset.side; markActive(b, '[data-side]'); save();
     }));
     stepBody.querySelectorAll('[data-control]').forEach(b => b.addEventListener('click', () => {
       state.control = b.dataset.control; markActive(b, '[data-control]'); save(); updateVisual(); updatePrice();
@@ -788,29 +810,30 @@
   function leadFields() {
     const p = calcPrice();
     const sys = p.sys, mat = p.mat;
-    const pal = D.getPalette(sys.id, state.material);
-    const color = pal.find(c => c.id === state.color) || pal[0];
     const hw = D.HARDWARE_COLORS.find(c => c.id === state.hardware) || D.HARDWARE_COLORS[0];
     const opts = [];
     if (state.guides && sys.guides) opts.push('направляющие');
     if (state.montage) opts.push('монтаж под ключ');
-    return {
+    const f = {
       'Система': sys.name,
       'Размеры': `${p.w}×${p.h} см (${p.area.toFixed(2)} м²)`,
       'Количество': `${p.qty} шт`,
       'Область': scopeName(state.scope),
       'Установка': labelFor(D.INSTALLS, state.install),
-      'Материал': mat.name,
-      'Цвет': color.name,
-      'Фурнитура': hw.name,
-      'Сторона': state.side === 'left' ? 'слева' : 'справа',
-      'Управление': labelFor(D.CONTROLS, state.control),
-      'Доп. опции': opts.length ? opts.join(', ') : '—',
-      'Предв. стоимость': money(p.total) + ' ₽',
-      'Способ связи': { call: 'звонок', whatsapp: 'WhatsApp', telegram: 'Telegram' }[state.contact],
-      'Имя': state.name || '—',
-      'Телефон': state.phone
+      'Материал / цвет': mat.name
     };
+    const secT = secondaryTitle();
+    if (secT) f[secondaryLabel()] = secT;
+    f['Положение'] = `${STATES[state.pos]}%`;
+    f['Фурнитура'] = hw.name;
+    f['Сторона'] = state.side === 'left' ? 'слева' : 'справа';
+    f['Управление'] = labelFor(D.CONTROLS, state.control);
+    f['Доп. опции'] = opts.length ? opts.join(', ') : '—';
+    f['Предв. стоимость'] = money(p.total) + ' ₽';
+    f['Способ связи'] = { call: 'звонок', whatsapp: 'WhatsApp', telegram: 'Telegram' }[state.contact];
+    f['Имя'] = state.name || '—';
+    f['Телефон'] = state.phone;
+    return f;
   }
 
   function onSubmit(e) {
@@ -840,6 +863,7 @@
     } else if (typeof window.sendLead === 'function') {
       try { window.sendLead('Конфигуратор', fields); } catch (err) { /* см. WhatsApp */ }
     }
+    ymGoal('cfg_submit', { system: state.system, material: state.material });
     showSuccess(fields);
   }
 
@@ -906,22 +930,44 @@
     modal.addEventListener('click', e => { if (e.target === modal || e.target.hasAttribute('data-close')) closeModal(); });
   }
 
-  /* -------- Панель визуализации: кнопки и ползунок ----------------------------- */
-  function setOpen(v) {
-    state.open = clamp(v, 0, 1);
-    if (openRange) openRange.value = Math.round(state.open * 100);
-    blind.style.setProperty('--open', state.open.toFixed(3));
+  /* -------- Панель визуализации: положение + вторичный режим ------------------- */
+  function setPos(idx) {
+    state.pos = clamp(Math.round(idx), 0, 4);
+    if (openRange) openRange.value = String(state.pos);
+    updateVisual();
     save();
   }
+  // Подпись ползунка и вторичный режим зависят от системы — перерисовываем.
+  function renderVizControls() {
+    const sys = D.getSystem(state.system);
+    const eSys = engineSys(sys.id);
+    if (openLabel) openLabel.textContent = eSys.stateLabel || 'Положение';
+    if (openRange) openRange.value = String(state.pos);
+    if (!secondaryWrap) return;
+    if (eSys.secondary) {
+      const label = eSys.secondaryLabel || 'Режим';
+      const chips = Object.entries(eSys.secondary).map(([val, txt]) =>
+        `<button type="button" class="vcfg-chip${val === state.secondary ? ' active' : ''}" data-secondary="${val}" aria-pressed="${val === state.secondary}">${esc(txt)}</button>`
+      ).join('');
+      secondaryWrap.innerHTML = `<label class="vcfg-sublabel">${esc(label)}</label><div class="vcfg-chips" role="group" aria-label="${esc(label)}">${chips}</div>`;
+      secondaryWrap.hidden = false;
+      secondaryWrap.querySelectorAll('[data-secondary]').forEach(b => b.addEventListener('click', () => {
+        state.secondary = b.dataset.secondary;
+        secondaryWrap.querySelectorAll('[data-secondary]').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-pressed', 'false'); });
+        b.classList.add('active'); b.setAttribute('aria-pressed', 'true');
+        updateVisual(); save();
+      }));
+    } else {
+      secondaryWrap.innerHTML = '';
+      secondaryWrap.hidden = true;
+    }
+  }
   if (openRange) {
-    openRange.value = Math.round(state.open * 100);
-    openRange.addEventListener('input', () => setOpen(+openRange.value / 100));
+    openRange.addEventListener('input', () => setPos(+openRange.value));
   }
   root.querySelectorAll('[data-viz]').forEach(btn => btn.addEventListener('click', () => {
     const a = btn.dataset.viz;
-    if (a === 'lighter') { state.tone = clamp(state.tone + 1, -6, 6); updateVisual(); save(); }
-    if (a === 'darker') { state.tone = clamp(state.tone - 1, -6, 6); updateVisual(); save(); }
-    if (a === 'toggle') { setOpen(state.open > 0.5 ? 0 : 1); }
+    if (a === 'toggle') { setPos(state.pos >= 2 ? 0 : 4); }
     if (a === 'reset') { resetAll(); }
   }));
 
@@ -929,8 +975,7 @@
     state = defaultState();
     maxReached = 1;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) { }
-    builtSystem = null;
-    if (openRange) openRange.value = Math.round(state.open * 100);
+    if (openRange) openRange.value = String(state.pos);
     renderStep();
   }
 
