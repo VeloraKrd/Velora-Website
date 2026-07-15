@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 
 <script type="application/ld+json">
 {
@@ -193,11 +193,9 @@
       <!-- Интерактивная визуализация -->
       <div class="vcfg-visual">
         <div class="vcfg-stage" id="vcfgStage" data-device="desktop" data-system="roller">
-          <img class="vcfg-layer" id="vcfgLayerBase" alt="Интерьер комнаты с выбранной системой жалюзи Velora" decoding="async" fetchpriority="high">
-          <img class="vcfg-layer" id="vcfgLayerLighting" alt="" aria-hidden="true" decoding="async">
-          <img class="vcfg-layer" id="vcfgLayerPrimary" alt="" aria-hidden="true" decoding="async">
-          <img class="vcfg-layer" id="vcfgLayerHardware" alt="" aria-hidden="true" decoding="async">
-          <img class="vcfg-layer" id="vcfgLayerState" alt="" aria-hidden="true" decoding="async">
+          <img id="vcfgV2Room" class="vcfg-v2-room" alt="Интерьер комнаты с выбранной системой жалюзи Velora" decoding="async" fetchpriority="high">
+          <div id="vcfgV2Darkness" class="vcfg-v2-darkness" aria-hidden="true"></div>
+          <svg id="vcfgV2Svg" class="vcfg-v2-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Предпросмотр выбранной системы жалюзи"></svg>
         </div>
         <div class="vcfg-viz-controls">
           <button type="button" class="vcfg-viz-btn" data-viz="toggle">
@@ -611,52 +609,39 @@ document.querySelector('.c-form').addEventListener('submit', function(e){
   setTimeout(()=>{ btn.textContent = original; }, 3000);
 });
 
-// ============ ОТПРАВКА ЗАЯВОК В TELEGRAM ============
-// НАСТРОЙКА: впишите токен бота и chat_id (инструкция — в ответе Claude).
-const TG_BOT_TOKEN = '8649556457:AAENUnmkuY3ifpp4mOsR_FBQLeo-aYed5Pg';
-const TG_CHAT_ID   = '1302852985';
-
+// ============ ОТПРАВКА ЗАЯВОК ============
+// БЕЗОПАСНОСТЬ: токен Telegram-бота на фронтенде НЕ хранится.
+// Все заявки уходят через защищённый Cloudflare Worker (window.VELORA_LEAD_ENDPOINT),
+// который сам обращается к Telegram, храня токен в секретах. См. worker/README-worker.md.
 function sendLead(source, fields){
-  // Собираем текст заявки
-  let text = '🪟 *Новая заявка Velora*\n';
-  text += '📍 Источник: ' + source + '\n\n';
-  for(const [k, v] of Object.entries(fields)){
-    if(v && v !== '—') text += '*' + k + ':* ' + v + '\n';
+  var endpoint = window.VELORA_LEAD_ENDPOINT;
+  if(!endpoint){
+    // Endpoint не настроен — ничего не отправляем на фронтенде и не раскрываем секретов.
+    console.warn('Velora: приём заявок не настроен. Укажите window.VELORA_LEAD_ENDPOINT (Cloudflare Worker) — см. worker/README-worker.md.');
+    return Promise.resolve(false);
   }
-  text += '\n🕐 ' + new Date().toLocaleString('ru-RU');
-
-  // Если токен не настроен — не пытаемся отправлять (чтобы не было ошибок в консоли)
-  if(TG_BOT_TOKEN.startsWith('ВСТАВЬТЕ') || TG_CHAT_ID.startsWith('ВСТАВЬТЕ')){
-    console.warn('Telegram не настроен: заявка не отправлена. Впишите TG_BOT_TOKEN и TG_CHAT_ID.');
-    return;
-  }
-
-  fetch('https://api.telegram.org/bot' + TG_BOT_TOKEN + '/sendMessage', {
+  return fetch(endpoint, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      chat_id: TG_CHAT_ID,
-      text: text,
-      parse_mode: 'Markdown'
-    })
-  }).catch(err => console.error('Ошибка отправки заявки:', err));
+    body: JSON.stringify({ source: source, fields: fields })
+  }).then(function(r){ return r.ok; }).catch(function(){ return false; });
 }
 window.sendLead = sendLead;
 </script>
 
 <!-- ОНЛАЙН-КОНФИГУРАТОР -->
-<!-- Чтобы отправлять заявки через Cloudflare Worker (безопаснее — токен бота не на сайте),
-     раскомментируйте строку ниже и вставьте адрес Worker (см. worker/README-worker.md):
+<!-- ОБЯЗАТЕЛЬНО для приёма заявок: раскомментируйте строку ниже и вставьте адрес
+     Cloudflare Worker (см. worker/README-worker.md). Токен бота на сайте не хранится.
 <script>window.VELORA_LEAD_ENDPOINT = 'https://velora-lead.ВАШ-САБДОМЕН.workers.dev';</script>
 -->
-<!-- Базовый путь к ассетам визуализации (папка assets/configurator) -->
-<script>window.VELORA_ASSET_BASE = 'assets/configurator';
-/* Если у вас подключена Яндекс.Метрика, укажите её номер счётчика,
-   чтобы конфигуратор отправлял цели cfg_system / cfg_material / cfg_submit:
-   window.VELORA_YM_ID = 12345678; */</script>
-<!-- Движок визуализации (слои изображений 8 систем) -->
-<script src="assets/configurator/visual-engine.js?v=1" defer></script>
-<script src="js/configurator-data.js?v=2" defer></script>
-<script src="js/configurator.js?v=2" defer></script>
+<script>
+/* Если подключена Яндекс.Метрика — укажите номер счётчика, чтобы конфигуратор
+   отправлял цели cfg_system / cfg_material / cfg_submit:
+   window.VELORA_YM_ID = 12345678; */
+</script>
+<!-- SVG-визуализатор V2 (геометрия из assets/configurator-v2/geometry-v2.json) -->
+<script src="js/configurator-visual-v2.js?v=3" defer></script>
+<script src="js/configurator-data.js?v=3" defer></script>
+<script src="js/configurator.js?v=3" defer></script>
 </body>
 </html>

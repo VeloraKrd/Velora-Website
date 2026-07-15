@@ -1,0 +1,51 @@
+{
+  "version": "2.0.0",
+  "rendering": "SVG generated from geometry-v2.json",
+  "sharedAssets": [
+    "assets/room-desktop.webp",
+    "assets/room-mobile.webp",
+    "geometry-v2.json"
+  ],
+  "systems": [
+    {
+      "id": "roller",
+      "title": "Рулонные"
+    },
+    {
+      "id": "cassette",
+      "title": "Кассетные"
+    },
+    {
+      "id": "daynight",
+      "title": "День-Ночь"
+    },
+    {
+      "id": "horizontal",
+      "title": "Горизонтальные"
+    },
+    {
+      "id": "vertical",
+      "title": "Вертикальные"
+    },
+    {
+      "id": "pleated",
+      "title": "Плиссе"
+    },
+    {
+      "id": "roman",
+      "title": "Римские"
+    },
+    {
+      "id": "wood",
+      "title": "Деревянные"
+    }
+  ],
+  "states": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "unifiedEvent": "velora:config-change"
+}

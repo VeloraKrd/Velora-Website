@@ -41,7 +41,7 @@ window.VELORA_CFG = (function () {
                      hex — цвет образца-кружка в карточке материала.                */
   const SYSTEMS = [
     {
-      id: 'roller', name: 'Рулонные', thumb: 'assets/configurator/thumbnails/roller.webp',
+      id: 'roller', name: 'Рулонные', thumb: 'assets/configurator-v2/assets/thumbnails/roller.webp',
       desc: 'Компактное полотно для любых окон и интерьеров.',
       unit: 'item', pricePerM2: 1700, minArea: 0.5, minItemPrice: 1700, priceFrom: 1700,
       installs: ['sash', 'recess', 'wall', 'ceiling'], controls: ['chain', 'manual', 'motor'], guides: true,
@@ -53,7 +53,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'cassette', name: 'Кассетные', thumb: 'assets/configurator/thumbnails/cassette.webp',
+      id: 'cassette', name: 'Кассетные', thumb: 'assets/configurator-v2/assets/thumbnails/cassette.webp',
       desc: 'Закрытая кассета и боковые направляющие — без просветов.',
       unit: 'item', pricePerM2: 2500, minArea: 0.5, minItemPrice: 2500, priceFrom: 2500,
       installs: ['sash', 'recess'], controls: ['chain', 'motor'], guides: false,
@@ -65,7 +65,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'daynight', name: 'День-Ночь', thumb: 'assets/configurator/thumbnails/daynight.webp',
+      id: 'daynight', name: 'День-Ночь', thumb: 'assets/configurator-v2/assets/thumbnails/daynight.webp',
       desc: 'Прозрачные и плотные полосы — свет под настроение.',
       unit: 'item', pricePerM2: 3500, minArea: 0.5, minItemPrice: 3500, priceFrom: 3500,
       installs: ['sash', 'recess', 'wall', 'ceiling'], controls: ['chain', 'motor'], guides: true,
@@ -77,7 +77,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'horizontal', name: 'Горизонтальные', thumb: 'assets/configurator/thumbnails/horizontal.webp',
+      id: 'horizontal', name: 'Горизонтальные', thumb: 'assets/configurator-v2/assets/thumbnails/horizontal.webp',
       desc: 'Алюминиевые ламели, точная регулировка света.',
       unit: 'm2', pricePerM2: 1500, minArea: 0.4, minItemPrice: 0, priceFrom: 1500,
       installs: ['sash', 'recess', 'wall'], controls: ['manual', 'chain'], guides: false,
@@ -89,7 +89,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'vertical', name: 'Вертикальные', thumb: 'assets/configurator/thumbnails/vertical.webp',
+      id: 'vertical', name: 'Вертикальные', thumb: 'assets/configurator-v2/assets/thumbnails/vertical.webp',
       desc: 'Для панорамных окон, балконов и офисов.',
       unit: 'm2', pricePerM2: 1500, minArea: 0.6, minItemPrice: 0, priceFrom: 1500,
       installs: ['recess', 'wall', 'ceiling'], controls: ['chain'], guides: false,
@@ -101,7 +101,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'pleated', name: 'Плиссе', thumb: 'assets/configurator/thumbnails/pleated.webp',
+      id: 'pleated', name: 'Плиссе', thumb: 'assets/configurator-v2/assets/thumbnails/pleated.webp',
       desc: 'Мягкие складки для мансард и нестандартных окон.',
       unit: 'm2', pricePerM2: 6000, minArea: 0.3, minItemPrice: 0, priceFrom: 6000,
       installs: ['sash', 'recess'], controls: ['manual', 'chain'], guides: true,
@@ -113,7 +113,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'roman', name: 'Римские', thumb: 'assets/configurator/thumbnails/roman.webp',
+      id: 'roman', name: 'Римские', thumb: 'assets/configurator-v2/assets/thumbnails/roman.webp',
       desc: 'Крупные горизонтальные складки, мягкий свет.',
       unit: 'm2', pricePerM2: 8000, minArea: 0.4, minItemPrice: 0, priceFrom: 8000,
       installs: ['recess', 'wall', 'ceiling'], controls: ['chain', 'manual', 'motor'], guides: false,
@@ -125,7 +125,7 @@ window.VELORA_CFG = (function () {
       ]
     },
     {
-      id: 'wood', name: 'Деревянные', thumb: 'assets/configurator/thumbnails/wood.webp',
+      id: 'wood', name: 'Деревянные', thumb: 'assets/configurator-v2/assets/thumbnails/wood.webp',
       desc: 'Широкие ламели из массива, тёплая фактура.',
       unit: 'm2', pricePerM2: 10000, minArea: 0.5, minItemPrice: 0, priceFrom: 10000,
       installs: ['recess', 'wall', 'ceiling'], controls: ['manual', 'chain', 'motor'], guides: false,

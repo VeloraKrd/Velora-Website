@@ -23,12 +23,11 @@
   const mqMobile = window.matchMedia('(max-width: 767px)');
   const isMobile = () => mqMobile.matches;
 
-  // Движок визуализации (assets/configurator/visual-engine.js) — источник слоёв,
-  // названий материалов, вторичных режимов (поворот ламелей / полосы / направление).
-  const ENGINE = (window.VeloraConfigurator && window.VeloraConfigurator.systems) || {};
-  const ASSET_BASE = window.VELORA_ASSET_BASE || 'assets/configurator';
+  // Метаданные систем берём из SVG-визуализатора V2 (configurator-visual-v2.js):
+  // defaultState, secondary, defaultSecondary, secondaryLabel, stateLabel.
+  const V2 = window.VeloraVisualV2 || null;
+  const ENGINE = (V2 && V2.meta) || {};
   const STATES = [0, 25, 50, 75, 100];
-  const CODES = ['000', '025', '050', '075', '100'];
   const engineSys = (id) => ENGINE[id] || {};
   const hasSecondary = (id) => !!engineSys(id).secondary;
   // Аналитика Яндекс.Метрики — работает, только если счётчик уже подключён.
@@ -126,13 +125,10 @@
 
   /* -------- Ссылки на DOM ------------------------------------------------------ */
   const stage = document.getElementById('vcfgStage');
-  const layers = {
-    base: document.getElementById('vcfgLayerBase'),
-    lighting: document.getElementById('vcfgLayerLighting'),
-    primary: document.getElementById('vcfgLayerPrimary'),
-    hardware: document.getElementById('vcfgLayerHardware'),
-    state: document.getElementById('vcfgLayerState')
-  };
+  // Слои SVG-визуализатора V2: фон-комната, затемнение, SVG-изделие.
+  const v2Room = document.getElementById('vcfgV2Room');
+  const v2Darkness = document.getElementById('vcfgV2Darkness');
+  const v2Svg = document.getElementById('vcfgV2Svg');
   const secondaryWrap = document.getElementById('vcfgSecondary');
   const openRange = document.getElementById('vcfgOpen');
   const openLabel = document.getElementById('vcfgOpenLabel');
@@ -189,54 +185,42 @@
     };
   }
 
-  /* -------- Визуализация (движок слоёв изображений) ---------------------------
-     Реиспользуем логику библиотеки: assets/configurator/visual-engine.js.
-     Мы НЕ вызываем VeloraConfigurator.init (у нас свой wizard), а напрямую
-     дергаем render() выбранной системы, подавая ей наш ctx.set().              */
+  /* -------- Визуализация (SVG-визуализатор V2) --------------------------------
+     Вся геометрия строится движком по geometry-v2.json. Мы только передаём
+     текущее состояние wizard в VeloraVisualV2.render(). Бизнес-логика тут не
+     трогается.                                                                 */
   function effectiveDevice() {
     return window.matchMedia('(max-width: 560px)').matches ? 'mobile' : 'desktop';
   }
-  function resetLayer(name) {
-    const el = layers[name]; if (!el) return;
-    el.removeAttribute('src'); el.style.display = 'none'; el.style.opacity = '1'; el.style.clipPath = 'none';
-  }
-  function setLayer(name, src, opacity, clipPath) {
-    const el = layers[name]; if (!el) return;
-    if (!src) { resetLayer(name); return; }
-    el.style.display = 'block';
-    el.style.opacity = opacity == null ? '1' : String(opacity);
-    el.style.clipPath = clipPath || 'none';
-    if (el.getAttribute('src') !== src) el.setAttribute('src', src);
+
+  let v2Ready = false;
+  if (V2 && v2Svg) {
+    try {
+      V2.init({
+        stage: stage, room: v2Room, darkness: v2Darkness, svg: v2Svg,
+        geometryUrl: 'assets/configurator-v2/geometry-v2.json',
+        assetBase: 'assets/configurator-v2/assets'
+      }).then(function () { v2Ready = true; updateVisual(); })
+        .catch(function () { /* geometry не загрузилась — картинка останется пустой, wizard работает */ });
+    } catch (e) { }
   }
 
   function updateVisual() {
     const sys = D.getSystem(state.system);
-    const eSys = engineSys(sys.id);
-    const device = effectiveDevice();
-    const pct = STATES[state.pos];
-    const code = CODES[state.pos];
-
-    if (stage) {
-      stage.dataset.device = device;
-      stage.dataset.system = sys.id;
-    }
-    if (layers.base) layers.base.src = `${ASSET_BASE}/common/room-${device}.webp`;
-    ['lighting', 'primary', 'hardware', 'state'].forEach(resetLayer);
-
-    if (typeof eSys.render === 'function') {
-      const ctx = {
-        device, pct, code,
+    if (stage) stage.dataset.system = sys.id;
+    if (V2 && typeof V2.render === 'function') {
+      V2.render({
+        system: sys.id,
+        device: effectiveDevice(),
         material: state.material,
         secondary: state.secondary,
-        systemBase: `${ASSET_BASE}/systems/${sys.id}`,
-        set: setLayer
-      };
-      try { eSys.render.call(eSys, ctx); } catch (e) { /* движок не загружен — покажем только фон */ }
+        state: STATES[state.pos]
+      });
     }
     dispatchChange();
   }
 
-  // Событие velora:change — контракт библиотеки, используется формой/аналитикой.
+  // Событие velora:change — единый результат выбора для формы/аналитики.
   function dispatchChange() {
     const sys = D.getSystem(state.system);
     const mat = D.getMaterial(sys.id, state.material);

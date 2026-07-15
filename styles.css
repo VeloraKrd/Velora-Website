@@ -1452,3 +1452,16 @@ body.vcfg-modal-open{overflow:hidden;}
   /* на телефоне вторичный режим — компактные чипы, перенос по строкам */
   body.configurator-mobile-open .vcfg-secondary .vcfg-chips{ gap:8px; }
 }
+
+/* ============================================================================
+   SVG-ВИЗУАЛИЗАТОР V2 — три слоя внутри #vcfgStage
+   Фон (room), затемнение (darkness) и SVG имеют одинаковые inset/размер и
+   тот же холст, что viewBox → короба и створки совпадают. object-fit фон =
+   cover, SVG preserveAspectRatio=meet; при совпадении пропорций сцены оба
+   заполняют стадию без смещения.
+   ============================================================================ */
+.vcfg-v2-room{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+.vcfg-v2-darkness{position:absolute; inset:0; width:100%; height:100%; background:#181511;
+  opacity:0; pointer-events:none; transition:opacity .3s var(--ease);}
+.vcfg-v2-svg{position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none; overflow:visible;}
+@media(prefers-reduced-motion:reduce){ .vcfg-v2-darkness{transition:none;} }
