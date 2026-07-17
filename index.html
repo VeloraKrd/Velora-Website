@@ -3,6 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {
+            if (document.scripts[j].src === r) { return; }
+        }
+        k=e.createElement(t),
+        a=e.getElementsByTagName(t)[0],
+        k.async=1,
+        k.src=r,
+        a.parentNode.insertBefore(k,a)
+    })(window, document, 'script',
+       'https://mc.yandex.ru/metrika/tag.js?id=110831737',
+       'ym');
+    ym(110831737, 'init', {
+        ssr: true,
+        webvisor: true,
+        clickmap: true,
+        ecommerce: "dataLayer",
+        referrer: document.referrer,
+        url: location.href,
+        accurateTrackBounce: true,
+        trackLinks: true
+    });
+</script>
+<!-- /Yandex.Metrika counter -->
+
 <title>Velora — жалюзи под заказ в Краснодаре | Кассетные, рулонные, римские жалюзи</title>
 <meta name="description" content="Velora — изготовление и установка жалюзи в Краснодаре. Бесплатный замер, монтаж и гарантия. Кассетные, рулонные, вертикальные, римские, деревянные и жалюзи на электроприводе.">
 <meta name="keywords" content="жалюзи Краснодар, жалюзи Краснодарский край, рулонные шторы Краснодар, кассетные жалюзи Краснодар, деревянные жалюзи Краснодар, римские шторы Краснодар, жалюзи на заказ, ремонт жалюзи Краснодар">
@@ -58,6 +88,15 @@
 </script>
 </head>
 <body>
+<!-- Yandex.Metrika noscript -->
+<noscript>
+    <div>
+        <img src="https://mc.yandex.ru/watch/110831737"
+             style="position:absolute; left:-9999px;"
+             alt="">
+    </div>
+</noscript>
+<!-- /Yandex.Metrika noscript -->
 
 <header id="siteHeader">
   <a href="#top" class="logo">VELORA<span>.</span></a>
@@ -591,22 +630,37 @@ document.getElementById('reviewsTrack').innerHTML = reviews.map(r=>`
   </div>
 `).join('');
 
-// Contact form
+// Contact form — успех показываем ТОЛЬКО после подтверждения сервера.
 document.querySelector('.c-form').addEventListener('submit', function(e){
   e.preventDefault();
-  const btn = this.querySelector('button');
-  const original = btn.textContent;
-  const name = this.querySelector('input[type="text"]').value.trim();
-  const phone = this.querySelector('input[type="tel"]').value.trim();
-  const msg = this.querySelector('textarea').value.trim();
-  sendLead('Контактная форма', {
+  var form = this;
+  var btn = form.querySelector('button');
+  var original = btn.dataset.label || btn.textContent;
+  btn.dataset.label = original;
+  var name = form.querySelector('input[type="text"]').value.trim();
+  var phone = form.querySelector('input[type="tel"]').value.trim();
+  var msg = form.querySelector('textarea').value.trim();
+  btn.disabled = true; btn.textContent = 'Отправляем…';
+  Promise.resolve(sendLead('Контактная форма', {
     'Имя': name || '—',
     'Телефон': phone || '—',
     'Сообщение': msg || '—'
+  })).then(function(ok){
+    btn.disabled = false;
+    if(ok){
+      if(typeof window.veloraReachGoal==='function'){
+        window.veloraReachGoal('contact_form_success');
+        window.veloraReachGoal('lead_success', { lead_type:'contact' });
+      }
+      btn.textContent = 'Сообщение отправлено ✓';
+      form.reset();
+      setTimeout(function(){ btn.textContent = original; }, 3000);
+    } else {
+      // Ошибка сервера: форму НЕ очищаем, lead_success НЕ шлём.
+      btn.textContent = 'Ошибка отправки — попробуйте ещё раз';
+      setTimeout(function(){ btn.textContent = original; }, 4000);
+    }
   });
-  btn.textContent = 'Сообщение отправлено ✓';
-  this.reset();
-  setTimeout(()=>{ btn.textContent = original; }, 3000);
 });
 
 // ============ ОТПРАВКА ЗАЯВОК ============
@@ -634,14 +688,11 @@ window.sendLead = sendLead;
      Cloudflare Worker (см. worker/README-worker.md). Токен бота на сайте не хранится.
 <script>window.VELORA_LEAD_ENDPOINT = 'https://velora-lead.ВАШ-САБДОМЕН.workers.dev';</script>
 -->
-<script>
-/* Если подключена Яндекс.Метрика — укажите номер счётчика, чтобы конфигуратор
-   отправлял цели cfg_system / cfg_material / cfg_submit:
-   window.VELORA_YM_ID = 12345678; */
-</script>
+<!-- Яндекс.Метрика: цели + клики по контактам -->
+<script src="js/velora-metrika.js?v=1" defer></script>
 <!-- SVG-визуализатор V2 (геометрия из assets/configurator-v2/geometry-v2.json) -->
 <script src="js/configurator-visual-v2.js?v=3" defer></script>
 <script src="js/configurator-data.js?v=3" defer></script>
-<script src="js/configurator.js?v=3" defer></script>
+<script src="js/configurator.js?v=4" defer></script>
 </body>
 </html>

@@ -30,15 +30,16 @@
   const STATES = [0, 25, 50, 75, 100];
   const engineSys = (id) => ENGINE[id] || {};
   const hasSecondary = (id) => !!engineSys(id).secondary;
-  // Аналитика Яндекс.Метрики — работает, только если счётчик уже подключён.
-  function ymGoal(goal, params) {
-    try {
-      var id = window.VELORA_YM_ID;
-      if (!id && window.Ya && Ya._metrika && Ya._metrika.counters) {
-        var k = Object.keys(Ya._metrika.counters)[0]; if (k) id = +k;
-      }
-      if (typeof window.ym === 'function' && id) window.ym(id, 'reachGoal', goal, params || {});
-    } catch (e) { }
+  // Аналитика Яндекс.Метрики — через общий безопасный helper (js/velora-metrika.js).
+  function goal(name, params) {
+    if (typeof window.veloraReachGoal === 'function') window.veloraReachGoal(name, params);
+  }
+  let openGoalFired = false;   // configurator_open — один раз за загрузку
+  let completeGoalFired = false; // configurator_complete — один раз за загрузку
+  function fireConfiguratorOpen() {
+    if (openGoalFired) return;
+    openGoalFired = true;
+    goal('configurator_open');
   }
 
   const money = (n) => Math.round(n).toLocaleString('ru-RU');
@@ -296,6 +297,11 @@
     state.step = n;
     maxReached = Math.max(maxReached, n);
     save();
+    // configurator_complete — при переходе пользователя на финальный шаг (один раз)
+    if (n === TOTAL_STEPS && !completeGoalFired) {
+      completeGoalFired = true;
+      goal('configurator_complete', { system: state.system });
+    }
     renderStep();
     if (opts && opts.scroll && !isMobileOpen()) {
       const y = root.getBoundingClientRect().top + window.scrollY - 70;
@@ -358,6 +364,7 @@
   }
   function openMobileConfigurator() {
     if (!isMobile() || isMobileOpen()) return;
+    fireConfiguratorOpen();
     openerEl = document.activeElement;
     lockPageScroll();
     if (shell) { shell.setAttribute('role', 'dialog'); shell.setAttribute('aria-modal', 'true'); }
@@ -589,6 +596,8 @@
         <button type="submit" class="vcfg-submit">Получить точный расчёт
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
+        <p class="vcfg-err vcfg-submit-err" id="vcfgSubmitErr" role="alert" aria-live="assertive"></p>
+        <a class="vcfg-wa" id="vcfgSubmitWa" href="#" target="_blank" rel="noopener" hidden>Отправить заявку в WhatsApp</a>
       </form>
       <div class="vcfg-success" id="vcfgSuccess" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
@@ -653,7 +662,6 @@
         state.pos = defaultPos(state.system);
         reconcile();
         save();
-        ymGoal('cfg_system', { system: state.system });
         renderStep(); // перерисовать карточки (активная) и визуал
       }));
     }
@@ -667,7 +675,6 @@
       stepBody.querySelectorAll('[data-mat]').forEach(b => b.addEventListener('click', () => {
         state.material = b.dataset.mat;
         markActive(b, '[data-mat]'); save(); updateVisual(); updatePrice();
-        ymGoal('cfg_material', { system: state.system, material: state.material });
       }));
     }
     if (step === 5) bindColor();
@@ -837,18 +844,40 @@
     save();
 
     const fields = leadFields();
-    // 1) Cloudflare Worker (если задан), 2) прямой Telegram (window.sendLead), 3) WhatsApp-фолбэк
-    const endpoint = window.VELORA_LEAD_ENDPOINT;
-    if (endpoint) {
-      fetch(endpoint, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'Конфигуратор', fields })
-      }).catch(() => { /* фолбэк — кнопка WhatsApp в success */ });
-    } else if (typeof window.sendLead === 'function') {
-      try { window.sendLead('Конфигуратор', fields); } catch (err) { /* см. WhatsApp */ }
-    }
-    ymGoal('cfg_submit', { system: state.system, material: state.material });
-    showSuccess(fields);
+    const p = calcPrice();
+    const submitBtn = document.querySelector('#vcfgForm .vcfg-submit');
+    setSubmitError('');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.dataset.label = submitBtn.textContent; submitBtn.textContent = 'Отправляем…'; }
+
+    // Единственный канал — window.sendLead (Cloudflare Worker). Успех показываем
+    // ТОЛЬКО после подтверждённого ответа сервера. Второй submit-handler не создаём.
+    const sender = (typeof window.sendLead === 'function') ? window.sendLead('Конфигуратор', fields) : Promise.resolve(false);
+    Promise.resolve(sender).then(function (okServer) {
+      if (submitBtn) { submitBtn.disabled = false; if (submitBtn.dataset.label) submitBtn.textContent = submitBtn.dataset.label; }
+      if (okServer) {
+        goal('configurator_submit', { system: state.system, material: state.material });
+        goal('lead_success', {
+          lead_type: 'configurator',
+          system: state.system || '',
+          material: state.material || '',
+          estimated_price: Math.round(p.total) || 0
+        });
+        showSuccess(fields);
+      } else {
+        showSubmitError();
+      }
+    });
+  }
+
+  function setSubmitError(msg) {
+    const el = document.getElementById('vcfgSubmitErr');
+    if (el) { el.textContent = msg || ''; el.classList.toggle('show', !!msg); }
+  }
+  // Ошибка отправки: форму НЕ очищаем, success не показываем, lead_success не шлём.
+  function showSubmitError() {
+    setSubmitError('Не удалось отправить заявку. Проверьте связь и попробуйте ещё раз или напишите нам в WhatsApp.');
+    const wa = document.getElementById('vcfgSubmitWa');
+    if (wa) { wa.href = buildWa(); wa.hidden = false; }
   }
 
   function buildWa() {
@@ -868,8 +897,7 @@
       recap.innerHTML = [
         ['Система', fields['Система']],
         ['Размеры', fields['Размеры']],
-        ['Материал', fields['Материал']],
-        ['Цвет', fields['Цвет']],
+        ['Материал / цвет', fields['Материал / цвет']],
         ['Управление', fields['Управление']],
         ['Предв. стоимость', fields['Предв. стоимость']]
       ].map(r => `<div class="vcfg-srow"><span>${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
@@ -991,6 +1019,11 @@
   }
   window.addEventListener('resize', onViewportChange, { passive: true });
   window.addEventListener('orientationchange', onViewportChange, { passive: true });
+
+  // configurator_open — первое взаимодействие с конфигуратором за загрузку.
+  // На десктопе секция всегда видна, поэтому «открытие» = первый клик/касание в ней.
+  // На мобильном дополнительно вызывается из openMobileConfigurator().
+  root.addEventListener('pointerdown', fireConfiguratorOpen, { once: true });
 
   /* -------- Старт -------------------------------------------------------------- */
   renderStep();
