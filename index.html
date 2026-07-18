@@ -630,69 +630,84 @@ document.getElementById('reviewsTrack').innerHTML = reviews.map(r=>`
   </div>
 `).join('');
 
-// Contact form — успех показываем ТОЛЬКО после подтверждения сервера.
-document.querySelector('.c-form').addEventListener('submit', function(e){
+// Contact form — успех показываем ТОЛЬКО после ответа Worker {"ok":true}.
+document.querySelector('.c-form').addEventListener('submit', async function(e){
   e.preventDefault();
   var form = this;
   var btn = form.querySelector('button');
+  if(btn.disabled) return; // защита от двойного нажатия
   var original = btn.dataset.label || btn.textContent;
   btn.dataset.label = original;
   var name = form.querySelector('input[type="text"]').value.trim();
   var phone = form.querySelector('input[type="tel"]').value.trim();
   var msg = form.querySelector('textarea').value.trim();
   btn.disabled = true; btn.textContent = 'Отправляем…';
-  Promise.resolve(sendLead('Контактная форма', {
-    'Имя': name || '—',
-    'Телефон': phone || '—',
-    'Сообщение': msg || '—'
-  })).then(function(ok){
-    btn.disabled = false;
-    if(ok){
-      if(typeof window.veloraReachGoal==='function'){
-        window.veloraReachGoal('contact_form_success');
-        window.veloraReachGoal('lead_success', { lead_type:'contact' });
-      }
-      btn.textContent = 'Сообщение отправлено ✓';
-      form.reset();
-      setTimeout(function(){ btn.textContent = original; }, 3000);
-    } else {
-      // Ошибка сервера: форму НЕ очищаем, lead_success НЕ шлём.
-      btn.textContent = 'Ошибка отправки — попробуйте ещё раз';
-      setTimeout(function(){ btn.textContent = original; }, 4000);
+  var result = await sendLead({
+    source: "Контактная форма Velora",
+    fields: {
+      name: name,
+      phone: phone,
+      "Сообщение": msg
     }
   });
+  btn.disabled = false;
+  if(result.ok){
+    if(typeof window.veloraReachGoal==='function'){
+      window.veloraReachGoal('contact_form_success');
+      window.veloraReachGoal('lead_success', { lead_type:'contact_form' });
+    }
+    btn.textContent = 'Сообщение отправлено ✓';
+    form.reset();
+    setTimeout(function(){ btn.textContent = original; }, 3000);
+  } else {
+    // Ошибка сервера/сети: имя и телефон НЕ очищаем, lead_success НЕ шлём.
+    btn.textContent = 'Ошибка отправки — попробуйте ещё раз';
+    setTimeout(function(){ btn.textContent = original; }, 4000);
+  }
 });
 
 // ============ ОТПРАВКА ЗАЯВОК ============
-// БЕЗОПАСНОСТЬ: токен Telegram-бота на фронтенде НЕ хранится.
-// Все заявки уходят через защищённый Cloudflare Worker (window.VELORA_LEAD_ENDPOINT),
-// который сам обращается к Telegram, храня токен в секретах. См. worker/README-worker.md.
-function sendLead(source, fields){
-  var endpoint = window.VELORA_LEAD_ENDPOINT;
+// Единый канал — защищённый Cloudflare Worker (window.VELORA_LEAD_ENDPOINT).
+// Токен Telegram-бота и chat_id на фронтенде НЕ хранятся; прямых запросов к
+// api.telegram.org из браузера нет. Функция возвращает { ok, error }.
+async function sendLead(payload){
+  const endpoint = window.VELORA_LEAD_ENDPOINT;
   if(!endpoint){
-    // Endpoint не настроен — ничего не отправляем на фронтенде и не раскрываем секретов.
-    console.warn('Velora: приём заявок не настроен. Укажите window.VELORA_LEAD_ENDPOINT (Cloudflare Worker) — см. worker/README-worker.md.');
-    return Promise.resolve(false);
+    console.error("VELORA_LEAD_ENDPOINT is not configured");
+    return { ok:false, error:"endpoint_not_configured" };
   }
-  return fetch(endpoint, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ source: source, fields: fields })
-  }).then(function(r){ return r.ok; }).catch(function(){ return false; });
+  try {
+    const response = await fetch(endpoint, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json; charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    let data = null;
+    try { data = await response.json(); } catch(error){ data = null; }
+    if(!response.ok || !data || data.ok !== true){
+      console.error("Velora lead delivery failed", { status: response.status, error: (data && data.error) || "invalid_response" });
+      return { ok:false, error: (data && data.error) || "delivery_failed" };
+    }
+    return { ok:true };
+  } catch(error){
+    console.error("Velora lead network error", { message: (error && error.message) || "Unknown network error" });
+    return { ok:false, error:"network_error" };
+  }
 }
 window.sendLead = sendLead;
 </script>
 
 <!-- ОНЛАЙН-КОНФИГУРАТОР -->
-<!-- ОБЯЗАТЕЛЬНО для приёма заявок: раскомментируйте строку ниже и вставьте адрес
-     Cloudflare Worker (см. worker/README-worker.md). Токен бота на сайте не хранится.
-<script>window.VELORA_LEAD_ENDPOINT = 'https://velora-lead.ВАШ-САБДОМЕН.workers.dev';</script>
--->
+<!-- Приём заявок: адрес проверенного Cloudflare Worker.
+     Должен быть определён ДО подключения configurator.js. -->
+<script>
+window.VELORA_LEAD_ENDPOINT = "https://velora-leads.maxichernuk1.workers.dev";
+</script>
 <!-- Яндекс.Метрика: цели + клики по контактам -->
 <script src="js/velora-metrika.js?v=1" defer></script>
 <!-- SVG-визуализатор V2 (геометрия из assets/configurator-v2/geometry-v2.json) -->
 <script src="js/configurator-visual-v2.js?v=3" defer></script>
 <script src="js/configurator-data.js?v=3" defer></script>
-<script src="js/configurator.js?v=4" defer></script>
+<script src="js/configurator.js?v=5" defer></script>
 </body>
 </html>

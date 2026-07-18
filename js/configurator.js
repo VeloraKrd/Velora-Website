@@ -797,7 +797,10 @@
     return out;
   }
 
-  /* -------- Текст заявки / WhatsApp -------------------------------------------- */
+  /* -------- Поля заявки (payload.fields) / WhatsApp ----------------------------
+     Формат строго по спецификации Worker: ключи телефона и имени — латиницей
+     (phone / name), остальные — человекочитаемые. Ни одного undefined / null /
+     [object Object]: любое пустое значение приводим к строке или '—'.          */
   function leadFields() {
     const p = calcPrice();
     const sys = p.sys, mat = p.mat;
@@ -805,26 +808,28 @@
     const opts = [];
     if (state.guides && sys.guides) opts.push('направляющие');
     if (state.montage) opts.push('монтаж под ключ');
-    const f = {
-      'Система': sys.name,
-      'Размеры': `${p.w}×${p.h} см (${p.area.toFixed(2)} м²)`,
-      'Количество': `${p.qty} шт`,
-      'Область': scopeName(state.scope),
-      'Установка': labelFor(D.INSTALLS, state.install),
-      'Материал / цвет': mat.name
-    };
+
+    const contactMethod = { call: 'звонок', whatsapp: 'WhatsApp', telegram: 'Telegram' }[state.contact] || 'звонок';
     const secT = secondaryTitle();
-    if (secT) f[secondaryLabel()] = secT;
-    f['Положение'] = `${STATES[state.pos]}%`;
-    f['Фурнитура'] = hw.name;
-    f['Сторона'] = state.side === 'left' ? 'слева' : 'справа';
-    f['Управление'] = labelFor(D.CONTROLS, state.control);
-    f['Доп. опции'] = opts.length ? opts.join(', ') : '—';
-    f['Предв. стоимость'] = money(p.total) + ' ₽';
-    f['Способ связи'] = { call: 'звонок', whatsapp: 'WhatsApp', telegram: 'Telegram' }[state.contact];
-    f['Имя'] = state.name || '—';
-    f['Телефон'] = state.phone;
-    return f;
+    const stateTitle = (secT ? secT + ', ' : '') + STATES[state.pos] + '%';
+
+    return {
+      name: state.name || '',
+      phone: state.phone || '',
+      'Способ связи': contactMethod,
+      'Система': sys.name || '—',
+      'Материал / цвет': mat.name || '—',
+      'Положение': stateTitle,
+      'Фурнитура': hw.name || '—',
+      'Сторона управления': state.side === 'left' ? 'слева' : 'справа',
+      'Управление': labelFor(D.CONTROLS, state.control),
+      'Дополнительные опции': opts.length ? opts.join(', ') : '—',
+      'Ширина': `${p.w} см`,
+      'Высота': `${p.h} см`,
+      'Количество': `${p.qty} шт`,
+      'Установка': labelFor(D.INSTALLS, state.install),
+      'Предварительная стоимость': money(p.total) + ' ₽'
+    };
   }
 
   function onSubmit(e) {
@@ -843,23 +848,28 @@
     state.phone = phoneEl.value.trim();
     save();
 
+    const submitBtn = document.querySelector('#vcfgForm .vcfg-submit');
+    if (submitBtn && submitBtn.disabled) return; // защита от двойной отправки
+
     const fields = leadFields();
     const p = calcPrice();
-    const submitBtn = document.querySelector('#vcfgForm .vcfg-submit');
+    const systemTitle = (p.sys && p.sys.name) || '';
     setSubmitError('');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.dataset.label = submitBtn.textContent; submitBtn.textContent = 'Отправляем…'; }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.dataset.label = submitBtn.dataset.label || submitBtn.textContent; submitBtn.textContent = 'Отправляем…'; }
 
     // Единственный канал — window.sendLead (Cloudflare Worker). Успех показываем
-    // ТОЛЬКО после подтверждённого ответа сервера. Второй submit-handler не создаём.
-    const sender = (typeof window.sendLead === 'function') ? window.sendLead('Конфигуратор', fields) : Promise.resolve(false);
-    Promise.resolve(sender).then(function (okServer) {
+    // ТОЛЬКО после подтверждённого ответа сервера {ok:true}. Второй submit-handler не создаём.
+    const sender = (typeof window.sendLead === 'function')
+      ? window.sendLead({ source: 'Конфигуратор Velora', fields: fields })
+      : Promise.resolve({ ok: false, error: 'sendLead_missing' });
+
+    Promise.resolve(sender).then(function (result) {
       if (submitBtn) { submitBtn.disabled = false; if (submitBtn.dataset.label) submitBtn.textContent = submitBtn.dataset.label; }
-      if (okServer) {
-        goal('configurator_submit', { system: state.system, material: state.material });
+      if (result && result.ok === true) {
+        goal('configurator_submit');
         goal('lead_success', {
           lead_type: 'configurator',
-          system: state.system || '',
-          material: state.material || '',
+          system: systemTitle,
           estimated_price: Math.round(p.total) || 0
         });
         showSuccess(fields);
@@ -882,8 +892,12 @@
 
   function buildWa() {
     const f = leadFields();
+    const labels = { name: 'Имя', phone: 'Телефон' };
     let t = 'Здравствуйте! Хочу заказать жалюзи Velora.\n';
-    for (const k in f) { if (k === 'Способ связи') continue; t += `${k}: ${f[k]}\n`; }
+    for (const k in f) {
+      if (k === 'Способ связи') continue;
+      t += `${labels[k] || k}: ${f[k]}\n`;
+    }
     return `https://wa.me/${PHONE}?text=${encodeURIComponent(t)}`;
   }
 
@@ -896,10 +910,10 @@
     if (recap) {
       recap.innerHTML = [
         ['Система', fields['Система']],
-        ['Размеры', fields['Размеры']],
+        ['Размеры', `${fields['Ширина']} × ${fields['Высота']}`],
         ['Материал / цвет', fields['Материал / цвет']],
         ['Управление', fields['Управление']],
-        ['Предв. стоимость', fields['Предв. стоимость']]
+        ['Стоимость', fields['Предварительная стоимость']]
       ].map(r => `<div class="vcfg-srow"><span>${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
     }
     if (wa) wa.href = buildWa();
