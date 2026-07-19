@@ -57,7 +57,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 
 <script type="application/ld+json">
 {
@@ -129,21 +129,16 @@
   <div class="hero-bg"></div>
   <div class="slats" id="heroSlats"></div>
   <div class="hero-content">
-    <span class="eyebrow">Пошив и монтаж под ключ в Краснодаре</span>
-    <h1>Жалюзи под ваши размеры за 3–5 дней</h1>
-    <p>Бесплатный замер&nbsp;&bull;&nbsp;Монтаж&nbsp;&bull;&nbsp;Гарантия 2 года</p>
+    <span class="eyebrow">Краснодар и край&nbsp;·&nbsp;бесплатный замер</span>
+    <h1>Узнайте стоимость жалюзи на свои окна за 60 секунд</h1>
+    <p>Выберите систему, цвет и размеры. Предварительная цена появится сразу — без звонка и обязательств.</p>
     <div class="hero-btns">
-      <a href="#configurator" class="btn-gold">Рассчитать стоимость
+      <a href="#configurator" class="btn-gold" id="heroCalcBtn">Рассчитать за 60 секунд
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
-      <a href="#configurator" class="btn-ghost">Получить бесплатный замер</a>
+      <a href="https://wa.me/79181384029?text=Здравствуйте%21%20Хочу%20получить%203%20варианта%20жалюзи%20под%20мой%20бюджет." class="btn-ghost" id="heroWaBtn" target="_blank" rel="noopener">Получить 3 варианта в WhatsApp</a>
     </div>
-    <div class="hero-trust">
-      <div class="ht-item"><b>2000+</b><span>установленных проектов</span></div>
-      <div class="ht-item"><b>2 года</b><span>гарантия</span></div>
-      <div class="ht-item"><b>Бесплатный</b><span>замер</span></div>
-      <div class="ht-item"><b>3–5 дней</b><span>изготовление</span></div>
-    </div>
+    <p class="hero-trust-line">Бесплатный замер с образцами&nbsp;·&nbsp;изготовление 3–5 дней&nbsp;·&nbsp;гарантия 2 года</p>
   </div>
   <div class="hero-scroll"><span>Листайте вниз</span><span class="scroll-line"></span></div>
 </section>
@@ -159,6 +154,9 @@
     </div>
   </div>
 
+  <div class="catalog-hint" id="catalogHint" aria-hidden="true"><span>Листайте каталог</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </div>
   <div class="grid-products" id="productsGrid"></div>
 </section>
 
@@ -170,13 +168,18 @@
     </div>
   </div>
   <div class="adv-grid section-pad" style="padding-top:0;" id="advGrid"></div>
+  <div class="adv-cta-wrap section-pad" style="padding-top:0;">
+    <a href="https://wa.me/79181384029?text=Здравствуйте%21%20Хочу%20получить%203%20варианта%20жалюзи%20под%20мой%20бюджет." class="btn-gold adv-cta" id="advWaBtn" target="_blank" rel="noopener">Получить 3 варианта под бюджет
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
 </section>
 
 
 <section class="works section-pad" id="works">
   <div class="reveal">
     <span class="eyebrow">Портфолио</span>
-    <h2 class="section-title">Наши крайние работы</h2>
+    <h2 class="section-title">Наши последние работы</h2>
     <p class="works-sub">Реальные проекты Velora в Краснодаре и крае — квартиры, загородные дома, офисы и коммерческие помещения.</p>
   </div>
   <div class="gallery-grid reveal" style="margin-top:56px;" id="worksGrid"></div>
@@ -411,6 +414,13 @@
   </a>
 </div>
 
+<!-- Плавающая конверсионная кнопка (до 900px, появляется при прокрутке) -->
+<div class="sticky-cta" id="stickyCta" aria-hidden="true">
+  <button type="button" class="sticky-cta-btn" id="stickyCtaBtn">Рассчитать за 60 секунд
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+</div>
+
 <footer>
   <a href="#top" class="logo">VELORA<span>.</span></a>
   <p>© Velora 2026 · Жалюзи в Краснодаре и Краснодарском крае</p>
@@ -480,47 +490,73 @@ updateSectionFades();
 
 // Products data
 const products = [
-  {n:'01', slug:'vertical', title:'Вертикальные жалюзи', img:'img/vertical.svg', priceLabel:'от 1 500 ₽/м²', benefits:['Для панорамных окон, балконов и офисов','Плавный поворот ламелей — свет под настроение','Ткань и ПВХ, более 40 оттенков']},
-  {n:'02', slug:'horizontal', title:'Горизонтальные жалюзи', img:'img/horizontal.svg', priceLabel:'от 1 500 ₽/м²', benefits:['Для кухни, спальни и кабинета','Точная регулировка света и приватности','Алюминий — не боится влаги и пара']},
-  {n:'03', slug:'cassette', title:'Кассетные жалюзи', img:'img/cassette.svg', priceLabel:'от 2 500 ₽', benefits:['Для пластиковых окон — без сверления рамы','Плотное прилегание, никаких боковых просветов','Ткани с грязеотталкивающей пропиткой']},
-  {n:'04', slug:'roller', title:'Рулонные жалюзи', img:'img/roller.svg', priceLabel:'от 1 700 ₽', benefits:['Для любых окон и интерьеров','От лёгкого затенения до полного блэкаута','Более 100 тканей и фактур']},
-  {n:'05', slug:'wood', title:'Деревянные жалюзи', img:'img/wood.svg', priceLabel:'от 10 000 ₽/м²', benefits:['Для гостиных, кабинетов и спален','Широкие ламели мягко рассеивают свет','Ламели 25 и 50 мм, массив дерева']},
-  {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/motorized.svg', priceLabel:'от 22 000 ₽/м²', benefits:['Деревянные ламели 25 и 50 мм','Дистанционное управление с пульта','Для высоких и труднодоступных окон']},
-  {n:'07', slug:'daynight', title:'День/Ночь', img:'img/daynight.svg', priceLabel:'от 3 500 ₽', benefits:['Для спальни и гостиной','Мягкий свет днём и приватность вечером','Изделие высотой 40–140 см']},
-  {n:'08', slug:'pleated', title:'Плиссе', img:'img/pleated.svg', priceLabel:'от 6 000 ₽/м²', benefits:['Для мансард и нестандартных окон','Складки мягко рассеивают яркий свет','Сотовые ткани сохраняют тепло зимой']},
-  {n:'09', slug:'roman', title:'Римские жалюзи', img:'img/roman.svg', priceLabel:'от 8 000 ₽/м²', benefits:['Для спальни, гостиной и кухни','Мягкое регулирование света складками','Лён, хлопок и блэкаут — десятки фактур']}
+  {n:'01', slug:'vertical', title:'Вертикальные жалюзи', img:'img/catalog/vertical.webp', alt:'Вертикальные жалюзи в гостиной', priceLabel:'от 1 500 ₽/м²', benefits:['Для панорамных окон, балконов и офисов','Ткань и ПВХ, более 40 оттенков']},
+  {n:'02', slug:'horizontal', title:'Горизонтальные жалюзи', img:'img/catalog/horizontal.webp', alt:'Горизонтальные алюминиевые жалюзи', priceLabel:'от 1 500 ₽/м²', benefits:['Для кухни, спальни и кабинета','Алюминий — не боится влаги и пара']},
+  {n:'03', slug:'cassette', title:'Кассетные жалюзи', img:'img/catalog/cassette.webp', alt:'Кассетные жалюзи на окнах', priceLabel:'от 2 500 ₽', benefits:['Для пластиковых окон — без сверления рамы','Плотное прилегание без боковых просветов']},
+  {n:'04', slug:'roller', title:'Рулонные жалюзи', img:'img/catalog/roller.webp', alt:'Рулонные жалюзи в современном интерьере', priceLabel:'от 1 700 ₽', benefits:['Для любых окон и интерьеров','От лёгкого затенения до полного блэкаута']},
+  {n:'05', slug:'wood', title:'Деревянные жалюзи', img:'img/catalog/wood.webp', alt:'Деревянные жалюзи в интерьере', priceLabel:'от 10 000 ₽/м²', benefits:['Для гостиных, кабинетов и спален','Ламели 25 и 50 мм, массив дерева']},
+  {n:'06', slug:'motorized', title:'Жалюзи на электроприводе', img:'img/catalog/motorized.webp', alt:'Деревянные жалюзи с электроприводом', priceLabel:'от 22 000 ₽/м²', benefits:['Дистанционное управление с пульта','Для высоких и труднодоступных окон']},
+  {n:'07', slug:'daynight', title:'День/Ночь', img:'img/catalog/daynight.webp', alt:'Жалюзи День-Ночь на больших окнах', priceLabel:'от 3 500 ₽', benefits:['Для спальни и гостиной','Мягкий свет днём и приватность вечером']},
+  {n:'08', slug:'pleated', title:'Плиссе', img:'img/catalog/pleated.webp', alt:'Жалюзи плиссе с разными вариантами открытия', priceLabel:'от 6 000 ₽/м²', benefits:['Для мансард и нестандартных окон','Сотовые ткани сохраняют тепло зимой']},
+  {n:'09', slug:'roman', title:'Римские жалюзи', img:'img/catalog/roman.webp', alt:'Римские шторы в современном интерьере', priceLabel:'от 8 000 ₽/м²', benefits:['Для спальни, гостиной и кухни','Лён, хлопок и блэкаут — десятки фактур']}
 ];
 
 const grid = document.getElementById('productsGrid');
 grid.innerHTML = products.map(p=>`
-  <div class="p-card">
+  <article class="p-card" data-slug="${p.slug}">
     <div class="img-wrap">
-      <img src="${p.img}" alt="${p.title}" loading="lazy">
-      <div class="p-slats">${Array.from({length:8}).map(()=>'<span></span>').join('')}</div>
-      <span class="p-num">${p.n}</span>
+      <img src="${p.img}" alt="${p.alt}" width="1200" height="900" loading="lazy" decoding="async">
     </div>
     <div class="p-body">
       <h3>${p.title}</h3>
-      <ul class="p-benefits">${p.benefits.map(b=>`<li>${b}</li>`).join('')}</ul>
       <div class="p-price">${p.priceLabel}</div>
-      <a href="product.html?id=${p.slug}" class="p-more">Подобрать
+      <ul class="p-benefits">${p.benefits.slice(0,2).map(b=>`<li>${b}</li>`).join('')}</ul>
+      <a href="product.html?id=${p.slug}" class="p-more" data-slug="${p.slug}">Подробнее
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
-  </div>
+  </article>
 `).join('');
 
-// Advantages data
+// Клик по карточке/«Подробнее» → цель catalog_card_click (без ПДн) + переход на товар
+grid.addEventListener('click', function(e){
+  const card = e.target.closest('.p-card');
+  if(!card) return;
+  const slug = card.dataset.slug || '';
+  if(typeof window.veloraReachGoal === 'function') window.veloraReachGoal('catalog_card_click', { product_slug: slug });
+  if(!e.target.closest('a')){ window.location.href = 'product.html?id=' + slug; }
+});
+
+// Горизонтальный каталог: подсказка + цель catalog_swipe (один раз за загрузку)
+(function(){
+  const hint = document.getElementById('catalogHint');
+  const SKEY = 'velora_catalog_swiped';
+  let swipeGoalFired = false;
+  if(hint && sessionStorage.getItem(SKEY)){ hint.classList.add('hidden'); }
+  function onSwipe(){
+    if(grid.scrollLeft > 24){
+      if(!swipeGoalFired){
+        swipeGoalFired = true;
+        if(typeof window.veloraReachGoal === 'function') window.veloraReachGoal('catalog_swipe');
+      }
+      if(hint) hint.classList.add('hidden');
+      try { sessionStorage.setItem(SKEY, '1'); } catch(err){}
+      grid.removeEventListener('scroll', onSwipe);
+    }
+  }
+  grid.addEventListener('scroll', onSwipe, { passive:true });
+})();
+
+// Advantages data (4 карточки)
 const advantages = [
-  {title:'Бесплатный замер', desc:'Выезд специалиста и точные измерения без каких-либо затрат с вашей стороны.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M9 7.5l3-3 3 3M12 4.5V15m-7.5 4.5h15" />'},
-  {title:'Индивидуальный дизайн', desc:'Подбираем ткани, цвета и механизмы под ваш интерьер и задачи.', icon:'<circle cx="12" cy="12" r="8.25"/><path stroke-linecap="round" d="M12 8v4l2.5 2.5"/>'},
-  {title:'Быстрая установка', desc:'Монтаж большинства систем занимает не более одного дня.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>'},
-  {title:'Гарантия качества', desc:'Официальная гарантия на все механизмы и ткани — до 5 лет.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/>'},
-  {title:'Современные материалы', desc:'Работаем с сертифицированными тканями и фурнитурой ведущих брендов.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/>'},
-  {title:'Доставка и монтаж', desc:'Полный цикл — от замера до финальной установки под ключ.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M3 7h11v8H3zM14 10h4l3 3v2h-7zM6.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm11 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>'}
+  {num:'01', title:'Бесплатный замер', desc:'Приедем с образцами и предложим несколько решений под ваш бюджет.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M3.5 7.5h17v9h-17zM7.5 7.5v3.5M11 7.5v5M14.5 7.5v3.5M18 7.5v5"/>'},
+  {num:'02', title:'Изготовление 3–5 дней', desc:'Стандартные системы изготавливаем без долгого ожидания.', icon:'<circle cx="12" cy="12" r="8.25"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5V12l3 2"/>'},
+  {num:'03', title:'Гарантия 2 года', desc:'На изделие, механизм и выполненный монтаж.', icon:'<path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.5 12l1.8 1.8L15 10"/>'},
+  {num:'04', title:'Установка под ключ', desc:'Доставка, аккуратный монтаж и настройка в один визит.', icon:'<circle cx="8" cy="12" r="3.25"/><path stroke-linecap="round" stroke-linejoin="round" d="M11.2 12H21M17.5 12v3M20.5 12v2.2"/>'}
 ];
 document.getElementById('advGrid').innerHTML = advantages.map(a=>`
   <div class="adv-item">
+    <span class="adv-num">${a.num}</span>
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">${a.icon}</svg>
     <h3>${a.title}</h3>
     <p>${a.desc}</p>
@@ -637,6 +673,78 @@ document.getElementById('reviewsTrack').innerHTML = reviews.map(r=>`
     <p class="rv-text">«${r.text}»</p>
   </div>
 `).join('');
+
+// ============ HERO CTA · ПЛАВАЮЩАЯ КНОПКА · ЦЕЛИ ============
+// Используем существующую функцию veloraReachGoal (без дублирующего helper'а)
+// и существующий механизм открытия конфигуратора (#vcfgOpenBtn).
+(function(){
+  function reach(name, params){
+    if(typeof window.veloraReachGoal === 'function') window.veloraReachGoal(name, params || {});
+  }
+  const mqReduce   = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mqCfgMobile= window.matchMedia('(max-width: 767px)'); // порог полноэкранного конфигуратора
+  const cfgSection = document.getElementById('configurator');
+  const openBtn    = document.getElementById('vcfgOpenBtn');  // существующий обработчик открытия
+
+  // Единая точка входа: на телефоне открываем полноэкранный конфигуратор
+  // существующим механизмом, иначе — плавно прокручиваем к секции.
+  function openConfigurator(){
+    if(mqCfgMobile.matches && openBtn){
+      openBtn.click();
+    } else if(cfgSection){
+      cfgSection.scrollIntoView({ behavior: mqReduce.matches ? 'auto' : 'smooth', block:'start' });
+    }
+  }
+
+  const heroCalc = document.getElementById('heroCalcBtn');
+  if(heroCalc) heroCalc.addEventListener('click', function(e){
+    reach('hero_calculate_click');
+    e.preventDefault();
+    openConfigurator();
+  });
+
+  const heroWa = document.getElementById('heroWaBtn');
+  if(heroWa) heroWa.addEventListener('click', function(){ reach('hero_whatsapp_click'); });
+
+  const advWa = document.getElementById('advWaBtn');
+  if(advWa) advWa.addEventListener('click', function(){ reach('advantages_whatsapp_click'); });
+
+  // Плавающая кнопка «Рассчитать за 60 секунд» (до 900px)
+  const sticky   = document.getElementById('stickyCta');
+  const stickyBtn= document.getElementById('stickyCtaBtn');
+  const contacts = document.getElementById('contacts');
+  if(stickyBtn) stickyBtn.addEventListener('click', function(){
+    reach('hero_sticky_cta_click');
+    openConfigurator();
+  });
+
+  const mqSticky = window.matchMedia('(max-width: 900px)');
+  let ticking = false;
+  function updateSticky(){
+    ticking = false;
+    if(!sticky) return;
+    if(!mqSticky.matches){ sticky.classList.remove('show'); sticky.setAttribute('aria-hidden','true'); return; }
+    const cfgOpen  = document.body.classList.contains('configurator-mobile-open');
+    const scrolled = window.scrollY > 120;
+    let nearEnd = false;
+    if(contacts){
+      const r = contacts.getBoundingClientRect();
+      nearEnd = r.top < window.innerHeight * 0.9; // достигли контактов/футера
+    }
+    const show = scrolled && !cfgOpen && !nearEnd;
+    sticky.classList.toggle('show', show);
+    sticky.setAttribute('aria-hidden', show ? 'false' : 'true');
+  }
+  function requestSticky(){ if(!ticking){ requestAnimationFrame(updateSticky); ticking = true; } }
+  window.addEventListener('scroll', requestSticky, { passive:true });
+  window.addEventListener('resize', requestSticky, { passive:true });
+  // Скрываем панель, когда открывается полноэкранный конфигуратор (меняется класс body)
+  try {
+    const bodyObs = new MutationObserver(requestSticky);
+    bodyObs.observe(document.body, { attributes:true, attributeFilter:['class'] });
+  } catch(err){}
+  updateSticky();
+})();
 
 // Contact form — успех показываем ТОЛЬКО после ответа Worker {"ok":true}.
 document.querySelector('.c-form').addEventListener('submit', async function(e){

@@ -1465,3 +1465,123 @@ body.vcfg-modal-open{overflow:hidden;}
   opacity:0; pointer-events:none; transition:opacity .3s var(--ease);}
 .vcfg-v2-svg{position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none; overflow:visible;}
 @media(prefers-reduced-motion:reduce){ .vcfg-v2-darkness{transition:none;} }
+
+/* ============================================================================
+   ОБНОВЛЕНИЕ ГЛАВНОЙ (реклама): hero-строка доверия, sticky CTA,
+   горизонтальный каталог, компактные карточки, блок преимуществ 4×.
+   ============================================================================ */
+
+/* ---------- HERO: компактная строка доверия ---------- */
+.hero-trust-line{
+  margin-top:22px; color:rgba(255,255,255,.9); font-size:13.5px; line-height:1.5;
+  letter-spacing:.02em; text-shadow:0 1px 10px rgba(0,0,0,.4);
+  opacity:0; animation:fadeUp .9s var(--ease) 1.6s forwards;
+}
+@media(max-width:600px){
+  .hero{ height:auto; min-height:100svh; min-height:100dvh; align-items:center; }
+  .hero-content{
+    padding:92px 6vw calc(28px + env(safe-area-inset-bottom,0px));
+    display:flex; flex-direction:column; justify-content:center;
+    min-height:100svh; min-height:100dvh; box-sizing:border-box; width:100%;
+  }
+  .hero-content h1{ font-size:clamp(27px,8vw,40px); line-height:1.12; }
+  .hero-content p{ font-size:15px; margin-top:14px; }
+  .hero-btns{ margin-top:24px; gap:12px; }
+  .hero-trust-line{ margin-top:16px; font-size:12.5px; }
+}
+
+/* ---------- Плавающая конверсионная кнопка (до 900px) ---------- */
+.sticky-cta{
+  position:fixed; left:0; right:0; z-index:945;
+  bottom:calc(66px + env(safe-area-inset-bottom,0px)); /* над мобильной панелью действий */
+  padding:0 14px; display:none;
+  transform:translateY(180%); opacity:0; pointer-events:none;
+  transition:transform .42s var(--ease), opacity .3s var(--ease);
+}
+@media(max-width:900px){ .sticky-cta{ display:block; } body{ padding-bottom:96px; } }
+.sticky-cta.show{ transform:none; opacity:1; pointer-events:auto; }
+.sticky-cta-btn{
+  width:100%; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  padding:15px 20px; border:0; border-radius:100px; cursor:pointer; font-family:inherit;
+  font-size:15px; font-weight:700; letter-spacing:.01em; color:var(--graphite); background:var(--gold);
+  box-shadow:0 10px 28px rgba(184,147,90,.42);
+  transition:background .25s var(--ease), transform .2s var(--ease);
+}
+.sticky-cta-btn:hover{ background:var(--gold-bright); }
+.sticky-cta-btn:active{ transform:scale(.98); }
+.sticky-cta-btn svg{ width:16px; height:16px; }
+body.menu-open .sticky-cta{ display:none; }
+@media(prefers-reduced-motion:reduce){ .sticky-cta{ transition:opacity .3s linear; } }
+
+/* ---------- КАТАЛОГ: компактная карточка, фото 4:3 ---------- */
+.p-card{ cursor:pointer; }
+.p-card .img-wrap{ aspect-ratio:4/3; }
+.p-card .img-wrap img{ display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
+.p-card:hover .img-wrap img{ transform:scale(1.03); }
+.p-body{ padding:20px 22px 22px; }
+.p-body h3{ font-size:19px; margin-bottom:8px; }
+.p-price{ font-family:'Fraunces',serif; font-size:19px; color:var(--graphite); margin:0 0 12px; padding:0; border:0; }
+.p-benefits{ flex:0 0 auto; margin:0 0 16px; }
+.p-benefits li{ font-size:13.5px; }
+.p-more{ margin-top:auto; }
+
+/* Подсказка «Листайте каталог →» */
+.catalog-hint{ display:none; }
+@media(max-width:1099px){
+  .catalog-hint{
+    display:flex; align-items:center; gap:8px; justify-content:flex-end;
+    margin:0 16px 12px; color:var(--gold); font-size:12.5px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase;
+    transition:opacity .4s var(--ease), transform .4s var(--ease);
+  }
+  .catalog-hint svg{ width:16px; height:16px; animation:hintNudge 1.4s var(--ease) infinite; }
+  .catalog-hint.hidden{ opacity:0; transform:translateY(-4px); pointer-events:none; }
+}
+@keyframes hintNudge{ 0%,100%{transform:translateX(0)} 50%{transform:translateX(5px)} }
+@media(prefers-reduced-motion:reduce){ .catalog-hint svg{ animation:none; } }
+
+/* ---------- Горизонтальный каталог до 1099px (desktop-сетка сохраняется) ---------- */
+@media(max-width:1099px){
+  .grid-products{
+    display:flex; flex-wrap:nowrap; overflow-x:auto; overflow-y:visible;
+    scroll-snap-type:x mandatory; overscroll-behavior-inline:contain;
+    -webkit-overflow-scrolling:touch;
+    gap:14px; background:transparent; border:0; padding:2px 16px 8px;
+    scrollbar-width:none;
+  }
+  .grid-products::-webkit-scrollbar{ display:none; }
+  .p-card{
+    flex-shrink:0; scroll-snap-align:start; scroll-snap-stop:normal;
+    border:1px solid var(--graphite-line); border-radius:14px; overflow:hidden;
+    background:var(--paper); box-shadow:0 6px 20px rgba(28,26,23,.06);
+  }
+}
+@media(min-width:768px) and (max-width:1099px){
+  .p-card{ width:42vw; min-width:310px; max-width:440px; }
+}
+@media(max-width:767px){
+  .p-card{ width:min(84vw,340px); }
+  .grid-products{ gap:14px; padding-left:16px; padding-right:16px; }
+}
+
+/* ---------- БЛОК ПРЕИМУЩЕСТВ: 4 карточки 4/2/2 ---------- */
+.adv-grid{ grid-template-columns:repeat(4,1fr); background:var(--gold-dim); border-color:var(--gold-dim); }
+@media(max-width:900px){ .adv-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .adv-grid{ grid-template-columns:repeat(2,1fr); } }
+.adv-item{ position:relative; padding:40px 28px 34px; }
+.adv-num{
+  position:absolute; top:22px; right:24px; font-family:'Fraunces',serif; font-size:15px;
+  color:var(--gold-bright); letter-spacing:.06em; opacity:.9;
+}
+.adv-item svg{ width:26px; height:26px; margin-bottom:20px; }
+.adv-item h3{ font-size:17px; }
+.adv-item p{ font-size:13.5px; }
+@media(max-width:560px){
+  .adv-item{ padding:24px 16px 22px; }
+  .adv-num{ top:14px; right:14px; font-size:13px; }
+  .adv-item svg{ width:22px; height:22px; margin-bottom:14px; }
+  .adv-item h3{ font-size:15px; margin-bottom:8px; }
+  .adv-item p{ font-size:12.5px; line-height:1.5; }
+}
+.adv-cta-wrap{ display:flex; justify-content:center; margin-top:44px; }
+.adv-cta{ margin-top:0; }
